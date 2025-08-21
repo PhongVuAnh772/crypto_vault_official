@@ -1,10 +1,21 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
+    "jsx": "react",
     "strict": true,
+    "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "./*"
+      "@src/*": [
+        "app/src/*"
+      ],
+      "@assets/*": [
+        "app/src/assets/*"
+      ],
+      "@components/*": [
+        "app/src/components/*"
+      ],
+      "@core/*": [
+        "app/src/core/*"
       ]
     }
   },
@@ -12,6 +23,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "declarations.d.ts"
   ]
 }

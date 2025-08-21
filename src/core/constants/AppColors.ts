@@ -1,0 +1,57 @@
+const appColors = {
+  main: {
+    green: "#00F4C8",
+    darkGreen: "#0DC7A5",
+    tokyoRed: "#E1251B",
+  },
+  light: {
+    green: "#E8FFF0",
+    yellow: "#FFF8EB",
+    red: "#FFF2F5",
+  },
+  border: {
+    green: "#CAF5D9",
+    yellow: "#FFE58F",
+    red: "#FFC6C5",
+  },
+  gradient: {
+    greenBlue: ["#00F4C8", "#3A7DE6", "#1E298E"],
+    green: ["#BFFFF4", "#9CE3FF"],
+  },
+  neutral: {
+    white: "#FFFFFF",
+    black: "#000000",
+    n900: "#000000",
+    n800: "#272727",
+    n700: "#3E3F40",
+    n600: "#6C6F73",
+    n500: "#A6A9B0",
+    n400: "#C8C8C8",
+    n300: "#E7E7E7",
+    n200: "#F0F0F0",
+    n100: "#F6F6F6",
+    n50: "#F6F6F6",
+  },
+  functional: {
+    green: "#4CA977",
+    yellow: "#FFB625",
+    success: "#108C4A",
+    pending: "#FFB625",
+    warning: "#E1251B",
+    link: "#1890FF",
+    disable: "#CFC2C6",
+    upcoming: "#FFAF00",
+  },
+  other: {
+    outline_lightest: "#F8F8F8",
+    verified: "#52E146",
+    unverified: "#FFAF00",
+    spam: "#E1251B",
+    label: "#FFF4F4",
+    transparent: "rgba(225, 225, 225,0)",
+    buttonNewUI: "#00000040",
+    transparentNewUI: "#FFFFFFB2",
+    status_pending: "#FFF0D3",
+  },
+};
+export default appColors;
