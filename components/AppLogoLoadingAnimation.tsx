@@ -5,35 +5,86 @@ import { StyleSheet, View } from "react-native";
 import appStyles from "src/core/styles";
 
 type AppLogoLoadingAnimationType = {
-  isLoading?: boolean;
+  status?: "loading" | "success" | "error";
+  width?: number;
+  height?: number;
+  onAnimationFinish?: () => void;
 };
 
 const AppLogoLoadingAnimation: React.FC<AppLogoLoadingAnimationType> = ({
-  isLoading,
+  status = "loading",
+  width = 100,
+  height = 100,
+  onAnimationFinish,
 }) => {
-  return isLoading ? (
-    <View
-      style={[
-        StyleSheet.absoluteFillObject,
-        appStyles.center,
-        appLogoLoadingAnimationStyle.container,
-      ]}
-    >
-      <LottieView
-        source={appAnimations.logoLoading}
-        style={appLogoLoadingAnimationStyle.icon}
-        autoPlay
-        loop
-      />
-    </View>
-  ) : null;
+  if (status === "loading") {
+    return (
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          appStyles.center,
+          styles.container,
+          { marginRight: 20 },
+        ]}
+      >
+        <LottieView
+          source={appAnimations.logoLoading}
+          style={{ width, height }}
+          autoPlay
+          loop
+        />
+      </View>
+    );
+  }
+
+  if (status === "success") {
+    return (
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          appStyles.center,
+          styles.container,
+          { marginRight: 20 },
+        ]}
+      >
+        <LottieView
+          source={appAnimations.successAnimation}
+          style={{ width, height }}
+          autoPlay
+          loop={false}
+          onAnimationFinish={onAnimationFinish}
+        />
+      </View>
+    );
+  }
+
+  if (status === "error") {
+    return (
+      <View
+        style={[
+          StyleSheet.absoluteFillObject,
+          appStyles.center,
+          styles.container,
+          { marginRight: 20 },
+        ]}
+      >
+        {/* <LottieView
+          source={appAnimations.errorCross} 
+          style={{ width, height }}
+          autoPlay
+          loop={false}
+        /> */}
+      </View>
+    );
+  }
+
+  return null;
 };
 
-const appLogoLoadingAnimationStyle = StyleSheet.create({
+const styles = StyleSheet.create({
   container: {
     zIndex: 9999,
   },
-  icon: { width: 100, height: 100 },
 });
 
 export default AppLogoLoadingAnimation;

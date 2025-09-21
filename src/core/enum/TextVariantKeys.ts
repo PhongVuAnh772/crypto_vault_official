@@ -1,0 +1,25 @@
+enum TextVariantKeys {
+    headlineExtraLarge = 'headlineExtraLarge',
+    headlineLarge = 'headlineLarge',
+    headlineMedium = 'headlineMedium',
+    headlineSmall = 'headlineSmall',
+    titleLarge = 'titleLarge',
+    titleMedium = 'titleMedium',
+    titleSmall = 'titleSmall',
+    bodyMLarge = 'bodyMLarge',
+    bodyMMedium = 'bodyMMedium',
+    bodyMSmall = 'bodyMSmall',
+    bodyMTiny = 'bodyMTiny',
+    bodyRLarge = 'bodyRLarge',
+    bodyRMedium = 'bodyRMedium',
+    bodyRSmall = 'bodyRSmall',
+    bodyRTiny = 'bodyRTiny',
+    labelLarge = 'labelLarge',
+    labelMedium = 'labelMedium',
+    labelSmall = 'labelSmall',
+    labelTiny = 'labelTiny',
+    labelLink = 'labelLink',
+    labelCap = 'labelCap',
+}
+
+export default TextVariantKeys;

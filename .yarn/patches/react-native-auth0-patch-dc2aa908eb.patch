@@ -1,0 +1,13 @@
+diff --git a/src/types.ts b/src/types.ts
+index 6f3efd34a1d9c653d2572097e4db7654a0b533d1..68d81bb19015ae1d87984749dc9668c211121b0d 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -214,7 +214,7 @@ export interface AuthorizeUrlOptions {
+   /**
+    * Random string to prevent CSRF attacks.
+    */
+-  state: object;
++  state: string;
+   /**
+    * Custom parameters to send to `/authorize`
+    */

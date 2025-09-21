@@ -1,0 +1,27 @@
+diff --git a/dist/native/pbkdf2_sha512.js b/dist/native/pbkdf2_sha512.js
+index fe733396a95b9374665953bb102cdaa0f4d69e9c..c2805099280c8b6a5b9db7e2e66e4efbdc61abd1 100644
+--- a/dist/native/pbkdf2_sha512.js
++++ b/dist/native/pbkdf2_sha512.js
+@@ -9,10 +9,17 @@
+ Object.defineProperty(exports, "__esModule", { value: true });
+ exports.pbkdf2_sha512 = void 0;
+ async function pbkdf2_sha512(key, salt, iterations, keyLen) {
+-    const keyBuffer = typeof key === 'string' ? Buffer.from(key, 'utf-8') : key;
+-    const saltBuffer = typeof salt === 'string' ? Buffer.from(salt, 'utf-8') : salt;
+-    let pbkdf2 = require('react-native-fast-pbkdf2').default;
+-    let res = await pbkdf2.derive(keyBuffer.toString('base64'), saltBuffer.toString('base64'), iterations, keyLen, 'sha-512');
+-    return Buffer.from(res, 'base64');
++  const keyBuffer = typeof key === "string" ? Buffer.from(key, "utf-8") : key;
++  // const saltBuffer = typeof salt === 'string' ? Buffer.from(salt, 'utf-8') : salt;
++  // let pbkdf2 = require('react-native-fast-pbkdf2').default;
++  // let res = await pbkdf2.derive(keyBuffer.toString('base64'), saltBuffer.toString('base64'), iterations, keyLen, 'sha-512');
++  // return Buffer.from(res, 'base64');
++  let pbkdf2 = require("react-native").NativeModules.TonPbkdf2;
++  let res = await pbkdf2.derivationKey(
++    keyBuffer.toString("hex"),
++    typeof salt === "string" ? salt : salt.toString("utf-8"),
++    iterations
++  );
++  return Buffer.from(res, "hex");
+ }
+ exports.pbkdf2_sha512 = pbkdf2_sha512;

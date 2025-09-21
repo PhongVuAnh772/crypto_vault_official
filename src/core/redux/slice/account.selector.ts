@@ -1,0 +1,170 @@
+import Slip0044 from 'src/core/enum/Slip0044';
+import { useAppSelector } from '../hooks';
+import {
+    getAccountId,
+    getAllAccount,
+    getProtocolDataLists,
+    getSelectedProtocolId,
+} from './account.slice';
+import { AddressListItemType } from './account.type';
+import {
+    defaultSettingCurrency,
+    selectorSelectedCurrencySetting,
+    selectorSettingCurrency,
+} from './app.slice';
+
+export const useSelectedCurrencySetting = () => {
+    const selectedCurrencySetting = useAppSelector(
+        selectorSelectedCurrencySetting,
+    );
+    const settingCurrency = useAppSelector(selectorSettingCurrency);
+    let defaultCurrency = settingCurrency?.find(e =>
+        e.symbol.toLocaleLowerCase().includes('jp'),
+    );
+    defaultCurrency =
+        defaultCurrency ??
+        (settingCurrency ? settingCurrency[0] : defaultSettingCurrency);
+    if (selectedCurrencySetting) {
+        return selectedCurrencySetting;
+    } else {
+        return defaultCurrency;
+    }
+};
+
+export const useAccountProtocolSelected = () => {
+    const accountLists = useAppSelector(getAllAccount);
+    const selectAccountId = useAppSelector(getAccountId);
+    const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    if (accountLists !== undefined) {
+        const currentAccount = [...accountLists].find(
+            e => e?.id === selectAccountId,
+        );
+        const protocolData = currentAccount?.protocolData;
+        if (selectedProtocolId) {
+            const selectedProtocol = [...(protocolData ?? [])].find(
+                e => e?._id === selectedProtocolId,
+            );
+            return selectedProtocol;
+        }
+    }
+};
+export const useWalletData = (id: string, address: string) => {
+    const accountLists = useAppSelector(getAllAccount);
+    const selectAccountId = useAppSelector(getAccountId);
+    if (accountLists !== undefined) {
+        const currentAccount = [...accountLists].find(
+            e => e?.id === selectAccountId,
+        );
+        const protocolData = currentAccount?.protocolData;
+        const selectedProtocol = [...(protocolData ?? [])].find(
+            e => e?._id === id,
+        );
+        const addressData = selectedProtocol?.addressList.find(
+            e => e.address === address,
+        );
+        return addressData;
+    }
+};
+export const useProtocolSelected = () => {
+    const protocolDataLists = useAppSelector(getProtocolDataLists);
+    const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    return protocolDataLists?.find(e => {
+        if (selectedProtocolId) {
+            return e?._id === selectedProtocolId;
+        } else {
+            return e.slip0044 === Slip0044.Polygon;
+        }
+    });
+};
+
+export const useCurrentWallet = (): AddressListItemType | undefined => {
+    const accountLists = useAppSelector(getAllAccount);
+    const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    const selectAccountId = useAppSelector(getAccountId);
+
+    if (accountLists !== undefined) {
+        const accountWallet = [...accountLists].find(
+            e => e?.id === selectAccountId,
+        );
+        if (!accountWallet) {
+            return;
+        }
+
+        const { protocolData } = accountWallet;
+        const currentProtocol = protocolData?.find(
+            e => e?._id === selectedProtocolId,
+        );
+
+        if (!currentProtocol) {
+            return;
+        }
+        const { addressList, selectedAddressId } = currentProtocol;
+        const addRessData = addressList.find(e => e.id === selectedAddressId);
+
+        if (!addRessData) {
+            return;
+        }
+        return addRessData;
+    }
+    return undefined;
+};
+
+export const useAccount = () => {
+    const accountLists = useAppSelector(getAllAccount);
+    const selectAccountId = useAppSelector(getAccountId);
+    if (accountLists !== undefined) {
+        const accountWallet = [...accountLists].find(
+            e => e?.id === selectAccountId,
+        );
+        return accountWallet;
+    }
+};
+
+export const useMnemonic = () => {
+    const currentAccount = useAccount();
+    return currentAccount?.mnemonic;
+};
+
+const useAddressDataWithSlip0044 = (slip0044: Slip0044) => {
+    const protocolListData = useAppSelector(getProtocolDataLists);
+
+    const coinProtocolData = protocolListData?.find(
+        e => e.slip0044 === slip0044,
+    );
+
+    const currentAccount = useAccount();
+
+    const accountProtocolListData = currentAccount?.protocolData;
+
+    const coinAccountData = accountProtocolListData?.find(
+        e => e._id === coinProtocolData?._id,
+    );
+    const polAddressList = coinAccountData?.addressList;
+    const selectedAddressId = coinAccountData?.selectedAddressId;
+    const currentCoinAddressData = polAddressList?.find(
+        e => e.id === selectedAddressId,
+    );
+
+    return currentCoinAddressData;
+};
+
+export const usePolAddressData = () => {
+    return useAddressDataWithSlip0044(Slip0044.Polygon)?.address;
+};
+
+export const useTonAddressData = () => {
+    return useAddressDataWithSlip0044(Slip0044.Ton);
+};
+export const useBitcoinAddressData = () => {
+    return useAddressDataWithSlip0044(Slip0044.Bitcoin);
+};
+export const useCurrencyRateConversion = () => {
+    const currencyUSD = useAppSelector(selectorSettingCurrency);
+    const usd = currencyUSD?.find(item => item.symbol === 'USD');
+    const euro = currencyUSD?.find(item => item.symbol === 'EUR');
+
+    if (usd && euro) {
+        return euro.rate / usd.rate;
+    }
+    return 1;
+};

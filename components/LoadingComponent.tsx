@@ -7,11 +7,15 @@ import AppLogoLoadingAnimation from "./AppLogoLoadingAnimation";
 type AppLoadingType = {
   size?: number | "small" | "large";
   visible?: boolean;
+  status?: "loading" | "success" | "error";
+  onAnimationFinish?: () => void;
 };
 
 const LoadingScreen: React.FC<AppLoadingType> = ({
   size = "large",
+  status = "loading",
   visible = false,
+  onAnimationFinish,
 }) => {
   if (!visible) return null;
   return (
@@ -26,7 +30,12 @@ const LoadingScreen: React.FC<AppLoadingType> = ({
         },
       ]}
     >
-      <AppLogoLoadingAnimation isLoading />
+      <AppLogoLoadingAnimation
+        status={status}
+        width={300}
+        height={300}
+        onAnimationFinish={onAnimationFinish}
+      />
     </View>
   );
 };

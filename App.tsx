@@ -2,8 +2,9 @@
 import "./src/utils/shim";
 
 import "@exodus/patch-broken-hermes-typed-arrays";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { Buffer } from "buffer";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-get-random-values";
 import "react-native-reanimated";
@@ -23,19 +24,41 @@ ErrorUtils.setGlobalHandler((error, isFatal) => {
   console.error("Caught global error:", error, isFatal);
 });
 export default function App() {
+  const [publishableKey, setPublishableKey] = useState("");
+
+  const fetchPublishableKey = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/app/stripe-key");
+      const { key } = await res.json();
+      console.log(key, "res");
+      setPublishableKey(key);
+    } catch (err) {
+      console.error("Error fetching publishable key", err);
+    }
+  };
+  useEffect(() => {
+    fetchPublishableKey();
+  }, []);
   return (
     <GestureHandlerRootView style={appStyles.flex1}>
       <SessionCryptoProvider>
-        <Provider store={store}>
-          {/* <I18nextProvider i18n={i18next}> */}
-          <PersistGate loading={null} persistor={persistor}>
-            <Main />
-            {/* <TonConnectLayout /> */}
-            {/* <WalletConnectModal /> */}
-          </PersistGate>
-          {/* </I18nextProvider> */}
-        </Provider>
+        <StripeProvider
+          publishableKey={publishableKey}
+          merchantIdentifier="merchant.com.phongvuanh772.CryptoVault"
+          urlScheme="cryptovault"
+        >
+          <Provider store={store}>
+            {/* <I18nextProvider i18n={i18next}> */}
+            <PersistGate loading={null} persistor={persistor}>
+              <Main />
+              {/* <TonConnectLayout /> */}
+              {/* <WalletConnectModal /> */}
+            </PersistGate>
+            {/* </I18nextProvider> */}
+          </Provider>
+        </StripeProvider>
       </SessionCryptoProvider>
+
       <Toast config={toastConfig} position="bottom" />
     </GestureHandlerRootView>
   );
