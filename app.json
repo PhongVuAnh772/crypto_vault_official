@@ -7,7 +7,7 @@
     "icon": "./assets/images/icon_app.png",
     "scheme": "cryptovault",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.phongvuanh772.CryptoVault",
@@ -42,12 +42,7 @@
                 }
             ],
             "expo-router",
-            [
-                "react-native-auth0",
-                {
-                    "domain": "dev-eeczycwj8h12hym0.us.auth0.com"
-                }
-            ],
+            
             "@react-native-firebase/app",
             "@react-native-firebase/crashlytics",
             [
@@ -58,9 +53,6 @@
                     }
                 }
             ]
-        ],
-    "experiments": {
-      "typedRoutes": true
-    }
+        ]
   }
 }

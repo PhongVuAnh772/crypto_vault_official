@@ -18,18 +18,6 @@ import useWalletKitEventsManager from "./core/hooks/useWalletKitEventsManager";
 import TonConnectLayout from "./features/tonConnect";
 import WalletConnectModal from "./features/walletConnect/indext";
 import AppNavigator from "./navigation";
-
-//   "scripts": {
-//     "start": "expo start --dev-client",
-//     "reset-project": "node ./scripts/reset-project.js",
-//     "android": "expo run:android",
-//     "ios": "expo run:ios",
-//     "web": "expo start --web",
-//     "lint": "expo lint",
-//     "ios14": "xcrun simctl boot 'iPhone 16 Plus' && open -a Simulator && expo run:ios",
-//     "postinstall": "patch-package"
-//   },
-
 const Main = () => {
   const { paperTheme, fonts, barStyle } = useAppThemeHook();
   const { isModalShow, isWebViewShowing, enablePassword } = useRequirePinCode();

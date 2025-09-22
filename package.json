@@ -2,28 +2,13 @@
   "name": "trustvault",
   "version": "1.0.0",
   "scripts": {
-    "change-env-test": "scripts/configure_env.sh test",
-    "change-env-staging": "scripts/configure_env.sh staging",
-    "change-env-production": "scripts/configure_env.sh production",
-    "change-schema-test": "scripts/configure_schema.sh test",
-    "change-schema-production": "scripts/configure_schema.sh production",
+    "postinstall": "patch-package",
     "start": "expo start",
-    "start-real-schema-production": "expo start --dev-client --scheme io.redx.wallet",
-    "start-real-schema-test": "expo start --dev-client --scheme io.redx.wallet.test",
-    "android-test": "yarn change-env-test; expo run:android",
-    "android-staging": "yarn change-env-staging; expo run:android",
-    "android-production": "yarn change-env-production; expo run:android",
-    "ios-test-schema-production": "yarn change-env-test; yarn change-schema-production; expo run:ios --scheme CryptoVault --configuration Debug",
-    "ios-staging-schema-production": "yarn change-env-staging; yarn change-schema-production; expo run:ios --scheme CryptoVault --configuration Debug",
-    "ios-production-schema-production": "yarn change-env-production; yarn change-schema-production; expo run:ios --scheme CryptoVault --configuration Debug",
-    "ios-test-schema-test": "yarn change-env-test; yarn change-schema-test; expo run:ios --scheme CryptoVault_test --configuration DebugTest",
-    "ios-staging-schema-test": "yarn change-env-staging; yarn change-schema-test; expo run:ios --scheme CryptoVault_test --configuration DebugTest",
-    "ios-production-schema-test": "yarn change-env-production; yarn change-schema-test; expo run:ios --scheme CryptoVault_test --configuration DebugTest",
-    "lint-all-with-warnings": "eslint . --max-warnings=0",
-    "lint-all": "eslint .",
-    "lint-error": "eslint --quiet .",
+    "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
-    "ios": "expo run:ios"
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "lint": "expo lint"
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
@@ -90,7 +75,9 @@
     "react-native-confirmation-code-field": "^7.4.0",
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "^13.0.0",
+    "react-native-dotenv": "^3.4.11",
     "react-native-fast-image": "^8.6.3",
+    "react-native-fast-pbkdf2": "^0.3.1",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-get-random-values": "^1.11.0",
     "react-native-keychain": "^8.2.0",
@@ -122,6 +109,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@react-native-community/cli": "^20.0.2",
     "@types/big.js": "^6",
     "@types/fast-text-encoding": "^1",
     "@types/react": "~18.2.45",
@@ -135,7 +123,5 @@
     "typescript": "~5.3.3"
   },
   "private": true,
-  "resolutions": {
-    "**/axios": "^1.6.7"
-  }
+  "packageManager": "yarn@4.10.2"
 }

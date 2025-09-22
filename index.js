@@ -1,3 +1,5 @@
+import './src/core/polyfills/index.js'
+
 import { registerRootComponent } from 'expo';
 
 import App from './App';

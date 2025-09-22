@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
 #import "RCTJailbreakCheckerModule.h"
 #import <React/RCTLog.h>
-#import "RedX-Swift.h"
+#import "CryptoVault-Swift.h"
 
 @implementation RCTJailbreakCheckerModule
 
