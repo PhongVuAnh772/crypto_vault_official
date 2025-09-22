@@ -4,17 +4,19 @@
     "slug": "CryptoVault",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon_app.png",
     "scheme": "cryptovault",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.phongvuanh772.CryptoVault"
+      "bundleIdentifier": "com.phongvuanh772.CryptoVault",
+      "googleServicesFile": "./ios/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon_app.png",
+        "googleServicesFile": "./android/app/google-services.json",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -25,20 +27,32 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    }
+   "plugins": [
+            "expo-asset",
+            [
+                "react-native-permissions",
+                {
+                    "iosPermissions": ["Camera"]
+                }
+            ],
+            [
+                "expo-dev-launcher",
+                {
+                    "launchMode": "most-recent"
+                }
+            ],
+            "expo-router",
+            
+            "@react-native-firebase/app",
+            "@react-native-firebase/crashlytics",
+            [
+                "expo-build-properties",
+                {
+                    "ios": {
+                        "useFrameworks": "static"
+                    }
+                }
+            ]
+        ]
   }
 }

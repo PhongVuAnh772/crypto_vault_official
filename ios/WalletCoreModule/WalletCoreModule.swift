@@ -1,7 +1,7 @@
 import Foundation
 import WalletCore
 import CryptoKit
-
+import React
 
 @objc(WalletCoreModule)
 class WalletCoreModule: NSObject {

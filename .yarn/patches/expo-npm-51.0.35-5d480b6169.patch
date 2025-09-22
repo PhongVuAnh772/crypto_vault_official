@@ -1,0 +1,22 @@
+diff --git a/build/Expo.fx.js b/build/Expo.fx.js
+index f653e1a0d79a019e0ae897f19fe38b3daf9f88be..0aa7e5d4014e65fc134e2abbb2271061f694d688 100644
+--- a/build/Expo.fx.js
++++ b/build/Expo.fx.js
+@@ -15,3 +15,17 @@ if (isRunningInExpoGo()) {
+     ErrorUtils.setGlobalHandler(createErrorHandler(globalHandler));
+ }
+ //# sourceMappingURL=Expo.fx.js.map
++global.Buffer = require('@craftzdog/react-native-buffer').Buffer;
++global.process = require('process');
++
++if (typeof btoa === 'undefined') {
++  global.btoa = function (str) {
++    return new Buffer(str, 'binary').toString('base64');
++  };
++}
++
++if (typeof atob === 'undefined') {
++  global.atob = function (b64Encoded) {
++    return new Buffer(b64Encoded, 'base64').toString('binary');
++  };
++}

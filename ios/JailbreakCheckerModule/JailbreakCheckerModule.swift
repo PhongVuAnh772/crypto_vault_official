@@ -1,5 +1,5 @@
 import Foundation
-
+import React
 @objc(JailbreakCheckerModule)
 class JailbreakCheckerModule: NSObject {
   @objc static func isJailBroken(

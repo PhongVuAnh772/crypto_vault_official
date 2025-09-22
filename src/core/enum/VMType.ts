@@ -1,7 +1,6 @@
 enum VMType {
-  BITCOIN = "Bitcoin",
-  EVM = "EVM",
-  TON = "TVM",
-  TRON = "TRON",
+    Bitcoin = 'Bitcoin',
+    EVM = 'EVM',
+    Ton = 'TVM',
 }
 export default VMType;

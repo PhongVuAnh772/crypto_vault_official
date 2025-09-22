@@ -1,6 +1,6 @@
 enum AuthAction {
-  restoreWallet = "restoreWallet",
-  newWallet = "newWallet",
+    restoreWallet = 'restoreWallet',
+    newWallet = 'newWallet',
 }
 
 export default AuthAction;

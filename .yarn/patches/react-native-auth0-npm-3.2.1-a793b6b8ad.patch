@@ -1,0 +1,13 @@
+diff --git a/src/types.ts b/src/types.ts
+index 73213d05a6b76307e6a3523e33dc42a3f2b04107..6f3efd34a1d9c653d2572097e4db7654a0b533d1 100644
+--- a/src/types.ts
++++ b/src/types.ts
+@@ -210,7 +210,7 @@ export interface AuthorizeUrlOptions {
+   /**
+    * Where the authorization server will redirect back after success or failure.
+    */
+-  redirectUri: object;
++  redirectUri: string;
+   /**
+    * Random string to prevent CSRF attacks.
+    */
