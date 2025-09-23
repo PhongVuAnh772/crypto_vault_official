@@ -1,601 +1,587 @@
-import { StackActions } from '@react-navigation/native';
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { TouchableOpacity } from 'react-native';
-import AppToastType from 'src/core/enum/AppToastType';
-import Slip0044 from 'src/core/enum/Slip0044';
-import ThemeKey from 'src/core/enum/ThemeKey';
-import LanguageKey from 'src/core/locales/LanguageKey';
-import { useAppDispatch, useAppSelector } from 'src/core/redux/hooks';
+import { StackActions } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { TouchableOpacity } from "react-native";
+import AppToastType from "src/core/enum/AppToastType";
+import Slip0044 from "src/core/enum/Slip0044";
+import ThemeKey from "src/core/enum/ThemeKey";
+import LanguageKey from "src/core/locales/LanguageKey";
+import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
 import {
-    useAccountProtocolSelected,
-    useCurrencyRateConversion,
-    useCurrentWallet,
-    useProtocolSelected,
-    useSelectedCurrencySetting,
-} from 'src/core/redux/slice/account.selector';
+  useAccountProtocolSelected,
+  useCurrencyRateConversion,
+  useCurrentWallet,
+  useProtocolSelected,
+  useSelectedCurrencySetting,
+} from "src/core/redux/slice/account.selector";
 import {
-    changWallet,
-    editWallet,
-    getAccountId,
-    getProtocolDataLists,
-    removeWallet,
-    setSelectedProtocol,
-} from 'src/core/redux/slice/account.slice';
-import { AddressListItemType } from 'src/core/redux/slice/account.type';
+  changWallet,
+  editWallet,
+  getAccountId,
+  getProtocolDataLists,
+  removeWallet,
+  setSelectedProtocol,
+} from "src/core/redux/slice/account.slice";
+import { AddressListItemType } from "src/core/redux/slice/account.type";
 import {
-    getHeightBottomTab,
-    getThemeMode,
-    getUpdateBalance,
-    setUpdateBalance,
-} from 'src/core/redux/slice/app.slice';
+  getHeightBottomTab,
+  getThemeMode,
+  getUpdateBalance,
+  setUpdateBalance,
+} from "src/core/redux/slice/app.slice";
 import {
-    deleteEVMCollectionByWallet,
-    migrateNFTCollection,
-} from 'src/core/redux/slice/NFT/NFTImport.slice';
-import { checkValidAddressEVM } from 'src/core/services/Web3';
-import Utils from 'src/core/utils/commonUtils';
+  deleteEVMCollectionByWallet,
+  migrateNFTCollection,
+} from "src/core/redux/slice/NFT/NFTImport.slice";
+import { checkValidAddressEVM } from "src/core/services/Web3";
+import Utils from "src/core/utils/commonUtils";
 import {
-    getBalanceNativeEVM,
-    getBalanceTokensEVM,
-} from 'src/features/home/slice/home.slice';
-import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
-import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
-import { ReceiveParamListType } from 'src/navigation/stacks/type/ReceiveParamListType';
+  getBalanceNativeEVM,
+  getBalanceTokensEVM,
+} from "src/features/home/slice/home.slice";
+import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
+import RootNavigationType from "src/navigation/stacks/type/NavigationType";
+import { ReceiveParamListType } from "src/navigation/stacks/type/ReceiveParamListType";
 
-import { appImages } from 'src/core/constants/AppImages';
+import { appImages } from "src/core/constants/AppImages";
 import {
-    deleteTokensByWallet,
-    filterTokenAvailable,
-    updateBalanceTokens,
-} from 'src/core/redux/slice/customToken/addCustomToken.slice';
-import { SupportTokenDataType } from 'src/core/redux/slice/customToken/addCustomToken.type';
-import { TokenBalance } from 'src/core/services/Moralis/type';
-import { convertChainByProtocol } from 'src/core/utils/evmUtils';
-import GlobalUtils from 'src/core/utils/globalUtils';
-import { MenuActionType } from '../components/WalletBottomSheet/WalletBottomSheet.type';
-import { ListCryptoDataType, TokensObject } from '../home.type';
+  deleteTokensByWallet,
+  filterTokenAvailable,
+  updateBalanceTokens,
+} from "src/core/redux/slice/customToken/addCustomToken.slice";
+import { SupportTokenDataType } from "src/core/redux/slice/customToken/addCustomToken.type";
+import { TokenBalance } from "src/core/services/Moralis/type";
+import { convertChainByProtocol } from "src/core/utils/evmUtils";
+import GlobalUtils from "src/core/utils/globalUtils";
+import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
+import { ListCryptoDataType, TokensObject } from "../home.type";
 
 const batchSize = 40;
 const updateInterval = 1000;
 
 const useEVMHome = ({ navigation }: RootNavigationType) => {
-    const newUI = GlobalUtils.getEnableRedXNewTheme();
-    const { t } = useTranslation();
-    const dispatch = useAppDispatch();
-    const currencyRateConversion = useCurrencyRateConversion();
-    const selectedCurrencySetting = useSelectedCurrencySetting();
-    const lightMode = useAppSelector(getThemeMode) !== ThemeKey.light;
-    const buttonRefs = useRef<{ [key: string]: TouchableOpacity | null }>({});
-    const protocolDataLists = useAppSelector(getProtocolDataLists);
-    const accountProtocolSelected = useAccountProtocolSelected();
-    const selectedAccountId = useAppSelector(getAccountId);
-    const updateBalanceState = useAppSelector(getUpdateBalance);
-    const heightBottomTab = useAppSelector(getHeightBottomTab);
-    const contentOffsetToast = heightBottomTab
-        ? heightBottomTab + 10
-        : undefined;
+  const { t } = useTranslation();
+  const dispatch = useAppDispatch();
+  const currencyRateConversion = useCurrencyRateConversion();
+  const selectedCurrencySetting = useSelectedCurrencySetting();
+  const lightMode = useAppSelector(getThemeMode) !== ThemeKey.light;
+  const buttonRefs = useRef<{ [key: string]: TouchableOpacity | null }>({});
+  const protocolDataLists = useAppSelector(getProtocolDataLists);
+  const accountProtocolSelected = useAccountProtocolSelected();
+  const selectedAccountId = useAppSelector(getAccountId);
+  const updateBalanceState = useAppSelector(getUpdateBalance);
+  const heightBottomTab = useAppSelector(getHeightBottomTab);
+  const contentOffsetToast = heightBottomTab ? heightBottomTab + 10 : undefined;
 
-    const wallet = useCurrentWallet();
-    const protocolBaseData = useProtocolSelected();
+  const wallet = useCurrentWallet();
+  const protocolBaseData = useProtocolSelected();
 
-    const addressList = accountProtocolSelected?.addressList;
-    const selectedAddressId = accountProtocolSelected?.selectedAddressId;
+  const addressList = accountProtocolSelected?.addressList;
+  const selectedAddressId = accountProtocolSelected?.selectedAddressId;
 
-    const listToken = useAppSelector(filterTokenAvailable);
-    const queueRef = useRef<SupportTokenDataType>([]);
+  const listToken = useAppSelector(filterTokenAvailable);
+  const queueRef = useRef<SupportTokenDataType>([]);
 
-    const isProcessingRef = useRef(false);
-    const [isAddView, setIsAddView] = useState(false);
-    const [isFirstInitial, setIsFirstInitial] = useState<boolean>(true);
-    const selectedAddress = addressList?.find(e => e.id === selectedAddressId);
-    const [refreshingHome, setRefreshingHome] = useState(false);
-    const [isFirstInitGenerateData, setIsFirstInitGenerateData] =
-        useState<boolean>(false);
-    const [selectedWallet, setSelectedWallet] =
-        useState<AddressListItemType | null>(null);
-    const [walletBalanceCurrency, setWalletBalanceCurrency] =
-        useState<number>(0);
-    const [listCryptoData, setListCryptoData] = useState<ListCryptoDataType[]>(
-        [],
-    );
-    const [newWalletAddress, setNewWalletAddress] = useState('');
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const isProcessingRef = useRef(false);
+  const [isAddView, setIsAddView] = useState(false);
+  const [isFirstInitial, setIsFirstInitial] = useState<boolean>(true);
+  const selectedAddress = addressList?.find((e) => e.id === selectedAddressId);
+  const [refreshingHome, setRefreshingHome] = useState(false);
+  const [isFirstInitGenerateData, setIsFirstInitGenerateData] =
+    useState<boolean>(false);
+  const [selectedWallet, setSelectedWallet] =
+    useState<AddressListItemType | null>(null);
+  const [walletBalanceCurrency, setWalletBalanceCurrency] = useState<number>(0);
+  const [listCryptoData, setListCryptoData] = useState<ListCryptoDataType[]>(
+    []
+  );
+  const [newWalletAddress, setNewWalletAddress] = useState("");
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
 
-    const [menuActionType, setMenuActionType] = useState<MenuActionType | null>(
-        null,
-    );
-    const showMenuWallet = selectedWallet !== null;
-    const [showBottomSheetModal, setShowBottomSheetModal] = useState(false);
+  const [menuActionType, setMenuActionType] = useState<MenuActionType | null>(
+    null
+  );
+  const showMenuWallet = selectedWallet !== null;
+  const [showBottomSheetModal, setShowBottomSheetModal] = useState(false);
 
-    const showSkeletonLoading = () => setIsFirstInitial(true);
-    const hideSkeletonLoading = () => setIsFirstInitial(false);
+  const showSkeletonLoading = () => setIsFirstInitial(true);
+  const hideSkeletonLoading = () => setIsFirstInitial(false);
 
-    const onChangeMenuActionType = (type: MenuActionType) => {
-        setMenuActionType(type);
-    };
-    const onCloseMenuWallet = () => {
-        setSelectedWallet(null);
-        setMenuActionType(null);
-    };
-    const showBottomSheetModalAction = () => {
-        setShowBottomSheetModal(true);
-    };
-    const closeShowBottomSheetModal = () => {
-        setShowBottomSheetModal(false);
-    };
+  const onChangeMenuActionType = (type: MenuActionType) => {
+    setMenuActionType(type);
+  };
+  const onCloseMenuWallet = () => {
+    setSelectedWallet(null);
+    setMenuActionType(null);
+  };
+  const showBottomSheetModalAction = () => {
+    setShowBottomSheetModal(true);
+  };
+  const closeShowBottomSheetModal = () => {
+    setShowBottomSheetModal(false);
+  };
 
-    const createCryptoData = async () => {
-        console.log('==============================');
-        console.log('Call createCryptoData');
-        console.log('==============================');
+  const createCryptoData = async () => {
+    console.log("==============================");
+    console.log("Call createCryptoData");
+    console.log("==============================");
 
-        await handleGenerateListToken();
-    };
+    await handleGenerateListToken();
+  };
 
-    const handleMigrateNFT = () => {
-        if (
-            wallet?.address &&
-            selectedAccountId &&
-            typeof protocolBaseData?.chainId === 'number'
-        ) {
-            dispatch(
-                migrateNFTCollection({
-                    accountId: selectedAccountId,
-                    walletAddress: wallet?.address,
-                    chainId: protocolBaseData?.chainId,
-                    idCollection: `${wallet?.address}_${protocolBaseData?.slip0044}`,
-                }),
-            );
-        }
-    };
+  const handleMigrateNFT = () => {
+    if (
+      wallet?.address &&
+      selectedAccountId &&
+      typeof protocolBaseData?.chainId === "number"
+    ) {
+      dispatch(
+        migrateNFTCollection({
+          accountId: selectedAccountId,
+          walletAddress: wallet?.address,
+          chainId: protocolBaseData?.chainId,
+          idCollection: `${wallet?.address}_${protocolBaseData?.slip0044}`,
+        })
+      );
+    }
+  };
 
-    const handleInitData = async () => {
-        handleMigrateNFT();
+  const handleInitData = async () => {
+    handleMigrateNFT();
+    await createCryptoData();
+  };
+
+  const handleHomeRefresh = useCallback(async () => {
+    if (!refreshingHome) {
+      try {
+        setRefreshingHome(true);
         await createCryptoData();
-    };
+        setRefreshingHome(false);
+      } catch (error) {
+        console.error("handleHomeRefresh Error:", error);
+        setRefreshingHome(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountProtocolSelected, listToken]);
 
-    const handleHomeRefresh = useCallback(async () => {
-        if (!refreshingHome) {
-            try {
-                setRefreshingHome(true);
-                await createCryptoData();
-                setRefreshingHome(false);
-            } catch (error) {
-                console.error('handleHomeRefresh Error:', error);
-                setRefreshingHome(false);
-            }
+  const goToSendScreen = () => {
+    if (protocolBaseData?.isDefault) {
+      Utils.showToast({
+        msg: t(LanguageKey.common_server_busy),
+        type: AppToastType.error,
+        contentOffSet: contentOffsetToast,
+      });
+      return;
+    }
+    navigation.navigate(HomeStackScreenKey.Transfer);
+  };
+  const goToMangeCryptoScreen = () => {
+    navigation.dispatch(StackActions.push(HomeStackScreenKey.ManageCrypto));
+  };
+
+  const goToReceive = () => {
+    const symbol = protocolBaseData?.symbol;
+    const address = selectedAddress?.address;
+    if (symbol != null && address != null) {
+      const receiveProp: ReceiveParamListType = {
+        currency: symbol,
+        address: address,
+      };
+      navigation.dispatch(
+        StackActions.push(HomeStackScreenKey.Receive, receiveProp)
+      );
+    } else {
+      Utils.showToast({
+        msg: t(LanguageKey.send_push_error_title),
+        type: AppToastType.error,
+        contentOffSet: contentOffsetToast,
+      });
+    }
+  };
+
+  const handlePressWallet = (data: AddressListItemType) => {
+    closeShowBottomSheetModal();
+    setTimeout(() => {
+      dispatch(changWallet(data.id));
+      Utils.showToast({
+        msg: t(LanguageKey.common_switch_to_name_successfully, {
+          name: data.name,
+        }),
+        type: AppToastType.success,
+        contentOffSet: contentOffsetToast,
+      });
+    }, 700);
+  };
+
+  const onShowMenuWallet = (wallet: AddressListItemType, index: number) => {
+    const buttonRef = buttonRefs.current[index.toString()];
+    if (buttonRef) {
+      buttonRef.measure(
+        (
+          x: number,
+          y: number,
+          width: number,
+          height: number,
+          pageX: number,
+          pageY: number
+        ) => {
+          setMenuPosition({ x: pageX + width, y: pageY });
+          setSelectedWallet(wallet);
+          setNewWalletAddress(wallet.name);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [accountProtocolSelected, listToken]);
+      );
+    }
+  };
 
-    const goToSendScreen = () => {
-        if (protocolBaseData?.isDefault) {
-            Utils.showToast({
-                msg: t(LanguageKey.common_server_busy),
-                type: AppToastType.error,
-                contentOffSet: contentOffsetToast,
-            });
-            return;
-        }
-        navigation.navigate(HomeStackScreenKey.Transfer);
-    };
-    const goToMangeCryptoScreen = () => {
-        navigation.dispatch(StackActions.push(HomeStackScreenKey.ManageCrypto));
-    };
+  const removeWalletAction = async () => {
+    if (!selectedWallet) return;
+    if (!selectedAccountId) return;
 
-    const goToReceive = () => {
-        const symbol = protocolBaseData?.symbol;
-        const address = selectedAddress?.address;
-        if (symbol != null && address != null) {
-            const receiveProp: ReceiveParamListType = {
-                currency: symbol,
-                address: address,
-            };
-            navigation.dispatch(
-                StackActions.push(HomeStackScreenKey.Receive, receiveProp),
-            );
-        } else {
-            Utils.showToast({
-                msg: t(LanguageKey.send_push_error_title),
-                type: AppToastType.error,
-                contentOffSet: contentOffsetToast,
-            });
-        }
-    };
-
-    const handlePressWallet = (data: AddressListItemType) => {
-        closeShowBottomSheetModal();
-        setTimeout(() => {
-            dispatch(changWallet(data.id));
-            Utils.showToast({
-                msg: t(LanguageKey.common_switch_to_name_successfully, {
-                    name: data.name,
-                }),
-                type: AppToastType.success,
-                contentOffSet: contentOffsetToast,
-            });
-        }, 700);
-    };
-
-    const onShowMenuWallet = (wallet: AddressListItemType, index: number) => {
-        const buttonRef = buttonRefs.current[index.toString()];
-        if (buttonRef) {
-            buttonRef.measure(
-                (
-                    x: number,
-                    y: number,
-                    width: number,
-                    height: number,
-                    pageX: number,
-                    pageY: number,
-                ) => {
-                    setMenuPosition({ x: pageX + width, y: pageY });
-                    setSelectedWallet(wallet);
-                    setNewWalletAddress(wallet.name);
-                },
-            );
-        }
-    };
-
-    const removeWalletAction = async () => {
-        if (!selectedWallet) return;
-        if (!selectedAccountId) return;
-
-        dispatch(
-            deleteEVMCollectionByWallet({
-                accountId: selectedAccountId,
-                walletAddress: `${selectedWallet.address}_${protocolBaseData?.slip0044}`,
-            }),
-        );
-        dispatch(
-            deleteTokensByWallet(
-                `${selectedWallet.address}_${protocolBaseData?.slip0044}`,
-            ),
-        );
-        await dispatch(removeWallet(selectedWallet));
-        onCloseMenuWallet();
-    };
-    const editWalletAction = async () => {
-        if (newWalletAddress !== selectedWallet?.name && selectedWallet) {
-            const newWalletData: AddressListItemType = {
-                ...selectedWallet,
-                name: newWalletAddress,
-            };
-            await dispatch(editWallet(newWalletData));
-        }
-        onCloseMenuWallet();
-    };
-    const handleGenerateListToken = useCallback(async () => {
-        try {
-            if (listToken.length === 0) {
-                setIsFirstInitGenerateData(true);
-            } else {
-                const listCustomCryptoConverted = listToken.map(item => {
-                    const id = Utils.generateUniqueId();
-                    const data: ListCryptoDataType = {
-                        id,
-                        name: item?.name,
-                        symbol: item?.symbol,
-                        logo: item?.logo,
-                        balance: item?.balance ?? 0,
-                        isNative: item.isNativeToken,
-                        contractAddress: item?.contractAddress,
-                        decimal: item.decimal,
-                        baseData: protocolBaseData,
-                        rateCurrency: item.balanceCurrency ?? 0,
-                    };
-                    return data;
-                });
-                setListCryptoData(listCustomCryptoConverted);
-                hideSkeletonLoading();
-                await processUpdateToken();
-            }
-        } catch (error) {
-            console.error('handleGenerateListToken Error:', error);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listToken, protocolBaseData?.rpcUrl, wallet]);
-
-    const processUpdateToken = async () => {
-        queueRef.current = [...listToken];
-        setTimeout(async () => {
-            await processQueue();
-        }, 500);
-    };
-
-    const onPressTokenDetailEVM = (token: ListCryptoDataType) => {
-        navigation.dispatch(
-            StackActions.push(HomeStackScreenKey.TokenDetailEVM, token),
-        );
-    };
-
-    const updateTokenBalance = useCallback(
-        async (tokensAddress: string[]) => {
-            if (!wallet?.address || !protocolBaseData) {
-                return;
-            }
-            const walletAddress = wallet.address;
-            const getChain = convertChainByProtocol(protocolBaseData.slip0044);
-
-            if (!getChain) {
-                return;
-            }
-
-            const hasNative = tokensAddress.includes(
-                protocolBaseData.nativeToken.address,
-            );
-
-            const [getTokensBalanceResponse, nativeBalance] = await Promise.all(
-                [
-                    dispatch(
-                        getBalanceTokensEVM({
-                            walletAddress: walletAddress,
-                            params: {
-                                chain: getChain,
-                                cursor: null,
-                                limit: batchSize,
-                                tokenAddresses: tokensAddress,
-                            },
-                        }),
-                    ).unwrap(),
-                    hasNative
-                        ? dispatch(
-                              getBalanceNativeEVM({
-                                  walletAddress: walletAddress,
-                                  params: {
-                                      chain: getChain,
-                                      cursor: null,
-                                      limit: 2,
-                                  },
-                                  contractAddress:
-                                      protocolBaseData.nativeToken.address,
-                              }),
-                          ).unwrap()
-                        : Promise.resolve(null),
-                ],
-            );
-
-            const listToken = getTokensBalanceResponse?.result;
-
-            if (!listToken) {
-                return;
-            }
-            const result: TokensObject = listToken.reduce(
-                (acc: TokensObject, token: TokenBalance) => {
-                    acc[token.token_address] = token;
-                    return acc;
-                },
-                {},
-            );
-
-            if (nativeBalance && hasNative) {
-                result[protocolBaseData.nativeToken.address] = nativeBalance;
-            }
-
-            dispatch(
-                updateBalanceTokens({
-                    walletAddress: wallet.address,
-                    protocolData: protocolBaseData,
-                    tokens: result,
-                }),
-            );
-            setListCryptoData(prevTokens =>
-                prevTokens.map(token => {
-                    const contractAddress =
-                        token?.contractAddress?.toLowerCase() || '';
-                    const matchToken = result[contractAddress];
-                    let updatedToken = { ...token };
-
-                    if (matchToken) {
-                        updatedToken.balance = +matchToken.balance;
-                        updatedToken.rateCurrency = matchToken.usd_price;
-                    }
-
-                    return updatedToken;
-                }),
-            );
-
-            hideSkeletonLoading();
-        },
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [wallet?.address, protocolBaseData?.rpcUrl, listToken.length],
+    dispatch(
+      deleteEVMCollectionByWallet({
+        accountId: selectedAccountId,
+        walletAddress: `${selectedWallet.address}_${protocolBaseData?.slip0044}`,
+      })
     );
-    const processQueue = useCallback(async () => {
-        if (isProcessingRef.current) return;
-        isProcessingRef.current = true;
-
-        const batch = queueRef.current.splice(0, batchSize);
-        const tokensAddress: string[] = [];
-
-        batch.forEach(token => {
-            if (token.contractAddress) {
-                tokensAddress.push(token.contractAddress);
-            }
+    dispatch(
+      deleteTokensByWallet(
+        `${selectedWallet.address}_${protocolBaseData?.slip0044}`
+      )
+    );
+    await dispatch(removeWallet(selectedWallet));
+    onCloseMenuWallet();
+  };
+  const editWalletAction = async () => {
+    if (newWalletAddress !== selectedWallet?.name && selectedWallet) {
+      const newWalletData: AddressListItemType = {
+        ...selectedWallet,
+        name: newWalletAddress,
+      };
+      await dispatch(editWallet(newWalletData));
+    }
+    onCloseMenuWallet();
+  };
+  const handleGenerateListToken = useCallback(async () => {
+    try {
+      if (listToken.length === 0) {
+        setIsFirstInitGenerateData(true);
+      } else {
+        const listCustomCryptoConverted = listToken.map((item) => {
+          const id = Utils.generateUniqueId();
+          const data: ListCryptoDataType = {
+            id,
+            name: item?.name,
+            symbol: item?.symbol,
+            logo: item?.logo,
+            balance: item?.balance ?? 0,
+            isNative: item.isNativeToken,
+            contractAddress: item?.contractAddress,
+            decimal: item.decimal,
+            baseData: protocolBaseData,
+            rateCurrency: item.balanceCurrency ?? 0,
+          };
+          return data;
         });
+        setListCryptoData(listCustomCryptoConverted);
+        hideSkeletonLoading();
+        await processUpdateToken();
+      }
+    } catch (error) {
+      console.error("handleGenerateListToken Error:", error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listToken, protocolBaseData?.rpcUrl, wallet]);
 
-        try {
-            await updateTokenBalance(tokensAddress);
-        } catch (error) {
-            console.error('processQueue Error:', error);
-            Utils.showToast({
-                msg: t(LanguageKey.common_server_busy),
-                type: AppToastType.error,
-                contentOffSet: contentOffsetToast,
-            });
-        } finally {
-            if (queueRef.current.length > 0) {
-                setTimeout(() => {
-                    isProcessingRef.current = false;
-                    processQueue();
-                }, updateInterval);
-            } else {
-                isProcessingRef.current = false;
-            }
-            hideSkeletonLoading();
-        }
-    }, [t, updateTokenBalance, contentOffsetToast]);
+  const processUpdateToken = async () => {
+    queueRef.current = [...listToken];
+    setTimeout(async () => {
+      await processQueue();
+    }, 500);
+  };
 
-    const getTotalBalanceToCurrency = (
-        listToken: ListCryptoDataType[],
-    ): number => {
-        return listToken.reduce((total, item) => {
-            const balance = item?.balance?.toString() || '';
-            if (!item.decimal || !balance || !item?.rateCurrency) {
-                return total + 0;
-            }
-            const convertBalance = Utils.convertBigIntFollowDecimals(
-                balance,
-                item.decimal,
-            );
-            const formattedBalance =
-                Utils.formattedBalanceCurrency(+convertBalance);
-            const coinAmount =
-                selectedCurrencySetting.rate *
-                item.rateCurrency *
-                currencyRateConversion;
+  const onPressTokenDetailEVM = (token: ListCryptoDataType) => {
+    navigation.dispatch(
+      StackActions.push(HomeStackScreenKey.TokenDetailEVM, token)
+    );
+  };
 
-            const cutCoinAmount = Utils.truncateToNumberDecimals(coinAmount, 2);
+  const updateTokenBalance = useCallback(
+    async (tokensAddress: string[]) => {
+      if (!wallet?.address || !protocolBaseData) {
+        return;
+      }
+      const walletAddress = wallet.address;
+      const getChain = convertChainByProtocol(protocolBaseData.slip0044);
 
-            const parsedBalance = parseFloat(
-                formattedBalance.replace(/,/g, ''),
-            );
-            const currency = cutCoinAmount * parsedBalance;
-            const cutCurrency = Utils.truncateToNumberDecimals(currency, 2);
+      if (!getChain) {
+        return;
+      }
 
-            return total + cutCurrency;
-        }, 0);
-    };
-    const goToStakeScreen = () => {
-        navigation.dispatch(StackActions.push(HomeStackScreenKey.Stake));
-    };
+      const hasNative = tokensAddress.includes(
+        protocolBaseData.nativeToken.address
+      );
 
-    const handleChangeProtocol = async () => {
-        showSkeletonLoading();
-        await createCryptoData();
-    };
+      const [getTokensBalanceResponse, nativeBalance] = await Promise.all([
+        dispatch(
+          getBalanceTokensEVM({
+            walletAddress: walletAddress,
+            params: {
+              chain: getChain,
+              cursor: null,
+              limit: batchSize,
+              tokenAddresses: tokensAddress,
+            },
+          })
+        ).unwrap(),
+        hasNative
+          ? dispatch(
+              getBalanceNativeEVM({
+                walletAddress: walletAddress,
+                params: {
+                  chain: getChain,
+                  cursor: null,
+                  limit: 2,
+                },
+                contractAddress: protocolBaseData.nativeToken.address,
+              })
+            ).unwrap()
+          : Promise.resolve(null),
+      ]);
 
-    const updateBalance = async () => {
-        await createCryptoData();
-        dispatch(setUpdateBalance(false));
-    };
-    useEffect(() => {
-        handleInitData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+      const listToken = getTokensBalanceResponse?.result;
 
-    useEffect(() => {
-        if (listCryptoData.length) {
-            const balance = getTotalBalanceToCurrency(listCryptoData);
-            setWalletBalanceCurrency(balance);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [listCryptoData, selectedCurrencySetting.rate]);
+      if (!listToken) {
+        return;
+      }
+      const result: TokensObject = listToken.reduce(
+        (acc: TokensObject, token: TokenBalance) => {
+          acc[token.token_address] = token;
+          return acc;
+        },
+        {}
+      );
 
-    useEffect(() => {
-        if (!isFirstInitial) {
-            handleChangeProtocol();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        accountProtocolSelected,
-        protocolDataLists,
-        listToken.length,
-        wallet?.address,
-    ]);
+      if (nativeBalance && hasNative) {
+        result[protocolBaseData.nativeToken.address] = nativeBalance;
+      }
 
-    useEffect(() => {
-        if (
-            listToken.length > 0 &&
-            protocolBaseData?.rpcUrl &&
-            isFirstInitGenerateData &&
-            wallet?.address
-        ) {
-            const isEVMAddress = checkValidAddressEVM(wallet?.address);
-            if (isEVMAddress) {
-                handleGenerateListToken();
-                setIsFirstInitGenerateData(false);
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-        listToken.length,
-        listCryptoData.length,
-        protocolBaseData?.rpcUrl,
-        isFirstInitGenerateData,
-        wallet,
-    ]);
-    useEffect(() => {
-        if (!protocolBaseData && protocolDataLists) {
-            const polProtocolData = protocolDataLists.find(
-                e => e.slip0044 === Slip0044.Polygon,
-            );
-            dispatch(
-                setSelectedProtocol(
-                    polProtocolData
-                        ? polProtocolData._id
-                        : protocolDataLists[0]?._id,
-                ),
-            );
-        }
-    }, [protocolBaseData, protocolDataLists, dispatch]);
+      dispatch(
+        updateBalanceTokens({
+          walletAddress: wallet.address,
+          protocolData: protocolBaseData,
+          tokens: result,
+        })
+      );
+      setListCryptoData((prevTokens) =>
+        prevTokens.map((token) => {
+          const contractAddress = token?.contractAddress?.toLowerCase() || "";
+          const matchToken = result[contractAddress];
+          let updatedToken = { ...token };
 
-    useEffect(() => {
-        if (!isFirstInitial) {
-            handleMigrateNFT();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [wallet?.address]);
+          if (matchToken) {
+            updatedToken.balance = +matchToken.balance;
+            updatedToken.rateCurrency = matchToken.usd_price;
+          }
 
-    useEffect(() => {
-        if (updateBalanceState) {
-            console.log('===================');
-            console.log('Update Balance');
-            console.log('===================');
-            updateBalance();
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [updateBalanceState]);
-    const getBackgroundImage = () => {
-        if (newUI) return appImages.newBackground1;
-        return lightMode ? appImages.background1Dark : appImages.background1;
-    };
-    return {
-        goToSendScreen,
-        goToReceive,
-        goToMangeCryptoScreen,
-        refreshingHome,
-        handleHomeRefresh,
-        walletBalanceCurrency,
-        protocolBaseData,
-        listCryptoData,
-        handlePressWallet,
-        selectedAddress,
-        addressList,
-        selectedAddressId,
-        menuPosition,
-        buttonRefs,
-        showMenuWallet,
-        onCloseMenuWallet,
-        onShowMenuWallet,
-        onChangeMenuActionType,
-        showBottomSheetModal,
-        closeShowBottomSheetModal,
-        setNewWalletAddress,
-        newWalletAddress,
-        isAddView,
-        setIsAddView,
-        removeWalletAction,
-        editWalletAction,
-        isFirstInitial,
-        onPressTokenDetailEVM,
-        goToStakeScreen,
-        showBottomSheetModalAction,
-        getBackgroundImage,
-        selectedCurrencySetting,
-        menuActionType,
-        currencyRateConversion,
-    };
+          return updatedToken;
+        })
+      );
+
+      hideSkeletonLoading();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [wallet?.address, protocolBaseData?.rpcUrl, listToken.length]
+  );
+  const processQueue = useCallback(async () => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+
+    const batch = queueRef.current.splice(0, batchSize);
+    const tokensAddress: string[] = [];
+
+    batch.forEach((token) => {
+      if (token.contractAddress) {
+        tokensAddress.push(token.contractAddress);
+      }
+    });
+
+    try {
+      await updateTokenBalance(tokensAddress);
+    } catch (error) {
+      console.error("processQueue Error:", error);
+      Utils.showToast({
+        msg: t(LanguageKey.common_server_busy),
+        type: AppToastType.error,
+        contentOffSet: contentOffsetToast,
+      });
+    } finally {
+      if (queueRef.current.length > 0) {
+        setTimeout(() => {
+          isProcessingRef.current = false;
+          processQueue();
+        }, updateInterval);
+      } else {
+        isProcessingRef.current = false;
+      }
+      hideSkeletonLoading();
+    }
+  }, [t, updateTokenBalance, contentOffsetToast]);
+
+  const getTotalBalanceToCurrency = (
+    listToken: ListCryptoDataType[]
+  ): number => {
+    return listToken.reduce((total, item) => {
+      const balance = item?.balance?.toString() || "";
+      if (!item.decimal || !balance || !item?.rateCurrency) {
+        return total + 0;
+      }
+      const convertBalance = Utils.convertBigIntFollowDecimals(
+        balance,
+        item.decimal
+      );
+      const formattedBalance = Utils.formattedBalanceCurrency(+convertBalance);
+      const coinAmount =
+        selectedCurrencySetting.rate *
+        item.rateCurrency *
+        currencyRateConversion;
+
+      const cutCoinAmount = Utils.truncateToNumberDecimals(coinAmount, 2);
+
+      const parsedBalance = parseFloat(formattedBalance.replace(/,/g, ""));
+      const currency = cutCoinAmount * parsedBalance;
+      const cutCurrency = Utils.truncateToNumberDecimals(currency, 2);
+
+      return total + cutCurrency;
+    }, 0);
+  };
+  const goToStakeScreen = () => {
+    navigation.dispatch(StackActions.push(HomeStackScreenKey.Stake));
+  };
+
+  const handleChangeProtocol = async () => {
+    showSkeletonLoading();
+    await createCryptoData();
+  };
+
+  const updateBalance = async () => {
+    await createCryptoData();
+    dispatch(setUpdateBalance(false));
+  };
+  useEffect(() => {
+    handleInitData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (listCryptoData.length) {
+      const balance = getTotalBalanceToCurrency(listCryptoData);
+      setWalletBalanceCurrency(balance);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [listCryptoData, selectedCurrencySetting.rate]);
+
+  useEffect(() => {
+    if (!isFirstInitial) {
+      handleChangeProtocol();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    accountProtocolSelected,
+    protocolDataLists,
+    listToken.length,
+    wallet?.address,
+  ]);
+
+  useEffect(() => {
+    if (
+      listToken.length > 0 &&
+      protocolBaseData?.rpcUrl &&
+      isFirstInitGenerateData &&
+      wallet?.address
+    ) {
+      const isEVMAddress = checkValidAddressEVM(wallet?.address);
+      if (isEVMAddress) {
+        handleGenerateListToken();
+        setIsFirstInitGenerateData(false);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    listToken.length,
+    listCryptoData.length,
+    protocolBaseData?.rpcUrl,
+    isFirstInitGenerateData,
+    wallet,
+  ]);
+  useEffect(() => {
+    if (!protocolBaseData && protocolDataLists) {
+      const polProtocolData = protocolDataLists.find(
+        (e) => e.slip0044 === Slip0044.Polygon
+      );
+      dispatch(
+        setSelectedProtocol(
+          polProtocolData ? polProtocolData._id : protocolDataLists[0]?._id
+        )
+      );
+    }
+  }, [protocolBaseData, protocolDataLists, dispatch]);
+
+  useEffect(() => {
+    if (!isFirstInitial) {
+      handleMigrateNFT();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wallet?.address]);
+
+  useEffect(() => {
+    if (updateBalanceState) {
+      console.log("===================");
+      console.log("Update Balance");
+      console.log("===================");
+      updateBalance();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateBalanceState]);
+  const getBackgroundImage = () => {
+    return lightMode ? appImages.background1Dark : appImages.background1;
+  };
+  return {
+    goToSendScreen,
+    goToReceive,
+    goToMangeCryptoScreen,
+    refreshingHome,
+    handleHomeRefresh,
+    walletBalanceCurrency,
+    protocolBaseData,
+    listCryptoData,
+    handlePressWallet,
+    selectedAddress,
+    addressList,
+    selectedAddressId,
+    menuPosition,
+    buttonRefs,
+    showMenuWallet,
+    onCloseMenuWallet,
+    onShowMenuWallet,
+    onChangeMenuActionType,
+    showBottomSheetModal,
+    closeShowBottomSheetModal,
+    setNewWalletAddress,
+    newWalletAddress,
+    isAddView,
+    setIsAddView,
+    removeWalletAction,
+    editWalletAction,
+    isFirstInitial,
+    onPressTokenDetailEVM,
+    goToStakeScreen,
+    showBottomSheetModalAction,
+    getBackgroundImage,
+    selectedCurrencySetting,
+    menuActionType,
+    currencyRateConversion,
+  };
 };
 
 export default useEVMHome;

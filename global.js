@@ -1,1 +1,1 @@
-global.redXNewTheme = true;
+global.redXNewTheme = false;
