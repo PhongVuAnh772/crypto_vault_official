@@ -25,26 +25,7 @@ export default function VideoScreen() {
     player.play();
   });
 
-  useEffect(() => {
-    let isActive = true;
-    console.log(
-      player && isFocused && isActive,
-      "player && isFocused && isActive"
-    );
-    if (player && isFocused && isActive) {
-      player.play();
-    }
-
-    return () => {
-      if (isFocused && player) {
-        try {
-          player.pause();
-        } catch (e) {
-          console.warn("Error during cleanup pause:", e);
-        }
-      }
-    };
-  }, [isFocused, player]);
+  
 
   useEffect(() => {
     dispatch(setIsFirstTime(false));

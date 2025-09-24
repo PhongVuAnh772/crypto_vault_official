@@ -9,6 +9,9 @@ PODS:
     - SimpleKeychain (= 1.2.0)
   - boost (1.83.0)
   - DoubleConversion (1.1.6)
+  - EXAV (14.0.7):
+    - ExpoModulesCore
+    - ReactCommon/turbomodule/core
   - EXConstants (16.0.2):
     - ExpoModulesCore
   - EXJSONUtils (0.13.1)
@@ -269,6 +272,8 @@ PODS:
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.5)
+  - Firebase (11.11.0):
+    - Firebase/Core (= 11.11.0)
   - Firebase/Analytics (11.11.0):
     - Firebase/Core
   - Firebase/Core (11.11.0):
@@ -380,6 +385,17 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
+  - GoogleUtilities (8.1.0):
+    - GoogleUtilities/AppDelegateSwizzler (= 8.1.0)
+    - GoogleUtilities/Environment (= 8.1.0)
+    - GoogleUtilities/Logger (= 8.1.0)
+    - GoogleUtilities/MethodSwizzler (= 8.1.0)
+    - GoogleUtilities/Network (= 8.1.0)
+    - "GoogleUtilities/NSData+zlib (= 8.1.0)"
+    - GoogleUtilities/Privacy (= 8.1.0)
+    - GoogleUtilities/Reachability (= 8.1.0)
+    - GoogleUtilities/SwizzlerTestHelpers (= 8.1.0)
+    - GoogleUtilities/UserDefaults (= 8.1.0)
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -404,6 +420,8 @@ PODS:
   - GoogleUtilities/Reachability (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
+  - GoogleUtilities/SwizzlerTestHelpers (8.1.0):
+    - GoogleUtilities/MethodSwizzler
   - GoogleUtilities/UserDefaults (8.1.0):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
@@ -1889,6 +1907,7 @@ DEPENDENCIES:
   - A0Auth0 (from `../node_modules/react-native-auth0`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
+  - EXAV (from `../node_modules/expo-av/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
   - EXJSONUtils (from `../node_modules/expo-json-utils/ios`)
   - EXManifests (from `../node_modules/expo-manifests/ios`)
@@ -1910,10 +1929,21 @@ DEPENDENCIES:
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
+  - Firebase
+  - FirebaseABTesting
+  - FirebaseCore
+  - FirebaseCoreExtension
+  - FirebaseCoreInternal
+  - FirebaseCrashlytics
+  - FirebaseInstallations
+  - FirebaseSessions
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - GoogleDataTransport
+  - GoogleUtilities
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
   - lottie-react-native (from `../node_modules/lottie-react-native`)
+  - nanopb
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -2033,6 +2063,8 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
+  EXAV:
+    :path: "../node_modules/expo-av/ios"
   EXConstants:
     :path: "../node_modules/expo-constants/ios"
   EXJSONUtils:
@@ -2242,6 +2274,7 @@ SPEC CHECKSUMS:
   Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
+  EXAV: 64e72329d2f8c2ba13608fed4a713af4e793242d
   EXConstants: 89d35611505a8ce02550e64e43cd05565da35f9a
   EXJSONUtils: 30c17fd9cc364d722c0946a550dfbf1be92ef6a4
   EXManifests: ebb7f551c340c0d06f3ecd9ae662e418bf68417c
@@ -2350,15 +2383,15 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: aa75595c1aefa18f868452091fa0c411a516ce11
   RNDeviceInfo: ae26ae45db3f9937f038a284bcd0a1db8d70db96
   RNFastImage: 462a183c4b0b6b26fdfd639e1ed6ba37536c3b87
-  RNFBAnalytics: b33dc47a5cdf688a58ad284f2c0b184299b59fd3
-  RNFBApp: 4105e54d9ca4a1c10893a032268470f670181110
-  RNFBCrashlytics: d2d9dd4636bad3f3c3ec42f53c3c13780cd634f5
-  RNFBMessaging: 6857871d9dff8f26b0c325fc7d97ba69cb77d213
-  RNFBRemoteConfig: 8d3675f18c052483ce294bb97b857428467fb41e
+  RNFBAnalytics: 03c83ba4617a3754c99e66267983efcc908932a9
+  RNFBApp: a448037d2df74af9d374a0b765be12ff1e844dc0
+  RNFBCrashlytics: c3bb5533f9957eddc88f3ea383583309a4ce9f89
+  RNFBMessaging: 0f0498a95c605e3afcf13ac5f349d0b201ea65f6
+  RNFBRemoteConfig: 4eb5fc9f21dc324153c7d3f5b48c935ab9031876
   RNGestureHandler: 5d95b0a3cffed8325ed0c181f4f411c1dcd49317
   RNKeychain: bbe2f6d5cc008920324acb49ef86ccc03d3b38e4
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
-  RNPermissions: c9f6254b68483c75efe58543d6cd92e5a3d869f5
+  RNPermissions: 7fcfd9df7f70de24605ac7b8cc0e22852a1688ee
   RNReanimated: f2535088b354179d404fc30eeafb131466a6a615
   RNScreens: 5b35d863db10f9be81da4e8f4e08096ee7644f8c
   RNSecureStorage: 505524e9ba6ae1e2420953192a812e0a67280f69
@@ -2372,6 +2405,6 @@ SPEC CHECKSUMS:
   VisionCamera: 0d520167daf1ccfad20b1ce6b952ddf224e8a5da
   Yoga: 33622183a85805e12703cd618b2c16bfd18bfffb
 
-PODFILE CHECKSUM: 2cc8a2e0f9996eccd22382b371dd4ef54f9b4187
+PODFILE CHECKSUM: dcae0d704a92843f3e4bb0b623dae83daa867e95
 
 COCOAPODS: 1.16.2

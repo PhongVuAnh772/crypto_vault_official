@@ -395,23 +395,23 @@ const useHeaderTabBar = (
   const protocolListSort = protocolDataLists.slice().sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
-  useEffect(() => {
-    const listConnected = TonConnectUtils.convertDataAllConnect(
-      isTestNet,
-      tonAddressData?.address!,
-      getAllConnect
-    );
-    const connectArray = listConnected.flatMap((group) =>
-      group.connections.map((item) => ({
-        item,
-        image: group.iconUrl,
-        name: group.name,
-        url: group.url,
-      }))
-    );
-    setQuantityConnect(connectArray.length);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAllConnect]);
+  // useEffect(() => {
+  //   const listConnected = TonConnectUtils.convertDataAllConnect(
+  //     isTestNet,
+  //     tonAddressData?.address!,
+  //     getAllConnect
+  //   );
+  //   const connectArray = listConnected.flatMap((group) =>
+  //     group.connections.map((item) => ({
+  //       item,
+  //       image: group.iconUrl,
+  //       name: group.name,
+  //       url: group.url,
+  //     }))
+  //   );
+  //   setQuantityConnect(connectArray.length);
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [getAllConnect]);
   useEffect(() => {
     if (tonAddressData?.address) {
       const listConnected = TonConnectUtils.convertDataAllConnect(

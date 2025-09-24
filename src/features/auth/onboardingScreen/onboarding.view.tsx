@@ -1,3 +1,4 @@
+import { ResizeMode, Video } from "expo-av"; // ✅ dùng expo-av
 import React, { useEffect, useRef } from "react";
 import {
   Image,
@@ -23,7 +24,10 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import useOnboardingScreen from "src/features/auth/onboardingScreen/onboarding.hook";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
+import OnboardingTextSlider from "../components/TextSlideAnimate";
 import useStyles from "./onboarding.styles";
+
+const videoSource = require("../../../../assets/video/onboarding.mp4");
 
 const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   const {
@@ -109,7 +113,17 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       <TouchableWithoutFeedback onPress={closeDropdown}>
         <View style={appStyles.flex1}>
           {/* Top / Language */}
-          <View style={styles.viewTop}>
+          <View
+            style={[
+              styles.viewTop,
+              {
+                backgroundColor:
+                  count === 1
+                    ? "rgb(23, 24, 29)"
+                    : theme.colors.surface_surface_brand,
+              },
+            ]}
+          >
             <TouchableOpacity
               onPress={openDropdown}
               style={[
@@ -130,12 +144,27 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
             </TouchableOpacity>
 
             {/* Animated Image */}
-            <Animated.View style={[slideStyle]}>
-              <Image
-                source={getIcon(prevCount.current)}
-                style={[styles.imageOnboarding, appStyles.mt25]}
+            {count !== 1 ? (
+              <Animated.View style={[slideStyle]}>
+                <Image
+                  source={getIcon(prevCount.current)}
+                  style={[styles.imageOnboarding, appStyles.mt25]}
+                />
+              </Animated.View>
+            ) : (
+              <Video
+                source={videoSource}
+                style={{
+                  width: 300,
+                  height: 300,
+
+                  zIndex: 9999,
+                }}
+                resizeMode={ResizeMode.COVER}
+                shouldPlay
+                isLooping
               />
-            </Animated.View>
+            )}
           </View>
 
           {/* Bottom */}
@@ -149,12 +178,16 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                   textColor={theme.colors.text_on_surface_text_highest}
                 />
               </View>
-              <AppText
-                styles={[styles.titleSub, styles.pT16]}
-                titleWithI18n={getSubTitle()}
-                variant={TextVariantKeys.bodyRMedium}
-                textColor={theme.colors.text_on_surface_text_medium_high}
-              />
+              {count == 1 ? (
+                <OnboardingTextSlider />
+              ) : (
+                <AppText
+                  styles={[styles.titleSub, styles.pT16]}
+                  titleWithI18n={getSubTitle()}
+                  variant={TextVariantKeys.bodyRMedium}
+                  textColor={theme.colors.text_on_surface_text_medium_high}
+                />
+              )}
             </Animated.View>
 
             <View style={{ paddingBottom: insets.bottom }}>

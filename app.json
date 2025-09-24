@@ -11,7 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.phongvuanh772.CryptoVault",
-      "googleServicesFile": "./ios/GoogleService-Info.plist"
+      "googleServicesFile": "./firebase/GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,6 +28,12 @@
       "favicon": "./assets/images/favicon.png"
     },
    "plugins": [
+           [
+              "expo-av",
+              {
+                "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+              }
+            ],
             "expo-asset",
             [
                 "react-native-permissions",
