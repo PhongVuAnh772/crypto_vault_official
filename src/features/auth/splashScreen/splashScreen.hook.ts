@@ -167,15 +167,15 @@ const useSplash = ({ navigation }: RootNavigationType) => {
     await remoteConfig().fetchAndActivate();
     RemoteUtils.themeConfig();
 
-    const deviceIsJailbreakOrRoot = await checkJailbreak();
-    if (deviceIsJailbreakOrRoot) {
-      Utils.showToast({
-        msg: AppI18Next.t(LanguageKey.common_text_error_title),
-        type: AppToastType.error,
-        visibilityTime: 10000000,
-      });
-      return;
-    }
+    // const deviceIsJailbreakOrRoot = await checkJailbreak();
+    // if (deviceIsJailbreakOrRoot) {
+    //   Utils.showToast({
+    //     msg: AppI18Next.t(LanguageKey.common_text_error_title),
+    //     type: AppToastType.error,
+    //     visibilityTime: 10000000,
+    //   });
+    //   return;
+    // }
 
     dispatch(setIsModalShow(true));
     // MARK: Look time logic
@@ -203,7 +203,6 @@ const useSplash = ({ navigation }: RootNavigationType) => {
       timeOutKeepSplashAction(goToOnboarding);
       dispatch(resetAllSlice());
     }
-    fetchDataClaimCounting();
   };
 
   useEffect(() => {

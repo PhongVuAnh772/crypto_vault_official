@@ -395,6 +395,7 @@ const useHeaderTabBar = (
   const protocolListSort = protocolDataLists.slice().sort((a, b) => {
     return a.name.localeCompare(b.name);
   });
+
   // useEffect(() => {
   //   const listConnected = TonConnectUtils.convertDataAllConnect(
   //     isTestNet,
@@ -412,6 +413,7 @@ const useHeaderTabBar = (
   //   setQuantityConnect(connectArray.length);
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [getAllConnect]);
+
   useEffect(() => {
     if (tonAddressData?.address) {
       const listConnected = TonConnectUtils.convertDataAllConnect(

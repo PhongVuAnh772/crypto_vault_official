@@ -40,12 +40,12 @@
     "home_tab_setting_title": "Setting",
     "onboarding_new_wallet_button_title": "Get a New Account",
     "onboarding_restore_wallet_button_title": "I already have one",
-    "onboarding_welcome_title": "Welcome to\nRED X Wallet",
-    "onboarding_title_2": "Easy and quick transactions.",
-    "onboarding_title_3": "Ultra-Secure,\nMulti-currency wallet.",
-    "onboarding_sub_title_1": "Experience all of Bitcoin, EVM Base Chain, TON in a user-friendly interface.",
-    "onboarding_sub_title_2": "Store, send, and receive - without ever leaving your wallet",
-    "onboarding_sub_title_3": "To get started, create a new account or import an existing one.",
+    "onboarding_welcome_title": "Manage Your Web3 Assets Anywhere, Anytime",
+    "onboarding_title_2": "Secure and Smart Crypto Wallet for the Future",
+    "onboarding_title_3": "Connect to Blockchain\nSafe, Fast Transactions",
+    "onboarding_sub_title_1": "Store, send, and receive multiple cryptocurrencies in one wallet with top-notch security and user-friendly experience.",
+    "onboarding_sub_title_2": "Integrated with DeFi, NFT, and Web3 apps, unlocking blockchain potential without worrying about risks.",
+    "onboarding_sub_title_3": "Instant transactions, full control of your assets, and multi-device sync – all in a single Web3 wallet.",
     "secret_phrase_risk_title": "Save secret recovery phrase",
     "secret_phrase_risk_header": "Recovery phrase",
     "secret_phrase_sub_title": "Save the below phrase outside of your phone in a secure place. With this phrase you can restore your account at any time.",
@@ -671,5 +671,6 @@
     "wallet_connect_text_warning_sign": "While sign this request to interact with dApp, you allow this dApp to manipulate your balance",
     "common_text_data": "Data",
     "common_text_message": "Message",
-    "create_new_wallet_warning": "If you forget your secret recovery phrase, your wallet cannot be restored. Do not share your secret recovery phrase with anyone, and keep a record of it in a safe place."
+    "create_new_wallet_warning": "If you forget your secret recovery phrase, your wallet cannot be restored. Do not share your secret recovery phrase with anyone, and keep a record of it in a safe place.",
+    "common_button_text_onboarding": "Got it, continue!"
 }

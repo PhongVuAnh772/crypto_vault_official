@@ -9,6 +9,7 @@
     "module": "commonjs",
     "jsx": "react",
     "strict": true,
+    "types": ["victory"],
     "baseUrl": "./",
     "paths": {
       "@src/*": [
@@ -27,6 +28,7 @@
   },
   "include": [
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "victory-native.d.ts"
   ]
 }

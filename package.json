@@ -107,6 +107,7 @@
     "rn-secure-storage": "^3.0.1",
     "stream-browserify": "^3.0.0",
     "tweetnacl": "^1.0.3",
+    "victory-native": "^41.20.1",
     "web3": "4.6.0"
   },
   "devDependencies": {
@@ -117,6 +118,7 @@
     "@types/react": "~18.2.45",
     "@types/react-native-get-random-values": "^1",
     "@types/readable-stream": "^4",
+    "@types/victory": "^35.0.0",
     "eslint": "^8.57.0",
     "eslint-config-expo": "~7.1.2",
     "patch-package": "^8.0.0",

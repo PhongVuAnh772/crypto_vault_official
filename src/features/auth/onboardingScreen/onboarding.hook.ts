@@ -117,6 +117,19 @@ const useOnboardingScreen = ({ navigation }: RootNavigationType) => {
     }
   };
 
+  const getTitleButton = () => {
+    switch (count) {
+      case 1:
+        return LanguageKey.common_button_text_onboarding;
+      case 2:
+        return LanguageKey.common_button_text_onboarding;
+      case 3:
+        return LanguageKey.common_button_text_onboarding;
+      default:
+        break;
+    }
+  };
+
   const openModalCreateNewWallet = () => {
     setIsVisible(!isVisible);
   };
@@ -162,6 +175,7 @@ const useOnboardingScreen = ({ navigation }: RootNavigationType) => {
     createWalletAction,
     onModalConfirmDismiss,
     isFirstScreen,
+    getTitleButton,
   };
 };
 

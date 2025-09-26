@@ -11,6 +11,8 @@ const useStyles = (theme: AppThemeType, isFirstScreen: boolean) =>
       ...appStyles.flex5,
       backgroundColor: theme.colors.surface_surface_high,
       paddingHorizontal: 24,
+      borderTopLeftRadius: 24,
+      borderTopRightRadius: 24,
     },
     viewNewTop: {
       ...appStyles.flex6,

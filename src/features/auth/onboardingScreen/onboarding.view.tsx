@@ -1,11 +1,8 @@
+import { appAnimations } from "constants/AppAnimations";
 import { ResizeMode, Video } from "expo-av"; // ✅ dùng expo-av
+import LottieView from "lottie-react-native";
 import React, { useEffect, useRef } from "react";
-import {
-  Image,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
-  View,
-} from "react-native";
+import { TouchableWithoutFeedback, View } from "react-native";
 import Animated, {
   Easing,
   useAnimatedStyle,
@@ -17,14 +14,11 @@ import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
 import BottomSheetWarningWallet from "src/components/specific/BottomSheetWalletWarning/bottomSheetWalletWarning.view";
 import appColors from "src/core/constants/AppColors";
-import { DropdowSvgIcon } from "src/core/constants/AppIconsSvg";
-import { appImages } from "src/core/constants/AppImages";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import useOnboardingScreen from "src/features/auth/onboardingScreen/onboarding.hook";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
-import OnboardingTextSlider from "../components/TextSlideAnimate";
 import useStyles from "./onboarding.styles";
 
 const videoSource = require("../../../../assets/video/onboarding.mp4");
@@ -50,6 +44,7 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     createWalletAction,
     onModalConfirmDismiss,
     isFirstScreen,
+    getTitleButton,
   } = useOnboardingScreen({ navigation });
 
   const styles = useStyles(theme, isFirstScreen);
@@ -94,11 +89,11 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   const getIcon = (step: number) => {
     switch (step) {
       case 1:
-        return appImages.onboarding1;
+        return appAnimations.onboarding1Animation;
       case 2:
-        return appImages.onboarding2;
+        return appAnimations.onboarding2Animation;
       case 3:
-        return appImages.onboarding3;
+        return appAnimations.onboarding3Animation;
       default:
         return null;
     }
@@ -108,7 +103,9 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     <ScreenWrapper
       mainStyle={[appStyles.flex1]}
       subStyle={[appStyles.flex1]}
-      backgroundImage={appImages.onboardingBackground}
+      backgroundColor={
+        count === 1 ? "rgb(23, 24, 29)" : theme.colors.surface_surface_brand
+      }
     >
       <TouchableWithoutFeedback onPress={closeDropdown}>
         <View style={appStyles.flex1}>
@@ -124,31 +121,17 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
               },
             ]}
           >
-            <TouchableOpacity
-              onPress={openDropdown}
-              style={[
-                styles.button_language,
-                styles.bdr100,
-                styles.customBorderButtonInitialUI,
-              ]}
-            >
-              <AppText
-                title={languageType === "en" ? "English" : "日本語"}
-                variant={TextVariantKeys.bodyMSmall}
-                textColor={theme.colors.text_on_surface_text_high}
-                maxFontSizeMultiplier={1.3}
-              />
-              <DropdowSvgIcon
-                color={theme.colors.text_on_surface_text_medium_high}
-              />
-            </TouchableOpacity>
-
             {/* Animated Image */}
             {count !== 1 ? (
               <Animated.View style={[slideStyle]}>
-                <Image
-                  source={getIcon(prevCount.current)}
-                  style={[styles.imageOnboarding, appStyles.mt25]}
+                <LottieView
+                  source={getIcon(count)}
+                  style={{
+                    width: count === 3 ? 700 : 300,
+                    height: count === 3 ? 700 : 300,
+                  }}
+                  autoPlay
+                  loop
                 />
               </Animated.View>
             ) : (
@@ -157,7 +140,6 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                 style={{
                   width: 300,
                   height: 300,
-
                   zIndex: 9999,
                 }}
                 resizeMode={ResizeMode.COVER}
@@ -168,7 +150,7 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
           </View>
 
           {/* Bottom */}
-          <View style={styles.viewBottom}>
+          <View style={[styles.viewBottom]}>
             <Animated.View style={[slideStyle, appStyles.flex1, styles.pT32]}>
               <View style={[appStyles.pH10]}>
                 <AppText
@@ -178,16 +160,13 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                   textColor={theme.colors.text_on_surface_text_highest}
                 />
               </View>
-              {count == 1 ? (
-                <OnboardingTextSlider />
-              ) : (
-                <AppText
-                  styles={[styles.titleSub, styles.pT16]}
-                  titleWithI18n={getSubTitle()}
-                  variant={TextVariantKeys.bodyRMedium}
-                  textColor={theme.colors.text_on_surface_text_medium_high}
-                />
-              )}
+
+              <AppText
+                styles={[styles.titleSub, styles.pT16]}
+                titleWithI18n={getSubTitle()}
+                variant={TextVariantKeys.bodyRMedium}
+                textColor={theme.colors.text_on_surface_text_medium_high}
+              />
             </Animated.View>
 
             <View style={{ paddingBottom: insets.bottom }}>
@@ -197,6 +176,8 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                     styles={{
                       backgroundColor: appColors.main.tokyoRed,
                       ...appStyles.fullWidth,
+                      height: 58,
+                      borderRadius: 25,
                     }}
                     onPress={openModalCreateNewWallet}
                     titleWithI18n={
@@ -205,14 +186,13 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                     textVariant={TextVariantKeys.titleSmall}
                     textColor={appColors.neutral.white}
                   />
-
                   <View style={styles.h10} />
-
                   <AppButton
                     onPress={createRestoreWalletAction}
                     styles={{
-                      backgroundColor: theme.colors.label_surface_button_light,
                       ...appStyles.fullWidth,
+                      height: 58,
+                      borderRadius: 25,
                     }}
                     titleWithI18n={
                       LanguageKey.onboarding_restore_wallet_button_title
@@ -222,28 +202,31 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                   />
                 </View>
               ) : (
-                <View style={styles.viewCounterWithButton}>
-                  <View
-                    style={[
-                      appStyles.alignItemsCenter,
-                      appStyles.flexRow,
-                      appStyles.justifyContentBetween,
-                      appStyles.fullWidth,
-                    ]}
-                  >
-                    <AppText
-                      title={`${count}/3`}
-                      variant={TextVariantKeys.labelSmall}
-                      textColor={theme.colors.text_on_surface_text_medium_high}
-                    />
+                <View style={styles.viewButton}>
+                  <AppButton
+                    styles={{
+                      backgroundColor: appColors.main.tokyoRed,
+                      ...appStyles.fullWidth,
+                      height: 58,
+                      borderRadius: 25,
+                    }}
+                    onPress={nextAction}
+                    titleWithI18n={getTitleButton()}
+                    textVariant={TextVariantKeys.titleSmall}
+                    textColor={appColors.neutral.white}
+                  />
 
-                    <AppButton
-                      forceStyles={styles.nextButton}
-                      titleWithI18n={LanguageKey.common_text_next}
-                      textStyles={styles.nextTextStyle}
-                      onPress={nextAction}
-                    />
-                  </View>
+                  <AppButton
+                    onPress={() => {}}
+                    styles={{
+                      ...appStyles.fullWidth,
+                      height: 58,
+                      borderRadius: 25,
+                    }}
+                    titleWithI18n={""}
+                    textVariant={TextVariantKeys.titleSmall}
+                    textColor={theme.colors.text_on_surface_text_highest}
+                  />
                 </View>
               )}
             </View>
