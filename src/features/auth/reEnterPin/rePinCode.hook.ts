@@ -13,6 +13,7 @@ import {
 import { getAuthAction, getThemeMode } from "src/core/redux/slice/app.slice";
 import GlobalUtils from "src/core/utils/globalUtils";
 import {
+  AuthStackScreenKey,
   NavigationStackKey,
   PinCodeStackScreenKey,
 } from "src/navigation/enum/NavigationKey";
@@ -39,11 +40,7 @@ const useRePinCode = ({ navigation }: RootNavigationType) => {
 
   const confirmAction = async () => {
     if (pin === value) {
-      if (authAction === AuthAction.restoreWallet) {
-        continueAction();
-      } else {
-        setCorrectPin(true);
-      }
+      continueAction();
     } else {
       setIncorrectPin(true);
       setValue("");
@@ -66,7 +63,7 @@ const useRePinCode = ({ navigation }: RootNavigationType) => {
       );
 
       if (addAccount.fulfilled.match(res)) {
-        navigation.dispatch(StackActions.replace(NavigationStackKey.HomeStack));
+        navigation.navigate(NavigationStackKey.CongratulationCreateWallet);
       }
       setIsLoading(false);
     }

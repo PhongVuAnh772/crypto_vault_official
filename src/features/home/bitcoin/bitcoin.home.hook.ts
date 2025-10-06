@@ -185,27 +185,19 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
   }, [accountProtocolSelected, listToken]);
 
   const goToSendScreen = () => {
-    if (protocolBaseData?.isDefault || blockBitcoinTransfer) {
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-        contentOffSet: contentOffsetToast,
-      });
-      return;
-    }
-
     dispatch(setTransferSlip0044(Slip0044.Bitcoin));
 
     const nativeCoinCryptoData = listCryptoData?.find((e) => e.isNative);
-    if (nativeCoinCryptoData) {
-      dispatch(setSelectedCryptoDataId(nativeCoinCryptoData.id));
-      navigation.navigate(HomeStackScreenKey.Transfer, {
-        isFromHome: true,
-      });
-    } else {
-      console.error("goToSendScreen error");
-      dispatch(setShowCommonErrorModal(true));
-    }
+    navigation.navigate(HomeStackScreenKey.Transfer, {
+      isFromHome: true,
+    });
+    // if (nativeCoinCryptoData) {
+    //   dispatch(setSelectedCryptoDataId(nativeCoinCryptoData.id));
+
+    // } else {
+    //   console.error("goToSendScreen error");
+    //   dispatch(setShowCommonErrorModal(true));
+    // }
   };
   const goToMangeCryptoScreen = () => {
     navigation.dispatch(StackActions.push(HomeStackScreenKey.ManageCrypto));

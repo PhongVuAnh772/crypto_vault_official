@@ -1,5 +1,7 @@
+import { AntDesign } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
+  Image,
   ImageBackground,
   RefreshControl,
   SectionList,
@@ -19,6 +21,7 @@ import AppSkeletonLoading from "src/components/common/AppSkeletonLoading";
 import AppText from "src/components/common/AppText";
 import ViewModeButton from "src/components/common/ViewModeButton/ViewModeButton";
 import SkeletonLoadingTransactionHistory from "src/components/homeComponents/SkeletonLoadingTransactionHistory/skeletonLoadingTransactionHistory.view";
+import styles from "src/components/layout/ForceUpdateModal/styles";
 import ParallaxScrollView from "src/components/layout/ParallaxScrollView";
 import SvgView from "src/components/SvgBox";
 import appColors from "src/core/constants/AppColors";
@@ -38,7 +41,12 @@ import Utils from "src/core/utils/commonUtils";
 import GlobalUtils from "src/core/utils/globalUtils";
 import { LoadingSkeletonItemAction } from "src/features/home/components/HomeSkeletonLoading";
 import useStyles from "./CoinDetails.styles";
-import { CoinHeaderType, LoadingViewType } from "./CoinDetails.type";
+import {
+  CoinHeaderType,
+  ListButtonTokenTrackingProps,
+  LoadingViewType,
+  TokenBalanceCardProps,
+} from "./CoinDetails.type";
 
 export const EmptyView: React.FC<LoadingViewType> = ({ viewMoreHistory }) => {
   return (
@@ -360,5 +368,211 @@ export const ContentInsideHeaderLoading: React.FC<
         </View>
       </View>
     )
+  );
+};
+
+export const ListButtonTokenTracking: React.FC<
+  ListButtonTokenTrackingProps
+> = ({ onSendPress, onReceivePress, onSwapPress, onBuyPress }) => {
+  return (
+    <View style={styles.btnTrackingContainer}>
+      {/* Send */}
+      <TouchableOpacity style={styles.button} onPress={onSendPress}>
+        <AntDesign name="upload" size={14} color={appColors.neutral.n700} />
+        <AppText
+          titleWithI18n={LanguageKey.home_send_title}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.text}
+        />
+      </TouchableOpacity>
+
+      {/* Receive */}
+      <TouchableOpacity style={styles.button} onPress={onReceivePress}>
+        <AntDesign name="download" size={14} color={appColors.neutral.n700} />
+        <AppText
+          titleWithI18n={LanguageKey.home_receive_title}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.text}
+        />
+      </TouchableOpacity>
+
+      {/* Swap */}
+      <TouchableOpacity style={styles.button} onPress={onSwapPress}>
+        <AntDesign name="swap" size={14} color={appColors.neutral.n700} />
+        <AppText
+          titleWithI18n={LanguageKey.home_swap_title}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.text}
+        />
+      </TouchableOpacity>
+
+      {/* Buy */}
+      <TouchableOpacity style={styles.button} onPress={onBuyPress}>
+        <AntDesign
+          name="shoppingcart"
+          size={14}
+          color={appColors.neutral.n700}
+        />
+        <AppText
+          titleWithI18n={"Buy"}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.text}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+};
+
+export const TokenInfoTracking: React.FC = () => {
+  return (
+    <View style={styles.marketInfoContainer}>
+      <AppText
+        titleWithI18n={LanguageKey.market_detail_title}
+        variant={TextVariantKeys.labelLarge}
+        textColor={appColors.neutral.black}
+        styles={styles.marketInfoSectionTitle}
+      />
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.market_cap}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="$175,118,733,466.06"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.volume_24h}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="$103,285,293,336.80"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.volume_to_marketcap}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="58.98%"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.circulating_supply}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="174,921,926,112.34"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.all_time_high}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="$1.32"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+
+      <View style={styles.marketInfoRow}>
+        <AppText
+          titleWithI18n={LanguageKey.all_time_low}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoLabelText}
+        />
+        <AppText
+          title="$0.57"
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.marketInfoValueText}
+        />
+      </View>
+    </View>
+  );
+};
+
+export const TokenBalanceCard = ({
+  logo,
+  name,
+  change,
+  usdValue,
+  balance,
+}: TokenBalanceCardProps) => {
+  return (
+    <View style={styles.cardContainer}>
+      {/* Logo */}
+      <Image source={logo} style={styles.logo} />
+
+      {/* Info */}
+      <View style={styles.infoContainer}>
+        <AppText
+          title={name}
+          variant={TextVariantKeys.bodyMMedium}
+          textColor={appColors.neutral.black}
+        />
+        <AppText
+          title={`${change > 0 ? "+" : ""}${change.toFixed(2)}%`}
+          variant={TextVariantKeys.labelTiny}
+          textColor={
+            change >= 0 ? appColors.functional.green : appColors.main.tokyoRed
+          }
+        />
+      </View>
+
+      {/* Value */}
+      <View style={styles.valueContainer}>
+        <AppText
+          title={usdValue}
+          variant={TextVariantKeys.bodyMMedium}
+          textColor={appColors.neutral.black}
+          styles={styles.textAlignRight}
+        />
+        <AppText
+          title={balance}
+          variant={TextVariantKeys.labelTiny}
+          textColor={appColors.neutral.black}
+          styles={styles.textAlignRight}
+        />
+      </View>
+    </View>
   );
 };

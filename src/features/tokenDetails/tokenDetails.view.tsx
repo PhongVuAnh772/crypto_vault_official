@@ -1,6 +1,6 @@
 import React from "react";
 import { ActivityIndicator, View } from "react-native";
-import { VictoryArea, VictoryChart, VictoryLine } from "victory-native";
+import { LineChart } from "react-native-wagmi-charts";
 
 import useCoinChart from "./tokenDetails.hook";
 import CoinChartStyles from "./tokenDetails.styles";
@@ -16,55 +16,20 @@ const TokenDetails: React.FC = () => {
     );
   }
 
+  // Chuyển dữ liệu về dạng { timestamp, value }
+  const chartData = data.map((item) => ({
+    timestamp: new Date(item.x).getTime(),
+    value: item.y,
+  }));
+
   return (
     <View style={CoinChartStyles.container}>
-      <VictoryChart
-        padding={{ top: 0, bottom: 0, left: 0, right: 0 }}
-        height={200}
-      >
-        <VictoryArea
-          data={data}
-          x="x"
-          y="y"
-          style={{
-            data: {
-              fill: "url(#gradientBlue)",
-              strokeWidth: 0,
-            },
-          }}
-          animate={{
-            duration: 1500,
-            easing: "linear",
-            onLoad: { duration: 1500 },
-          }}
-        />
-
-        <VictoryLine
-          data={data}
-          x="x"
-          y="y"
-          style={{
-            data: {
-              stroke: "#007aff",
-              strokeWidth: 2,
-            },
-          }}
-          animate={{
-            duration: 2000,
-            easing: "linear",
-            onLoad: { duration: 2000 },
-          }}
-        />
-
-        <svg>
-          <defs>
-            <linearGradient id="gradientBlue" x1="0" x2="0" y1="0" y2="1">
-              <stop offset="0%" stopColor="#007aff" stopOpacity={0.3} />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-        </svg>
-      </VictoryChart>
+      <LineChart.Provider data={chartData}>
+        <LineChart height={200}>
+          <LineChart.Gradient />
+          <LineChart.Path color="#007aff" width={2} />
+        </LineChart>
+      </LineChart.Provider>
     </View>
   );
 };

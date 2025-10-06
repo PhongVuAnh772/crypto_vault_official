@@ -80,7 +80,7 @@ const useStyles = (theme: AppThemeType) =>
     secretContainer: {
       marginVertical: 4,
       backgroundColor: "#F7F7FA",
-      height: 250,
+      height: 300,
       paddingHorizontal: 6,
       paddingVertical: 6,
       borderRadius: 8,

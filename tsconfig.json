@@ -29,6 +29,5 @@
   "include": [
     "**/*.ts",
     "**/*.tsx",
-    "victory-native.d.ts"
   ]
 }

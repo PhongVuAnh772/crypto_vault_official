@@ -91,7 +91,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = (props) => {
         icon={
           <Close2SvgIcon
             style={stylesWithTheme.mlMinus20}
-            color={theme.colors.surface_surface_high}
+            color={theme.colors.text_on_surface_text_high}
           />
         }
         styles={stylesWithTheme.button}

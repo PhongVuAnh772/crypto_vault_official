@@ -1,12 +1,11 @@
+import Feather from "@expo/vector-icons/Feather";
 import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
-import { TouchableHighlight } from "react-native-gesture-handler";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import appColors from "src/core/constants/AppColors";
 import appStyles from "src/core/styles";
 import { ProtocolDataWithSupportedTokensFormBEType } from "type/ProtocolType";
+import TextVariantKeys from "../src/core/enum/TextVariantKeys";
 import AppText from "./AppText";
-import TextVariantKeys from "src/core/constants/TextVariantKeys";
-import Feather from "@expo/vector-icons/Feather";
 
 type ProtocolType = {
   item: ProtocolDataWithSupportedTokensFormBEType;
@@ -47,14 +46,14 @@ const ProtocolItem = ({
           /> */}
           <AppText
             title={item.name}
-            variant={TextVariantKeys.TitleMedium}
+            variant={TextVariantKeys.titleMedium}
             styles={protocolItemStyle.nameProtocol}
             textColor={appColors.neutral.black}
           />
           <View style={protocolItemStyle.shortCurrencyContainer}>
             <AppText
               title={item.symbol}
-              variant={TextVariantKeys.LabelMedium}
+              variant={TextVariantKeys.titleSmall}
               textColor={appColors.neutral.black}
             />
           </View>

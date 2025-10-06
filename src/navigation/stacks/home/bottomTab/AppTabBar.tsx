@@ -91,8 +91,12 @@ const AppTabBar = ({
               { position: "relative" },
             ]}
           >
-            {bottomTabIcon(route.name, isFocused)}
-            {isFocused ? (
+            {route.name === LanguageKey.home_tab_explore_title
+              ? <View style={styles.iconCenterContainer}>
+                  
+              </View>
+              : bottomTabIcon(route.name, isFocused)}
+            {isFocused && route.name !== LanguageKey.home_tab_explore_title ? (
               <View style={appStyles.ml10}>
                 <AppText
                   titleWithI18n={route.name}

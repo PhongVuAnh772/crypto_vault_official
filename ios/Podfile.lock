@@ -1,13 +1,18 @@
 PODS:
-  - A0Auth0 (4.5.0):
-    - Auth0 (= 2.10)
-    - JWTDecode (= 3.2.0)
+  - A0Auth0 (3.2.1):
+    - Auth0 (= 2.7.2)
+    - JWTDecode (= 3.1.0)
     - React-Core
-    - SimpleKeychain (= 1.2.0)
-  - Auth0 (2.10.0):
-    - JWTDecode (= 3.2.0)
-    - SimpleKeychain (= 1.2.0)
+    - SimpleKeychain (= 1.1.0)
+  - Auth0 (2.7.2):
+    - JWTDecode (~> 3.1)
+    - SimpleKeychain (~> 1.1)
   - boost (1.83.0)
+  - ComputableLayout (0.7.0):
+    - DGSwiftUtilities (~> 0.11)
+  - ContextMenuAuxiliaryPreview (0.5.2):
+    - DGSwiftUtilities (~> 0.29)
+  - DGSwiftUtilities (0.47.0)
   - DoubleConversion (1.1.6)
   - EXAV (14.0.7):
     - ExpoModulesCore
@@ -428,7 +433,7 @@ PODS:
   - hermes-engine (0.74.5):
     - hermes-engine/Pre-built (= 0.74.5)
   - hermes-engine/Pre-built (0.74.5)
-  - JWTDecode (3.2.0)
+  - JWTDecode (3.1.0)
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -1427,6 +1432,57 @@ PODS:
     - React-Core
   - react-native-get-random-values (1.11.0):
     - React-Core
+  - react-native-ios-context-menu (3.1.0):
+    - ContextMenuAuxiliaryPreview (~> 0.5)
+    - DGSwiftUtilities
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - react-native-ios-utilities
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-ios-utilities (5.1.2):
+    - ComputableLayout (~> 0.7)
+    - DGSwiftUtilities (~> 0.46)
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTAppDelegate
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
+  - react-native-menu (1.2.2):
+    - React
   - react-native-netinfo (11.4.1):
     - React-Core
   - react-native-pager-view (6.9.1):
@@ -1767,6 +1823,27 @@ PODS:
     - React-Core
   - RNPermissions (4.1.5):
     - React-Core
+  - RNReactNativeHapticFeedback (2.3.3):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - RNReanimated (3.16.7):
     - DoubleConversion
     - glog
@@ -1878,7 +1955,7 @@ PODS:
     - Yoga
   - RNSecureStorage (3.0.1):
     - React
-  - RNSVG (15.2.0):
+  - RNSVG (14.1.0):
     - React-Core
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
@@ -1886,7 +1963,7 @@ PODS:
   - SDWebImageWebPCoder (0.8.5):
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.10)
-  - SimpleKeychain (1.2.0)
+  - SimpleKeychain (1.1.0)
   - SocketRocket (0.7.0)
   - SwiftProtobuf (1.31.1)
   - TrustWalletCore (4.1.5):
@@ -1974,6 +2051,9 @@ DEPENDENCIES:
   - "react-native-compat (from `../node_modules/@walletconnect/react-native-compat`)"
   - react-native-fast-pbkdf2 (from `../node_modules/react-native-fast-pbkdf2`)
   - react-native-get-random-values (from `../node_modules/react-native-get-random-values`)
+  - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
+  - react-native-ios-utilities (from `../node_modules/react-native-ios-utilities`)
+  - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
@@ -2016,6 +2096,7 @@ DEPENDENCIES:
   - RNKeychain (from `../node_modules/react-native-keychain`)
   - "RNNotifee (from `../node_modules/@notifee/react-native`)"
   - RNPermissions (from `../node_modules/react-native-permissions`)
+  - RNReactNativeHapticFeedback (from `../node_modules/react-native-haptic-feedback`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - RNSecureStorage (from `../node_modules/rn-secure-storage`)
@@ -2027,6 +2108,9 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Auth0
+    - ComputableLayout
+    - ContextMenuAuxiliaryPreview
+    - DGSwiftUtilities
     - Firebase
     - FirebaseABTesting
     - FirebaseAnalytics
@@ -2172,6 +2256,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-fast-pbkdf2"
   react-native-get-random-values:
     :path: "../node_modules/react-native-get-random-values"
+  react-native-ios-context-menu:
+    :path: "../node_modules/react-native-ios-context-menu"
+  react-native-ios-utilities:
+    :path: "../node_modules/react-native-ios-utilities"
+  react-native-menu:
+    :path: "../node_modules/@react-native-menu/menu"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -2256,6 +2346,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@notifee/react-native"
   RNPermissions:
     :path: "../node_modules/react-native-permissions"
+  RNReactNativeHapticFeedback:
+    :path: "../node_modules/react-native-haptic-feedback"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
@@ -2270,9 +2362,12 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
-  A0Auth0: db57601407bd36ddc3b8fa8e578fe8af4237cf39
-  Auth0: 2876d0c36857422eda9cb580a6cc896c7d14cb36
+  A0Auth0: 3e5033500f199020186a42c49020ecd508a72b27
+  Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  ComputableLayout: c50faffac4ed9f8f05b0ce5e6f3a60df1f6042c8
+  ContextMenuAuxiliaryPreview: 20be0be795b783b68f8792732eed4bed9f202c1c
+  DGSwiftUtilities: 567f8d5ee618f0b7afb185b17aa45ff356315a0f
   DoubleConversion: 76ab83afb40bddeeee456813d9c04f67f78771b5
   EXAV: 64e72329d2f8c2ba13608fed4a713af4e793242d
   EXConstants: 89d35611505a8ce02550e64e43cd05565da35f9a
@@ -2315,7 +2410,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
-  JWTDecode: 7dae24cb9bf9b608eae61e5081029ec169bb5527
+  JWTDecode: 3eaab1e06b6f4dcbdd6716aff09ba4c2104ca8b7
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: a881093fab623c467d3bce374367755c272bdd59
   lottie-react-native: 259a1d3ad1dca4b98d5f1805e0c1ababfd37494c
@@ -2350,6 +2445,9 @@ SPEC CHECKSUMS:
   react-native-compat: 37eac9f3ac5a7d0c7b3e817f6adec942bc2f4d1c
   react-native-fast-pbkdf2: 329e89b9929a51ed4d9ba88bf355a266f13d9d93
   react-native-get-random-values: d16467cf726c618e9c7a8c3c39c31faa2244bbba
+  react-native-ios-context-menu: 3a4f5dc9e0bba345d87211b8c43537d0f35b076a
+  react-native-ios-utilities: bce149f17675bb4473081c2e8e1f602f491f868a
+  react-native-menu: c394bbb3578281165d0025e500c9711f164e8fe1
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pager-view: eea83249a6a479e36351281e158be0dec409550a
   react-native-randombytes: 4eeddad82d1fd57adda1cd5beffe67d041c9d6de
@@ -2392,13 +2490,14 @@ SPEC CHECKSUMS:
   RNKeychain: bbe2f6d5cc008920324acb49ef86ccc03d3b38e4
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPermissions: 7fcfd9df7f70de24605ac7b8cc0e22852a1688ee
+  RNReactNativeHapticFeedback: 06a14feff1e46f560a65653dade5cf1206bbfe2e
   RNReanimated: f2535088b354179d404fc30eeafb131466a6a615
   RNScreens: 5b35d863db10f9be81da4e8f4e08096ee7644f8c
   RNSecureStorage: 505524e9ba6ae1e2420953192a812e0a67280f69
-  RNSVG: 0e7deccab0678200815104223aadd5ca734dd41d
+  RNSVG: 6d5ed33b6635ed6d6ecb50744dcf127580c39ed5
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
-  SimpleKeychain: 768cf43ae778b1c21816e94dddf01bb8ee96a075
+  SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
   SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
   TrustWalletCore: 23f08e2a8810b450f4a7673a3d137ebfb9243120

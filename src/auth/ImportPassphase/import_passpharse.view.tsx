@@ -11,9 +11,9 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 import AppText from "components/AppText";
-import TextVariantKeys from "src/core/constants/TextVariantKeys";
+import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import appStyles from "src/core/styles";
-import Utils from "src/utils/commonUtils";
+import Utils from "src/core/utils/commonUtils";
 import useRestoreWallet from "../ImportPassphase/importPassphrase.hook";
 import { RootNavigationType } from "../SplashScreen/index.view";
 import useStyles from "./restoreWallet.styles";
@@ -52,7 +52,7 @@ const RestoreWallet: React.FC<RootNavigationType> = ({ navigation }) => {
         <View style={styles.indexView}>
           <AppText
             title={(index + 1).toString()}
-            variant={TextVariantKeys.BodyMedium}
+            variant={TextVariantKeys.bodyMMedium}
             styles={appStyles.textAlignCenter}
           />
         </View>
@@ -118,19 +118,19 @@ const RestoreWallet: React.FC<RootNavigationType> = ({ navigation }) => {
     <View style={styles.container}>
       <AppText
         title="Bước 1/2"
-        variant={TextVariantKeys.BodySmall}
+        variant={TextVariantKeys.bodyMLarge}
         textColor="#8E8E93"
       />
       <AppText
         title="Nhập ví"
-        variant={TextVariantKeys.DisplaySmall}
+        variant={TextVariantKeys.headlineLarge}
         textColor="#000000"
         styles={{ fontWeight: "700" }}
       />
       <View style={[styles.row, { paddingTop: 5 }]}>
         <AppText
           title="Nhập cụm từ khôi phục bí mật của bạn"
-          variant={TextVariantKeys.BodyLarge}
+          variant={TextVariantKeys.bodyMLarge}
           textColor="#6E6E73"
         />
         <Feather

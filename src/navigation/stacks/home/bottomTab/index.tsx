@@ -85,13 +85,14 @@ const BottomTab = () => {
         component={NFTCollectionContainerScreen}
       />
       <Tab.Screen
-        name={LanguageKey.home_tab_transaction_title}
-        component={TransactionTab}
-      />
-      <Tab.Screen
         name={LanguageKey.home_tab_explore_title}
         component={SettingScreen}
       />
+      <Tab.Screen
+        name={LanguageKey.home_tab_transaction_title}
+        component={TransactionTab}
+      />
+
       <Tab.Screen
         name={LanguageKey.home_tab_setting_title}
         component={SettingScreen}

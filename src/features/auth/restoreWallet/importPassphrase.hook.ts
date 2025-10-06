@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Keyboard, TextInput } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
-import { RootNavigationType } from "../SplashScreen/index.view";
 
 import {
   AuthStackScreenKey,
@@ -14,8 +13,20 @@ import * as Clipboard from "expo-clipboard";
 import NativeWalletCoreModule from "src/core/modules/WalletCoreModules/NativeWalletCoreModule";
 import useAppSafeAreaInsets from "src/core/hooks/useAppSafeAreaInsets";
 import Utils from "src/core/utils/commonUtils";
+import { RootNavigationType } from "src/auth/SplashScreen/index.view";
+import { useAppTheme } from "src/core/hooks/useAppTheme";
+import {
+  addAccount,
+  getAllAccount,
+  getPin,
+  setTemporaryMnemonic,
+} from "src/core/redux/slice/account.slice";
+import { HomeParamListType } from "src/navigation/stacks/type/HomeParamListType";
+import LanguageKey from "src/core/locales/LanguageKey";
+import AppToastType from "src/core/enum/AppToastType";
 
 const useRestoreWallet = ({ navigation }: RootNavigationType) => {
+  const pin = useAppSelector(getPin);
   const dispatch = useAppDispatch();
   const [modalVisible, setModalVisible] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -28,6 +39,9 @@ const useRestoreWallet = ({ navigation }: RootNavigationType) => {
   const insets: EdgeInsets = useAppSafeAreaInsets();
   const [isSwitchOn, setIsSwitchOn] = useState(false);
   const onToggleSwitch = () => setIsSwitchOn(!isSwitchOn);
+  const walletData = useAppSelector(getAllAccount);
+
+  const theme = useAppTheme();
 
   const { t } = useTranslation();
   const [widthView, setWidthView] = useState(Utils.screenWidth);
@@ -70,6 +84,14 @@ const useRestoreWallet = ({ navigation }: RootNavigationType) => {
   const handleLayout = (event: any) => {
     const { width } = event.nativeEvent.layout;
     setWidthView(width);
+  };
+
+  const handleWordSelect = (word: string) => {
+    const updatedInputs = [...secretPhraseInputs];
+    updatedInputs[indexInputFocus ?? 0] = word;
+    setSecretPhraseInputs(updatedInputs);
+    setSuggestions([]);
+    inputRefs.current[(indexInputFocus ?? 0) + 1]?.focus();
   };
 
   const handlePaste = async () => {
@@ -120,7 +142,67 @@ const useRestoreWallet = ({ navigation }: RootNavigationType) => {
     }
   };
 
-  const handleRestoreAccount = () => {};
+  const handleRestoreAccount = async () => {
+    setDisableButton(true);
+    setSuggestions([]);
+    setIsLoading(true);
+    const secretPhrase = secretPhraseInputs.join(" ");
+    const findWalletResult = walletData?.find(
+      (e) => e.mnemonic === secretPhrase
+    );
+    if (findWalletResult) {
+      Utils.showToast({
+        msg: t(LanguageKey.restore_error_added),
+        type: AppToastType.error,
+      });
+      setDisableButton(false);
+      setIsLoading(false);
+    } else {
+      try {
+        const mnemonic = await nativeWalletCoreModule.importWallet({
+          secretPhrase,
+        });
+
+        if (mnemonic) {
+          dispatch(setTemporaryMnemonic(mnemonic));
+          if (pin !== undefined && pin !== null) {
+            const res = await dispatch(
+              addAccount({ mnemonic: mnemonic, pinCode: pin })
+            );
+            if (addAccount.fulfilled.match(res)) {
+              if (Keyboard.isVisible()) {
+                Keyboard.dismiss();
+              }
+              const param: HomeParamListType = {
+                reShowWalletModal: true,
+              };
+              navigation.navigate(NavigationStackKey.HomeStack, param);
+              setTimeout(() => {
+                Utils.showToast({
+                  msg: t(LanguageKey.restore_success_title),
+                  type: AppToastType.success,
+                });
+              }, 500);
+            }
+          } else {
+            if (Keyboard.isVisible()) {
+              Keyboard.dismiss();
+            }
+            setTimeout(() => {
+              navigation.navigate(NavigationStackKey.PinCodeStack);
+            }, 100);
+            setDisableButton(false);
+          }
+        }
+      } catch (error) {
+        console.error("handleRestoreAccount Error:", error);
+        setModalVisible(true);
+        setDisableButton(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   return {
     modalVisible,
@@ -149,6 +231,8 @@ const useRestoreWallet = ({ navigation }: RootNavigationType) => {
     handlePaste,
     handleInputChange,
     handleRestoreAccount,
+    handleWordSelect,
+    theme,
   };
 };
 export default useRestoreWallet;

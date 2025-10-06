@@ -1,9 +1,10 @@
+import { appAnimations } from "constants/AppAnimations";
+import LottieView from "lottie-react-native";
 import React from "react";
 import { View } from "react-native";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
 import BottomSheetModal from "src/components/specific/BottomSheetModal/BottomSheetModal.view";
-import { BigLockSvgIcon } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
@@ -49,10 +50,18 @@ const BottomSheetWarningWallet: React.FC<BottomSheetProps> = ({
         <View style={appStyles.pH25}>
           <View style={appStyles.flex1}>
             <View style={appStyles.center}>
-              <BigLockSvgIcon />
+              <LottieView
+                source={appAnimations.securityAnimation}
+                style={{
+                  width: 300,
+                  height: 180,
+                }}
+                autoPlay
+                loop
+              />
               <View style={appStyles.mv25}>
                 <AppText
-                  titleWithI18n={LanguageKey.never_show_secret_phrase_title}
+                  titleWithI18n={"Protect Your Secret Phrase"}
                   variant={TextVariantKeys.titleLarge}
                   textColor={theme.colors.text_on_surface_text_high}
                 />
@@ -60,7 +69,12 @@ const BottomSheetWarningWallet: React.FC<BottomSheetProps> = ({
               {listBottomSheetPhrase.map((item) => (
                 <View
                   key={item.title}
-                  style={[appStyles.center, appStyles.flexRow, appStyles.mbt15]}
+                  style={[
+                    appStyles.center,
+                    appStyles.flexRow,
+                    appStyles.mbt15,
+                    appStyles.mt10,
+                  ]}
                 >
                   <View style={appStyles.mr25}>
                     <item.icon

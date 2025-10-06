@@ -672,5 +672,17 @@
     "common_text_data": "Data",
     "common_text_message": "Message",
     "create_new_wallet_warning": "If you forget your secret recovery phrase, your wallet cannot be restored. Do not share your secret recovery phrase with anyone, and keep a record of it in a safe place.",
-    "common_button_text_onboarding": "Got it, continue!"
+    "common_button_text_onboarding": "Got it, continue!",
+    "market_detail_title": "Market Details",
+    "market_cap": "Market Capitalization",
+    "volume_24h": "24h Trading Volume",
+    "volume_to_marketcap": "Volume / Market Cap",
+    "circulating_supply": "Circulating Supply",
+    "all_time_high": "All-Time High",
+    "all_time_low": "All-Time Low",
+
+    "token_detail_title": "Token Details",
+    "contract_address": "Contract Address",
+    "token_decimal": "Token Decimal",
+    "token_list": "Token List"
 }

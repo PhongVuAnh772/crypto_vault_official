@@ -720,5 +720,18 @@ const LanguageKey = {
   common_text_message: "common_text_message",
   create_new_wallet_warning: "create_new_wallet_warning",
   common_button_text_onboarding: "common_button_text_onboarding",
+  market_detail_title: "market_detail_title",
+  market_cap: "market_cap",
+  volume_24h: "volume_24h",
+  volume_to_marketcap: "volume_to_marketcap",
+  circulating_supply: "circulating_supply",
+  all_time_high: "all_time_high",
+  all_time_low: "all_time_low",
+
+  // Token info
+  token_detail_title: "token_detail_title",
+  contract_address: "contract_address",
+  token_decimal: "token_decimal",
+  token_list: "token_list",
 };
 export default LanguageKey;

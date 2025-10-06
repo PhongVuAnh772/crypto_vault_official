@@ -8,7 +8,6 @@ import {
 import { ScreenWrapper } from "src/components";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
-import SvgView from "src/components/SvgBox";
 import appColors from "src/core/constants/AppColors";
 import { CopySvgIcon } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
@@ -51,18 +50,7 @@ const PharaseScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       </View>
     );
   };
-  const newRenderItem = ({ item, index }: { item: string; index: number }) => {
-    return (
-      <View style={[appStyles.flex1, appStyles.pd5]} onLayout={handleLayout}>
-        {renderItem({ item: item, index: index })}
-        {SvgView.view({
-          height: 40,
-          backgroundColor: "white",
-          widthView: widthView,
-        })}
-      </View>
-    );
-  };
+
   return (
     <ScreenWrapper
       enableHeader

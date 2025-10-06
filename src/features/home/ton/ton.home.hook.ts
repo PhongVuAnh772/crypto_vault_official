@@ -318,15 +318,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
   }, [accountProtocolSelected, listToken]);
 
   const goToSendScreen = () => {
-    if (protocolBaseData?.isDefault || blockTonTransfer) {
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-        contentOffSet: contentOffsetToast,
-      });
-      return;
-    }
-
     dispatch(setTransferSlip0044(Slip0044.Ton));
 
     const nativeCoinCryptoData = listCryptoData?.find((e) => e.isNative);

@@ -1,67 +1,190 @@
-import { StyleSheet } from 'react-native';
-import { EdgeInsets } from 'react-native-safe-area-context';
-import appColors from 'src/core/constants/AppColors';
-import appStyles from 'src/core/styles';
-import { AppThemeType } from 'src/core/type/ThemeType';
-import GlobalUtils from 'src/core/utils/globalUtils';
+import { Dimensions, StyleSheet } from "react-native";
+import { EdgeInsets } from "react-native-safe-area-context";
+import appColors from "src/core/constants/AppColors";
+import appStyles from "src/core/styles";
+import { AppThemeType } from "src/core/type/ThemeType";
+import GlobalUtils from "src/core/utils/globalUtils";
+
+const { width } = Dimensions.get("window");
+const NUM_COLUMNS = 3; // số cột muốn hiển thị
+const H_PADDING = 16; // = container.paddingHorizontal
+const GAP = 8; // khoảng cách giữa các ô
+const ITEM_WIDTH =
+  (width - H_PADDING * 2 - GAP * (NUM_COLUMNS - 1)) / NUM_COLUMNS;
 
 const useStyle = (theme: AppThemeType, insets: EdgeInsets) =>
-    StyleSheet.create({
-        button: {
-            backgroundColor: theme.colors.surface_surface_brand,
-            width: '100%',
-        },
-        secretPhraseItem: {
-            padding: 5,
-            ...appStyles.flex1,
-            ...appStyles.flexRow,
-        },
-        newSecretPhraseItem: {
-            padding: 5,
-            ...appStyles.flex1,
-            ...appStyles.flexRow,
-            position: 'absolute',
-            zIndex: 2,
-        },
-        secretPhraseItemViewIndex: {
-            ...appStyles.center,
-            height: 40,
-            width: GlobalUtils.getEnableRedXNewTheme() ? 26 : 32,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? undefined
-                : theme.colors.surface_surface_high,
-            borderTopLeftRadius: 4,
-            borderBottomLeftRadius: 4,
-            marginRight: 2,
-        },
-        secretPhraseItemViewPhrase: {
-            ...appStyles.center,
-            height: 40,
-            width: 75,
-            paddingRight: 5,
-        },
-        secretPhraseItemViewPhrase2: {
-            ...appStyles.justifyContentCenter,
-            paddingLeft: GlobalUtils.getEnableRedXNewTheme() ? 0 : 8,
-            height: 40,
-            width: '100%',
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? undefined
-                : theme.colors.surface_surface_high,
-            borderBottomRightRadius: 4,
-            borderTopRightRadius: 4,
-        },
-        newThemeOpacity: {
-            ...StyleSheet.absoluteFillObject,
-        },
-        viewButton: {
-            ...appStyles.pH25,
-            paddingBottom: insets?.bottom,
-            paddingTop: 10,
-        },
-        description: {
-            backgroundColor: appColors.other.transparentNewUI,
-            paddingVertical: 16,
-        },
-    });
+  StyleSheet.create({
+    secretPhraseItem: {
+      padding: 5,
+      ...appStyles.flex1,
+      ...appStyles.flexRow,
+    },
+    newSecretPhraseItem: {
+      padding: 5,
+      ...appStyles.flex1,
+      ...appStyles.flexRow,
+      position: "absolute",
+      zIndex: 2,
+    },
+    secretPhraseItemViewIndex: {
+      ...appStyles.center,
+      height: 40,
+      width: GlobalUtils.getEnableRedXNewTheme() ? 26 : 32,
+      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
+        ? undefined
+        : theme.colors.surface_surface_high,
+      borderTopLeftRadius: 4,
+      borderBottomLeftRadius: 4,
+      marginRight: 2,
+    },
+    secretPhraseItemViewPhrase: {
+      ...appStyles.center,
+      height: 40,
+      width: 75,
+      paddingRight: 5,
+    },
+    secretPhraseItemViewPhrase2: {
+      ...appStyles.justifyContentCenter,
+      paddingLeft: GlobalUtils.getEnableRedXNewTheme() ? 0 : 8,
+      height: 40,
+      width: "100%",
+      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
+        ? undefined
+        : theme.colors.surface_surface_high,
+      borderBottomRightRadius: 4,
+      borderTopRightRadius: 4,
+    },
+    newThemeOpacity: {
+      ...StyleSheet.absoluteFillObject,
+    },
+    viewButton: {
+      ...appStyles.pH25,
+      paddingBottom: insets?.bottom,
+      paddingTop: 10,
+    },
+    description: {
+      backgroundColor: appColors.other.transparentNewUI,
+      paddingVertical: 16,
+    },
+    container: {
+      flex: 1,
+      backgroundColor: "white",
+      paddingHorizontal: H_PADDING,
+    },
+    button: {
+      width: "100%",
+    },
+    inputContainer: {
+      marginVertical: 4,
+      backgroundColor: "#F7F7FA",
+      height: 300,
+      paddingHorizontal: 6,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    secretContainer: {
+      marginVertical: 4,
+      backgroundColor: "#F7F7FA",
+      height: 300,
+      paddingHorizontal: 6,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    inputSecret: {
+      marginVertical: 4,
+      backgroundColor: "white",
+      paddingHorizontal: 6,
+      paddingVertical: 6,
+      borderRadius: 8,
+      width: "32%",
+      height: 50,
+      borderWidth: 1,
+      borderColor: "#C9D6FF",
+    },
+    input: {
+      height: 40,
+      ...appStyles.center,
+      paddingVertical: 12,
+      paddingHorizontal: 8,
+      textAlignVertical: "top",
+      fontSize: 16,
+    },
+    newInput: {
+      height: 40,
+      flex: 1,
+      ...appStyles.center,
+      textAlignVertical: "center",
+      paddingVertical: 12,
+    },
+    pasteButton: {
+      position: "absolute",
+      width: 70,
+    },
+    suggestionBar: {
+      ...appStyles.flexRow,
+      backgroundColor: "rgba(51, 52, 52, 0.6)",
+    },
+    suggestionItem: {
+      padding: 10,
+      marginRight: 10,
+      backgroundColor: "#fff",
+      borderRadius: 5,
+    },
+    grid: {
+      flexGrow: 1,
+    },
+    indexView: {
+      borderTopLeftRadius: 4,
+      borderBottomLeftRadius: 4,
+      paddingLeft: 2,
+    },
+    newIndexView: {
+      ...appStyles.center,
+      ...appStyles.pd10,
+      borderTopLeftRadius: 4,
+      borderBottomLeftRadius: 4,
+      minWidth: 35,
+    },
+    item: {
+      width: ITEM_WIDTH,
+      marginBottom: GAP,
+    },
+    itemContent: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    itemContainer: {
+      ...appStyles.flexRow,
+      position: "absolute",
+      zIndex: 2,
+    },
+    buttonContainer: {
+      position: "absolute",
+      left: 0,
+      bottom: 0,
+      width: "100%",
+    },
+    header: {
+      backgroundColor: appColors.main.tokyoRed,
+      marginHorizontal: 0,
+      paddingHorizontal: 25,
+    },
+    row: {
+      flexDirection: "row",
+      alignItems: "center",
+    },
+    infoIcon: {
+      marginLeft: 4,
+      marginTop: 2,
+    },
+    secretPhraseContainer: {
+      flex: 1,
+      marginTop: 16,
+    },
+  });
 export default useStyle;
