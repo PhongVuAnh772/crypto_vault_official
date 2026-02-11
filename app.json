@@ -16,7 +16,6 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon_app.png",
-        "googleServicesFile": "./android/app/google-services.json",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -27,38 +26,38 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-   "plugins": [
-           [
-              "expo-av",
-              {
-                "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
-              }
-            ],
-            "expo-asset",
-            [
-                "react-native-permissions",
-                {
-                    "iosPermissions": ["Camera"]
-                }
-            ],
-            [
-                "expo-dev-launcher",
-                {
-                    "launchMode": "most-recent"
-                }
-            ],
-            "expo-router",
-            
-            "@react-native-firebase/app",
-            "@react-native-firebase/crashlytics",
-            [
-                "expo-build-properties",
-                {
-                    "ios": {
-                        "useFrameworks": "static"
-                    }
-                }
-            ]
-        ]
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      "expo-asset",
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": ["Camera"]
+        }
+      ],
+      [
+        "expo-dev-launcher",
+        {
+          "launchMode": "most-recent"
+        }
+      ],
+      "expo-router",
+
+      "@react-native-firebase/app",
+      "@react-native-firebase/crashlytics",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
   }
 }

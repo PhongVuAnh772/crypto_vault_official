@@ -181,9 +181,22 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
 
         <View style={[appStyles.flexRow, styles.iconContainer]}>
           {titleI18N === LanguageKey.home_tab_nft_collection_title && (
-            <TouchableOpacity onPress={handleOnPressImport} style={styles.ml8}>
-              <AddFillSvgIcon fill={"red"} width="24" height="24" />
-            </TouchableOpacity>
+            <View style={[appStyles.flexRow]}>
+              <TouchableOpacity
+                onPress={handleOnPressImport}
+                style={styles.ml8}
+              >
+                <AddFillSvgIcon fill={"red"} width="24" height="24" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.navigate(HomeStackScreenKey.MintNftScreen);
+                }}
+                style={styles.ml8}
+              >
+                <AddFillSvgIcon fill={"red"} width="24" height="24" />
+              </TouchableOpacity>
+            </View>
           )}
           {titleI18N === LanguageKey.home_tab_explore_title && (
             <View style={appStyles.flexRow}>
@@ -311,7 +324,7 @@ export const renderHeaderTabbar = (
   options: BottomTabNavigationOptions,
   navigation: BottomTabNavigationProp<ParamListBase>,
   route: RouteProp<ParamListBase, string>,
-  insets: EdgeInsets
+  insets: EdgeInsets,
 ) => {
   const titleI18N = getHeaderTitle(options, route.name);
   return (

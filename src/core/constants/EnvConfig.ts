@@ -36,4 +36,7 @@ export default {
   CHANGE_NOW_BASE_URL: process.env.CHANGE_NOW_BASE_URL ?? "",
   CHANGE_NOW_API_KEY: process.env.CHANGE_NOW_API_KEY ?? "",
   CHANGE_NOW_PARTNER_KEY: process.env.CHANGE_NOW_PARTNER_KEY ?? "",
+  PINATA_API_KEY: process.env.PINATA_API_KEY ?? "",
+  PINATA_API_SECRET: process.env.PINATA_API_SECRET ?? "",
+  TON_API_KEY: process.env.TON_API_KEY ?? "",
 };

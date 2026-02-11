@@ -83,5 +83,11 @@
     <string>Automatic</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-6813154663029543~3796647184</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow photo access</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow camera access</string>
   </dict>
 </plist>

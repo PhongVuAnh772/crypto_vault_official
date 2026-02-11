@@ -78,6 +78,7 @@ enum HomeStackScreenKey {
   BrowseScreen = "BrowseScreen",
   Scan = "Scan",
   ScanEvm = "ScanEvm",
+  MintNftScreen = "MintNftScreen",
 }
 
 enum CreateWalletStackScreenKey {

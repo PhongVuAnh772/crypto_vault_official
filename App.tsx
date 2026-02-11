@@ -18,9 +18,11 @@ import Main from "src/main";
 import "./reanimatedConfig";
 import AppI18Next from "./src/core/locales";
 require("buffer"); // for TON SDK
+
 export default function App() {
   LogBox.ignoreAllLogs();
   Utils.logConfig();
+
   return (
     <GestureHandlerRootView style={appStyles.flex1}>
       <Provider store={store}>
