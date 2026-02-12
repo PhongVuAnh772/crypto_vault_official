@@ -3,15 +3,14 @@ import { TonClient } from "@ton/ton";
 export class TonClientService {
   private static client: TonClient;
 
-  static get(testnet = true) {
+  static get(testnet = false) {
     if (!this.client) {
-      const base = testnet
-        ? "https://testnet.toncenter.com"
-        : "https://toncenter.com";
+      const base = "https://toncenter.com";
 
       this.client = new TonClient({
         endpoint: `${base}/api/v2/jsonRPC`,
-        apiKey: process.env.TONCENTER_API_KEY,
+        apiKey:
+          "bab534075fdbdeb5dc0823588d81fb3dab99eecebe853cee1ffb8714e1d086f8",
       });
     }
 

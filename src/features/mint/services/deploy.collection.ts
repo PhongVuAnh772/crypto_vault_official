@@ -8,17 +8,15 @@ export class CollectionDeployService {
     const collection = new NftCollection({
       ownerAddress: wallet.contract.address,
       nextItemIndex: 0,
-      collectionContentUrl: "ipfs://collection.json",
-      commonContentUrl: "ipfs://",
+      collectionContentUrl: "ipfs://HASH/collection.json",
+      commonContentUrl: "ipfs://HASH/",
       royaltyAddress: wallet.contract.address,
-      royaltyPercent: 5,
+      royaltyPercent: 0.05,
     });
 
     console.log("Collection address:", collection.address.toString());
 
     const seqno = await collection.deploy(wallet);
-
-    await WalletService.waitSeqno(wallet, seqno);
 
     console.log("Collection deployed ✅");
 

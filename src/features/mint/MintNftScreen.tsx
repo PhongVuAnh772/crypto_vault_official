@@ -19,18 +19,18 @@ export default function MintNftScreen() {
   const [loading, setLoading] = useState(false);
 
   const mnemonic = [
-    "replace",
-    "gain",
-    "photo",
-    "one",
-    "rapid",
-    "cool",
-    "luggage",
-    "stay",
-    "dwarf",
-    "bridge",
-    "tattoo",
-    "silly",
+    "step",
+    "camp",
+    "taste",
+    "client",
+    "clutch",
+    "tiny",
+    "coast",
+    "dilemma",
+    "butter",
+    "nose",
+    "lounge",
+    "meat",
   ];
 
   const pickImage = async () => {

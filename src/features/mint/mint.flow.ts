@@ -1,6 +1,7 @@
-import { Address, beginCell, internal, toNano } from "@ton/core";
+import { Address, beginCell, internal, SendMode, toNano } from "@ton/core";
 import { PinataService } from "./services/pinata.service";
 import { WalletService } from "./services/wallet.service";
+import { CollectionDeployService } from "./services/deploy.collection";
 
 export class MintFlow {
   static async mintNFT(params: {
@@ -8,17 +9,9 @@ export class MintFlow {
     mnemonic: string[];
     name: string;
     description: string;
-    collectionAddress: string;
+    collectionAddress?: string;
   }) {
-    // =========================
-    // STEP 1 — upload image
-    // =========================
-
     const imageHash = await PinataService.uploadFile(params.imageUri);
-
-    // =========================
-    // STEP 2 — upload metadata
-    // =========================
 
     const metadata = {
       name: params.name,
@@ -26,56 +19,54 @@ export class MintFlow {
       image: `ipfs://${imageHash}`,
     };
 
-    console.log(`imageHash ${imageHash}`);
-
     const metaHash = await PinataService.uploadJSON(metadata);
     const metaUri = `ipfs://${metaHash}`;
 
-    // // =========================
-    // // STEP 3 — open wallet
-    // // =========================
-
     const wallet = await WalletService.open(params.mnemonic);
-
+    console.log(
+      `wallet.contract.getBalance() ${wallet.contract.getBalance().then((e) => {
+        console.log(e.toString());
+      })}`,
+    );
     const seqno = await wallet.contract.getSeqno();
+    console.log(seqno);
 
-    // // =========================
-    // // STEP 4 — build mint body
-    // // =========================
-    // // op = 1 → mint (theo chuẩn tutorial TON)
+    let collectionAddr = params.collectionAddress;
+
+    if (!collectionAddr) {
+      console.log("Deploying collection...");
+      collectionAddr = await CollectionDeployService.deploy(params.mnemonic);
+    }
+
+    console.log("Using collection:", collectionAddr);
+
     const body = beginCell()
-      .storeUint(1, 32) // op code mint
-      .storeUint(0, 64) // query id
+      .storeUint(1, 32)
+      .storeUint(0, 64)
+      .storeUint(Date.now(), 64)
+      .storeCoins(toNano("0.02"))
       .storeAddress(wallet.contract.address)
       .storeRef(beginCell().storeBuffer(Buffer.from(metaUri)).endCell())
       .endCell();
-
-    // // =========================
-    // // STEP 5 — send tx
-    // // =========================
 
     await wallet.contract.sendTransfer({
       seqno,
       secretKey: wallet.keyPair.secretKey,
       messages: [
         internal({
-          to: Address.parse(params.collectionAddress),
+          to: Address.parse(collectionAddr.trim()),
           value: toNano("0.05"),
           body,
         }),
       ],
+      sendMode: SendMode.CARRY_ALL_REMAINING_BALANCE,
     });
 
-    // // =========================
-    // // STEP 6 — wait confirm
-    // // =========================
-
-    // await WalletService.waitSeqno(wallet, seqno);
-
-    // return {
-    //   imageHash,
-    //   metadataHash: metaHash,
-    //   metadataUri: metaUri,
-    // };
+    return {
+      collectionAddress: collectionAddr,
+      imageHash,
+      metadataHash: metaHash,
+      metadataUri: metaUri,
+    };
   }
 }
