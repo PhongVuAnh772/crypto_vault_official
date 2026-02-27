@@ -1,0 +1,19 @@
+name: Main CI
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "production-*"
+      - "development-*"
+
+jobs:
+  code-quality:
+    name: Code Quality
+    uses: ./.github/workflows/scripts/code-quality.yml
+
+  unit-test:
+    name: Unit Test
+    needs: code-quality
+    uses: ./.github/workflows/scripts/unit-test.yml

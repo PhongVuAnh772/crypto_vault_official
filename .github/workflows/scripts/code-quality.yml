@@ -1,0 +1,20 @@
+name: Code Quality
+
+on:
+  workflow_call:
+
+jobs:
+  run:
+    runs-on: [self-hosted, g3-runner]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: |
+          echo "/opt/homebrew/bin:/opt/homebrew/opt/ruby/bin" >> $GITHUB_PATH
+
+      - run: ~/bin/download-secure-files || true
+
+      - run: |
+          chmod +x scripts/deployment/common/check-code-quality.sh
+          scripts/deployment/common/check-code-quality.sh $GITHUB_WORKSPACE
