@@ -12,7 +12,7 @@ export class MintFlow {
     collectionAddress?: string;
   }) {
     const imageHash = await PinataService.uploadFile(params.imageUri);
-
+    // const imageHash = await PinataService.uploadFile(params.imageUri);
     const metadata = {
       name: params.name,
       description: params.description,
