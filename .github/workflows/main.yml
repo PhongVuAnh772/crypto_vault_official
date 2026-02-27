@@ -11,9 +11,9 @@ on:
 jobs:
   code-quality:
     name: Code Quality
-    uses: ./.github/workflows/scripts/code-quality.yml
+    uses: ./.github/workflows/code-quality.yml
 
   unit-test:
     name: Unit Test
     needs: code-quality
-    uses: ./.github/workflows/scripts/unit-test.yml
+    uses: ./.github/workflows/unit-test.yml
