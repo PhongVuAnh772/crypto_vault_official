@@ -22,4 +22,5 @@ export const appImages = {
   newBg: require("../../assets/images/bg.png"),
   newBgDark: require("../../assets/images/bg_new.png"),
   fgCard: require("../../assets/images/fg_card.png"),
+  newBackground2: require("../../assets/images/background_newest.png"),
 };

@@ -3,54 +3,53 @@ import { StyleSheet, View } from "react-native";
 import LinearGradient from "react-native-linear-gradient";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import {
-    ClockFocusSvgIcon,
-    ClockUnFocusSvgIcon,
-    ExploreFocusSvgIcon,
-    ExploreUnFocusSvgIcon,
-    HomeFocusSvgIcon,
-    HomeUnFocusSvgIcon,
-    NftFocusSvgIcon,
-    NftUnFocusSvgIcon,
-    SettingFocusSvgIcon,
-    SettingUnFocusSvgIcon,
+  ClockFocusSvgIcon,
+  ClockUnFocusSvgIcon,
+  ExploreFocusSvgIcon,
+  ExploreUnFocusSvgIcon,
+  HomeFocusSvgIcon,
+  HomeUnFocusSvgIcon,
+  NftFocusSvgIcon,
+  NftUnFocusSvgIcon,
+  SettingFocusSvgIcon,
+  SettingUnFocusSvgIcon,
 } from 'src/core/constants/AppIconsSvg';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import { BottomTabScreenKey } from 'src/navigation/enum/NavigationKey';
 
-
 const HomeIcon = ({focused}: {focused: boolean}) => {
     return focused ? (
-      <HomeFocusSvgIcon color={"white"} />
+      <HomeFocusSvgIcon color={"#C4B5FD"} />
     ) : (
-      <HomeUnFocusSvgIcon color={"white"} />
+      <HomeUnFocusSvgIcon color={"#A1A1AA"} />
     );
 };
 const NftIcon = ({focused}: {focused: boolean}) => {
     return focused ? (
-      <NftFocusSvgIcon color={"white"} />
+      <NftFocusSvgIcon color={"#C4B5FD"} />
     ) : (
-      <NftUnFocusSvgIcon color={"white"} />
+      <NftUnFocusSvgIcon color={"#A1A1AA"} />
     );
 };
 const TransactionIcon = ({focused}: {focused: boolean}) => {
     return focused ? (
-      <ClockFocusSvgIcon color={"white"} />
+      <ClockFocusSvgIcon color={"#C4B5FD"} />
     ) : (
-      <ClockUnFocusSvgIcon color={"white"} />
+      <ClockUnFocusSvgIcon color={"#A1A1AA"} />
     );
 };
 const ExploreIcon = ({focused}: {focused: boolean}) => {
     return focused ? (
-      <ExploreFocusSvgIcon color={"white"} />
+      <ExploreFocusSvgIcon color={"#C4B5FD"} />
     ) : (
-      <ExploreUnFocusSvgIcon />
+      <ExploreUnFocusSvgIcon color={"#A1A1AA"} />
     );
 };
 const SettingIcon = ({focused}: {focused: boolean}) => {
     return focused ? (
-      <SettingFocusSvgIcon color={"white"} />
+      <SettingFocusSvgIcon color={"#C4B5FD"} />
     ) : (
-      <SettingUnFocusSvgIcon color={"white"} />
+      <SettingUnFocusSvgIcon color={"#A1A1AA"} />
     );
 };
 

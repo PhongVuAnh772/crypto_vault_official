@@ -15,6 +15,7 @@ import SelectTokenEVM from "src/features/home/evm/selectToken/selectToken.view";
 import TokenDetailEVM from "src/features/home/evm/tokenDetail/token.detail.view";
 import ManageCryptoScreen from "src/features/home/manageCrypto/manageCrypto.view";
 import AddProtocol from "src/features/home/manageProtocol/addProtocol/addProtocol.view";
+import MoreActionScreen from "src/features/home/moreAction/index.view";
 import NFTConfirmationSend from "src/features/home/NFTCollection/evm/NFTConfirmationSendNFT/NFTConfirmationSendNFT.view";
 import NFTDetail from "src/features/home/NFTCollection/evm/NFTDetail/NFTDetail.view";
 import NFTImport from "src/features/home/NFTCollection/evm/NFTImport/NFTImport.view";
@@ -130,7 +131,13 @@ const HomeStack = () => {
           <Stack.Screen
             name={HomeStackScreenKey.MintNftScreen}
             component={MintNftScreen}
+            
           />
+          <Stack.Screen
+            name={HomeStackScreenKey.MoreActionScreen}
+            component={MoreActionScreen}
+          />
+          
           <Stack.Screen
             name={HomeStackScreenKey.BottomTab}
             component={BottomTab}

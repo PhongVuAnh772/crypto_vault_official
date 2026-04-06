@@ -17,7 +17,7 @@ enum HomeStackScreenKey {
   Transfer = "Transfer",
   BottomTab = "BottomTab",
   Bitcoin = "Bitcoin",
-  ChatScreen="ChatScreen",
+  ChatScreen = "ChatScreen",
   Ton = "Ton",
   Jetton = "Jetton",
   TransactionDetails = "TransactionDetails",
@@ -80,6 +80,7 @@ enum HomeStackScreenKey {
   Scan = "Scan",
   ScanEvm = "ScanEvm",
   MintNftScreen = "MintNftScreen",
+  MoreActionScreen = "MoreActionScreen",
 }
 
 enum CreateWalletStackScreenKey {

@@ -124,7 +124,7 @@ const AppTabBar = ({
                       return route.name; // dùng i18n
                   }
                 })()}
-                textColor={'white'}
+                textColor={isFocused ? '#C4B5FD' : '#A1A1AA'}
                 variant={TextVariantKeys.labelTiny}
               />
             )}

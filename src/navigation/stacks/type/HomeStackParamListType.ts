@@ -48,6 +48,7 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.ChangePincode]: ReceiveParamListType;
   [HomeStackScreenKey.NFTDetail]: NFTData;
   [HomeStackScreenKey.NFTList]: NFTCollection;
+  [HomeStackScreenKey.MoreActionScreen]: undefined;
   [HomeStackScreenKey.NFTImport]: undefined;
   [HomeStackScreenKey.NFTSend]: NFTData;
   [HomeStackScreenKey.NFTConfirmationSend]: NFTConfirmationSendParamsType;

@@ -7,8 +7,6 @@ import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
 import BalanceRedX from "./BalanceBox";
-import WalletActions from "./WalletActions";
-import WalletInfo from "./WalletInfo";
 
 type HomeHeaderType = {
   walletData?: AddressListItemType;
@@ -21,6 +19,7 @@ type HomeHeaderType = {
   gotoScan: () => void;
   withoutCurrencyRate?: boolean;
   hiddenScan?: boolean;
+  goToMoreActionScreen: () => void;
 };
 
 const HomeHeader: React.FC<HomeHeaderType> = ({
@@ -34,6 +33,7 @@ const HomeHeader: React.FC<HomeHeaderType> = ({
   gotoScan,
   withoutCurrencyRate = false,
   hiddenScan,
+  goToMoreActionScreen,
 }) => {
   const theme = useAppTheme();
 
@@ -49,7 +49,7 @@ const HomeHeader: React.FC<HomeHeaderType> = ({
   return (
     <View style={[styles.walletView]}>
       <View onLayout={handleLayout} style={styles.headerContainer}>
-        <View
+        {/* <View
           style={[
             appStyles.flexRow,
             appStyles.justifyContentBetween,
@@ -69,15 +69,13 @@ const HomeHeader: React.FC<HomeHeaderType> = ({
             goToScan={gotoScan}
             hiddenScan={hiddenScan}
           />
-        </View>
+        </View> */}
 
         <View style={[appStyles.flex1, appStyles.flexRow]}>
           <BalanceRedX
             balance={balance}
             withoutCurrencyRate={withoutCurrencyRate}
           />
-          {/* <View style={styles.separator} />
-                    <RezPointBalance navigation={navigation} /> */}
         </View>
         <ActionComponent
           sendAction={goToSendScreen}
@@ -85,6 +83,7 @@ const HomeHeader: React.FC<HomeHeaderType> = ({
           style={[styles.containerAction]}
           stakeAction={goToStakeScreen}
           isHome={true}
+          moreAction={goToMoreActionScreen}
         />
       </View>
     </View>

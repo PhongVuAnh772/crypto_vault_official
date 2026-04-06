@@ -90,7 +90,7 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
       paddingTop
       paddingBottom
       backgroundImage={getBackgroundImage()}
-      subStyle={[appStyles.pH25, appStyles.flex1, appStyles.mt30]}
+      subStyle={[appStyles.pH15, appStyles.flex1, appStyles.mt30]}
     >
       <ScrollView
         refreshControl={
@@ -113,6 +113,7 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
             withoutCurrencyRate={true}
             gotoScan={() => navigation.navigate(HomeStackScreenKey.ScanScreen)}
             hiddenScan={true}
+            goToMoreActionScreen={() => navigation.navigate(HomeStackScreenKey.MoreActionScreen)}
           />
           <ListCrypto
             cryptoDataLists={listCryptoData}

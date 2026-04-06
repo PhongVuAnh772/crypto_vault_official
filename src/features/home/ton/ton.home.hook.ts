@@ -436,7 +436,7 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceState]);
   const getBackgroundImage = () => {
-    return lightMode ? appImages.background1Dark : appImages.background1;
+    return lightMode ? appImages.newBackground2 : appImages.newBackground2;
   };
 
   return {
