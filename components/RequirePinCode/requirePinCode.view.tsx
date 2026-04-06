@@ -2,14 +2,13 @@ import AppText from "components/AppText";
 import React from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
-import TextVariantKeys from "src/core/constants/TextVariantKeys";
+import PinCodeInput from "src/components/common/PinCodeInput";
+import appColors from "src/core/constants/AppColors";
+import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import appStyles from "src/core/styles";
-import PinCodeInput from "src/features/components/PinCode";
-import { AppThemeType } from "src/type/ThemeType";
-import Utils from "src/utils/commonUtils";
+import Utils from "src/core/utils/commonUtils";
 import CountdownTimer from "./CountdownTimer";
 import useRequirePinCode from "./requirePinCode.hook";
-import appColors from "src/core/constants/AppColors";
 
 type RequirePinCodeLayoutType = {
   headerTitle?: string;
@@ -52,7 +51,7 @@ const RequirePinCodeLayout: React.FC<RequirePinCodeLayoutType> = ({
   const header = (
     <AppText
       titleWithI18n={headerTitle}
-      variant={TextVariantKeys.TitleMedium}
+      variant={TextVariantKeys.titleMedium}
       styles={appStyles.textAlignCenter}
       textColor={appColors.neutral.black}
     />

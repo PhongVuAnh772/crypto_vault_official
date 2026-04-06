@@ -1,71 +1,181 @@
-import { Address, beginCell, internal, SendMode, toNano } from "@ton/core";
-import { PinataService } from "./services/pinata.service";
-import { WalletService } from "./services/wallet.service";
-import { CollectionDeployService } from "./services/deploy.collection";
+import {
+  Address,
+  beginCell,
+  internal,
+  SendMode,
+  toNano,
+  fromNano,
+  OpenedContract,
+  Sender,
+  Contract,
+} from "@ton/core";
+
+import { TonClient, WalletContractV5R1 } from "@ton/ton";
+
+import { TonApiClient } from "@ton-api/client";
+import { ContractAdapter } from "@ton-api/ton-adapter";
+
+import { NftCollection } from "./contracts/nftCollection";
+import { waitSeqnoIncrease } from "./tx.utils";
+
+/* =======================================================
+   TON API SERVICE
+======================================================= */
+
+class TonApiService {
+  /* ---------- READ (TONAPI) ---------- */
+
+  private static readonly apiClient = new TonApiClient({
+    baseUrl: "https://tonapi.io",
+    apiKey:
+      "AEOBPSNAUIB7IZAAAAAJ4WOBCSRCBKM2IUD2BKZPBEPKOW4XUMDLCIRGPWCJYSTSOCKUMGI",
+  });
+
+  private static readonly adapter = new ContractAdapter(
+    TonApiService.apiClient,
+  );
+
+  static openRead<T extends Contract>(contract: T): OpenedContract<T> {
+    return this.adapter.open(contract);
+  }
+
+  /* ---------- WRITE (TON RPC) ---------- */
+
+  private static readonly tonClient = new TonClient({
+    endpoint: "https://toncenter.com/api/v2/jsonRPC",
+    apiKey: "bab534075fdbdeb5dc0823588d81fb3dab99eecebe853cee1ffb8714e1d086f8",
+  });
+
+  static openWrite<T extends Contract>(contract: T): OpenedContract<T> {
+    return this.tonClient.open(contract);
+  }
+}
+
+/* =======================================================
+   COLLECTION DEPLOY SERVICE
+======================================================= */
+
+class CollectionDeployService {
+  static async deploy(
+    wallet: OpenedContract<WalletContractV5R1>,
+    oldSeqno: number,
+    sender: Sender,
+    ownerAddress: Address,
+    royaltyAddress: Address,
+  ): Promise<string> {
+    console.log("🚀 Deploying collection...");
+
+    const collection = new NftCollection({
+      ownerAddress,
+      nextItemIndex: 0,
+      collectionContentUrl: "ipfs://HASH/collection.json",
+      commonContentUrl: "ipfs://HASH/",
+      royaltyAddress,
+      royaltyPercent: 0.05,
+    });
+
+    const openedCollection = TonApiService.openWrite(collection);
+
+    await openedCollection.deploy(sender);
+    await waitSeqnoIncrease(wallet, oldSeqno);
+
+
+    console.log("✅ Collection deployed:", collection.address.toString());
+
+    return collection.address.toString();
+  }
+}
+
+/* =======================================================
+   MINT FLOW
+======================================================= */
 
 export class MintFlow {
   static async mintNFT(params: {
-    imageUri: string;
-    mnemonic: string[];
+    imageHash: string;
     name: string;
     description: string;
+    publicKey: string;
+    secretKey: Buffer;
+    ownerAddress: string;
     collectionAddress?: string;
   }) {
-    const imageHash = await PinataService.uploadFile(params.imageUri);
-    // const imageHash = await PinataService.uploadFile(params.imageUri);
-    const metadata = {
-      name: params.name,
-      description: params.description,
-      image: `ipfs://${imageHash}`,
-    };
+    const metaUri = "ipfs://METADATA_HASH";
 
-    const metaHash = await PinataService.uploadJSON(metadata);
-    const metaUri = `ipfs://${metaHash}`;
+    /* ---------- CREATE WALLET ---------- */
 
-    const wallet = await WalletService.open(params.mnemonic);
-    console.log(
-      `wallet.contract.getBalance() ${wallet.contract.getBalance().then((e) => {
-        console.log(e.toString());
-      })}`,
-    );
-    const seqno = await wallet.contract.getSeqno();
-    console.log(seqno);
+    const wallet = WalletContractV5R1.create({
+      workchain: 0,
+      publicKey: Buffer.from(params.publicKey, "base64"),
+    });
+
+    const openedWallet = TonApiService.openWrite(wallet);
+    const sender = openedWallet.sender(params.secretKey);
+
+    console.log("Wallet:", wallet.address.toString());
+
+    const seqno = await openedWallet.getSeqno();
+    const balance = await openedWallet.getBalance();
+
+    console.log("Seqno:", seqno);
+    console.log("Balance:", fromNano(balance), "TON");
+
+    if (balance < toNano("0.1")) {
+      throw new Error("Not enough TON");
+    }
+
+    /* ---------- DEPLOY COLLECTION ---------- */
 
     let collectionAddr = params.collectionAddress;
 
     if (!collectionAddr) {
-      console.log("Deploying collection...");
-      collectionAddr = await CollectionDeployService.deploy(params.mnemonic);
+      collectionAddr = await CollectionDeployService.deploy(
+        openedWallet,
+        seqno,
+        sender,
+        Address.parse(params.ownerAddress),
+        Address.parse(params.ownerAddress),
+      );
     }
 
     console.log("Using collection:", collectionAddr);
 
-    const body = beginCell()
-      .storeUint(1, 32)
-      .storeUint(0, 64)
-      .storeUint(Date.now(), 64)
-      .storeCoins(toNano("0.02"))
-      .storeAddress(wallet.contract.address)
+    /* =====================================================
+     ✅ BUILD CORRECT NFT MINT BODY (TEP-62)
+  ===================================================== */
+
+    const nftItemContent = beginCell()
+      .storeAddress(Address.parse(params.ownerAddress))
       .storeRef(beginCell().storeBuffer(Buffer.from(metaUri)).endCell())
       .endCell();
 
-    await wallet.contract.sendTransfer({
-      seqno,
-      secretKey: wallet.keyPair.secretKey,
-      messages: [
-        internal({
-          to: Address.parse(collectionAddr.trim()),
-          value: toNano("0.05"),
-          body,
-        }),
-      ],
-      sendMode: SendMode.CARRY_ALL_REMAINING_BALANCE,
+    const body = beginCell()
+      .storeUint(1, 32) // OP mint
+      .storeUint(0, 64) // query id
+      .storeUint(0, 64) // item index
+      .storeCoins(toNano("0.02")) // TON for NFT item
+      .storeRef(nftItemContent) // ⭐ IMPORTANT
+      .endCell();
+
+    const message = internal({
+      to: Address.parse(collectionAddr),
+      value: toNano("0.05"),
+      body,
     });
+
+    /* ---------- SEND TX ---------- */
+
+    await openedWallet.sendTransfer({
+      seqno,
+      secretKey: params.secretKey,
+      messages: [message],
+      sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS,
+    });
+
+    console.log("✅ NFT Mint TX Sent");
 
     return {
       collectionAddress: collectionAddr,
-      imageHash,
-      metadataHash: metaHash,
       metadataUri: metaUri,
     };
   }

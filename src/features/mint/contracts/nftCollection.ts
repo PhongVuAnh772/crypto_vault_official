@@ -6,17 +6,14 @@ import {
   SendMode,
   Cell,
   toNano,
-  OpenedContract,
+  Sender,
 } from "@ton/core";
 
 import { encodeOffChainContent } from "../utils/ton.utils";
 import { CollectionData, MintParams, OpenedWallet } from "../type/ton.types";
-import { Buffer } from "buffer";
-import { WalletContractV5R1 } from "@ton/ton";
-import { KeyPair } from "@ton/crypto";
 
 export class NftCollection {
-  constructor(private data: CollectionData) {}
+  constructor(private readonly data: CollectionData) {}
 
   // =========================
   // STATE INIT
@@ -37,28 +34,14 @@ export class NftCollection {
   // DEPLOY
   // =========================
 
-  async deploy(wallet: {
-    contract: OpenedContract<WalletContractV5R1>;
-    keyPair: KeyPair;
-  }) {
-    const seqno = await wallet.contract.getSeqno();
-
-    await wallet.contract.sendTransfer({
-      seqno,
-      secretKey: wallet.keyPair.secretKey,
-      messages: [
-        internal({
-          to: this.address,
-          value: toNano("0.05"),
-          init: this.stateInit,
-        }),
-      ],
+  async deploy(sender: Sender) {
+    await sender.send({
+      to: this.address,
+      value: toNano("0.05"),
+      init: this.stateInit,
       sendMode: SendMode.PAY_GAS_SEPARATELY,
     });
-
-    return seqno;
   }
-
   // =========================
   // MINT BODY (DOCS OP=2)
   // =========================

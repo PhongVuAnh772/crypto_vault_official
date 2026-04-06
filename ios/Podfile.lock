@@ -2502,6 +2502,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 8e0eee3463521800cbf40016f2137c694efeaff8
   react-native-ios-context-menu: 3a4f5dc9e0bba345d87211b8c43537d0f35b076a
   react-native-ios-utilities: bce149f17675bb4473081c2e8e1f602f491f868a
+  react-native-keyboard-controller: bf82a8757d44b64912c7c9d2c92580d12e6af3ec
   react-native-menu: c394bbb3578281165d0025e500c9711f164e8fe1
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pager-view: eea83249a6a479e36351281e158be0dec409550a

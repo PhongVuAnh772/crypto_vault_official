@@ -9,8 +9,8 @@ export class TonClientService {
 
       this.client = new TonClient({
         endpoint: `${base}/api/v2/jsonRPC`,
-        apiKey:
-          "bab534075fdbdeb5dc0823588d81fb3dab99eecebe853cee1ffb8714e1d086f8",
+        // apiKey:
+        //   "bab534075fdbdeb5dc0823588d81fb3dab99eecebe853cee1ffb8714e1d086f8",
       });
     }
 
