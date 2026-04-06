@@ -16,6 +16,7 @@ import { ContractAdapter } from "@ton-api/ton-adapter";
 
 import { NftCollection } from "./contracts/nftCollection";
 import { waitSeqnoIncrease } from "./tx.utils";
+import { encodeOffChainContent } from "./utils/ton.utils";
 
 class TonApiService {
   private static readonly apiClient = new TonApiClient({
@@ -91,14 +92,14 @@ export class MintFlow {
   static async mintNFT(params: {
     imageHash: string;
     name: string;
+    metadataHash: string;
     description: string;
     publicKey: string;
     secretKey: Buffer;
     ownerAddress: string;
     collectionAddress?: string;
   }) {
-    const metaUri = "ipfs://METADATA_HASH";
-
+    const metaUri = `ipfs://${params.metadataHash}`;
     const wallet = WalletContractV5R1.create({
       workchain: 0,
       publicKey: Buffer.from(params.publicKey, "base64"),
@@ -133,9 +134,7 @@ export class MintFlow {
 
     console.log("Using collection:", collectionAddr);
 
-
-    const contentCell = beginCell().storeBuffer(Buffer.from(metaUri)).endCell();
-
+const contentCell = encodeOffChainContent(metaUri);
     const nftItemContent = beginCell()
       .storeAddress(Address.parse(params.ownerAddress))
       .storeRef(contentCell)
@@ -160,7 +159,6 @@ export class MintFlow {
       value: toNano("0.07"),
       body,
     });
-
 
     await openedWallet.sendTransfer({
       seqno,

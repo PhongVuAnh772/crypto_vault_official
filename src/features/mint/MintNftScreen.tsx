@@ -63,6 +63,12 @@ export default function MintNftScreen() {
       /* ---------- Upload image ---------- */
       const imageHash = await PinataService.uploadFile(imageUri);
 
+      const metadataHash = await PinataService.uploadJSON({
+        name,
+        description: desc,
+        image: `ipfs://${imageHash}`,
+      });
+
       /* ---------- Mint ---------- */
        const getSecretKey = TonUtils.merKeyToGetSecretKey(
          tonAddressData.privateKey,
@@ -72,10 +78,10 @@ export default function MintNftScreen() {
         imageHash,
         name,
         description: desc,
+        metadataHash,
         publicKey: tonAddressData.publicKey,
         secretKey: getSecretKey,
         ownerAddress: tonAddressData.address,
-        collectionAddress: "EQApuxGj7u6InoEKfIdnsva3qdceUSBw-mitiMPMu7Q5LnMU",
       });
 
       Alert.alert("Mint thành công 🎉", JSON.stringify(result, null, 2));
