@@ -18,6 +18,36 @@ export class NftCollection {
   // =========================
   // STATE INIT
   // =========================
+  async getCollectionData(provider: any) {
+    const res = await provider.get("get_collection_data", []);
+
+    const nextItemIndex = res.stack.readBigNumber();
+    const contentCell = res.stack.readCell();
+    const ownerAddress = res.stack.readAddress();
+
+    return {
+      nextItemIndex,
+      ownerAddress,
+      contentCell,
+    };
+  }
+  static createFromAddress(address: Address): NftCollection {
+    const dummy: CollectionData = {
+      ownerAddress: address,
+      nextItemIndex: 0,
+      collectionContentUrl: "",
+      commonContentUrl: "",
+      royaltyAddress: address,
+      royaltyPercent: 0,
+    };
+
+    const instance = new NftCollection(dummy);
+
+    // override address getter runtime
+    (instance as any)._externalAddress = address;
+
+    return instance;
+  }
 
   get stateInit() {
     return {

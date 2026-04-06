@@ -11,20 +11,13 @@ import {
 } from "@ton/core";
 
 import { TonClient, WalletContractV5R1 } from "@ton/ton";
-
 import { TonApiClient } from "@ton-api/client";
 import { ContractAdapter } from "@ton-api/ton-adapter";
 
 import { NftCollection } from "./contracts/nftCollection";
 import { waitSeqnoIncrease } from "./tx.utils";
 
-/* =======================================================
-   TON API SERVICE
-======================================================= */
-
 class TonApiService {
-  /* ---------- READ (TONAPI) ---------- */
-
   private static readonly apiClient = new TonApiClient({
     baseUrl: "https://tonapi.io",
     apiKey:
@@ -39,7 +32,6 @@ class TonApiService {
     return this.adapter.open(contract);
   }
 
-  /* ---------- WRITE (TON RPC) ---------- */
 
   private static readonly tonClient = new TonClient({
     endpoint: "https://toncenter.com/api/v2/jsonRPC",
@@ -49,11 +41,20 @@ class TonApiService {
   static openWrite<T extends Contract>(contract: T): OpenedContract<T> {
     return this.tonClient.open(contract);
   }
-}
 
-/* =======================================================
-   COLLECTION DEPLOY SERVICE
-======================================================= */
+  static async getCollectionData(address: Address) {
+    const res = await TonApiService.apiClient.nft.getNftCollection(
+      Address.parse(address.toString()),
+    );
+
+    return {
+      address: res.address,
+      nextItemIndex: BigInt(res.nextItemIndex),
+      owner: res.owner?.address,
+      rawContent: res.rawCollectionContent,
+    };
+  }
+}
 
 class CollectionDeployService {
   static async deploy(
@@ -86,10 +87,6 @@ class CollectionDeployService {
   }
 }
 
-/* =======================================================
-   MINT FLOW
-======================================================= */
-
 export class MintFlow {
   static async mintNFT(params: {
     imageHash: string;
@@ -101,8 +98,6 @@ export class MintFlow {
     collectionAddress?: string;
   }) {
     const metaUri = "ipfs://METADATA_HASH";
-
-    /* ---------- CREATE WALLET ---------- */
 
     const wallet = WalletContractV5R1.create({
       workchain: 0,
@@ -124,8 +119,6 @@ export class MintFlow {
       throw new Error("Not enough TON");
     }
 
-    /* ---------- DEPLOY COLLECTION ---------- */
-
     let collectionAddr = params.collectionAddress;
 
     if (!collectionAddr) {
@@ -140,36 +133,40 @@ export class MintFlow {
 
     console.log("Using collection:", collectionAddr);
 
-    /* =====================================================
-     ✅ BUILD CORRECT NFT MINT BODY (TEP-62)
-  ===================================================== */
+
+    const contentCell = beginCell().storeBuffer(Buffer.from(metaUri)).endCell();
 
     const nftItemContent = beginCell()
       .storeAddress(Address.parse(params.ownerAddress))
-      .storeRef(beginCell().storeBuffer(Buffer.from(metaUri)).endCell())
+      .storeRef(contentCell)
       .endCell();
 
+    const collectionData = await TonApiService.getCollectionData(
+      Address.parse(collectionAddr),
+    );
+
+    const nextIndex = collectionData.nextItemIndex;
+
     const body = beginCell()
-      .storeUint(1, 32) // OP mint
-      .storeUint(0, 64) // query id
-      .storeUint(0, 64) // item index
-      .storeCoins(toNano("0.02")) // TON for NFT item
-      .storeRef(nftItemContent) // ⭐ IMPORTANT
+      .storeUint(1, 32)
+      .storeUint(0, 64)
+      .storeUint(nextIndex, 64)
+      .storeCoins(toNano("0.02"))
+      .storeRef(nftItemContent)
       .endCell();
 
     const message = internal({
       to: Address.parse(collectionAddr),
-      value: toNano("0.05"),
+      value: toNano("0.07"),
       body,
     });
 
-    /* ---------- SEND TX ---------- */
 
     await openedWallet.sendTransfer({
       seqno,
       secretKey: params.secretKey,
       messages: [message],
-      sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS,
+      sendMode: SendMode.PAY_GAS_SEPARATELY,
     });
 
     console.log("✅ NFT Mint TX Sent");
@@ -177,6 +174,7 @@ export class MintFlow {
     return {
       collectionAddress: collectionAddr,
       metadataUri: metaUri,
+      index: nextIndex.toString(),
     };
   }
 }
