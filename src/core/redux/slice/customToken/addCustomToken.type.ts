@@ -28,6 +28,16 @@ export type ChangeActiveTokenType = {
     value: boolean;
 };
 
+export type UpdateNativeBalancePayload = {
+  walletAddress: string;
+  protocolData: {
+    _id: string;
+    slip0044: number;
+  };
+  balance: string; // raw bigint string
+  usd_price: number;
+};
+
 export type ConvertTokenFromBEParamDataType =
     ProtocolDataWithSupportedTokensFormBEType;
 

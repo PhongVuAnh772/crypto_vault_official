@@ -64,39 +64,152 @@ export const defaultSettingCurrency = {
 // MARK: Setting Currency
 
 export const getSettingCurrency = createAsyncThunk(
-    '/app/getSettingCurrency',
-    async (_, { rejectWithValue, dispatch }) => {
-        try {
-            const getSettingCurrencyRes = await sendGet<SettingCurrencyType[]>({
-                endPoint: 'mobile/setting-currency',
-            });
-            const data = getSettingCurrencyRes.data;
-            const resultBase = data?.find(e => e.rate === 1);
-            if (resultBase) {
-                dispatch(setBaseCurrency(resultBase));
-            }
-            return data;
-        } catch (error: any) {
-            return rejectWithValue(error?.response);
-        }
-    },
+  "/app/getSettingCurrency",
+  async (_, { rejectWithValue, dispatch }) => {
+    const MOCK_SETTING_CURRENCIES: SettingCurrencyType[] = [
+      {
+        name: "US Dollar",
+        rate: 1,
+        symbol: "USD",
+        sign: "$",
+      },
+      {
+        name: "Euro",
+        rate: 0.92,
+        symbol: "EUR",
+        sign: "€",
+      },
+      {
+        name: "Vietnamese Dong",
+        rate: 25000,
+        symbol: "VND",
+        sign: "₫",
+      },
+      {
+        name: "Japanese Yen",
+        rate: 155,
+        symbol: "JPY",
+        sign: "¥",
+      },
+      {
+        name: "British Pound",
+        rate: 0.79,
+        symbol: "GBP",
+        sign: "£",
+      },
+    ];
+
+    try {
+      const res = await sendGet<SettingCurrencyType[]>({
+        endPoint: "mobile/setting-currency",
+      });
+
+      const data = res?.data?.length ? res.data : MOCK_SETTING_CURRENCIES;
+
+      // set base currency (rate === 1)
+      const baseCurrency = data.find((e) => e.rate === 1);
+      if (baseCurrency) {
+        dispatch(setBaseCurrency(baseCurrency));
+      }
+
+      return data;
+    } catch (error: any) {
+      // fallback khi lỗi BE
+      const baseCurrency = MOCK_SETTING_CURRENCIES.find((e) => e.rate === 1);
+      if (baseCurrency) {
+        dispatch(setBaseCurrency(baseCurrency));
+      }
+
+      return MOCK_SETTING_CURRENCIES;
+      // ⛔ KHÔNG reject → app vẫn chạy
+    }
+  }
 );
 
 // MARK: Cryptos Currency
 export const getCryptosCurrency = createAsyncThunk(
-    '/app/getCryptosCurrency',
-    async (_, { rejectWithValue, dispatch }) => {
-        try {
-            const getCryptosCurrencyRes = await sendGet<CryptosCurrencyType[]>({
-                endPoint: 'mobile/cryptos/currency',
-            });
-            const data = getCryptosCurrencyRes.data;
-            return data;
-        } catch (error: any) {
-            return rejectWithValue(error?.response);
-        }
-    },
+  "/app/getCryptosCurrency",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await sendGet<CryptosCurrencyType[]>({
+        endPoint: "mobile/cryptos/currency",
+      });
+
+      if (res?.data && res.data.length > 0) {
+        return res.data;
+      }
+
+      // ===== MOCK DATA (fallback) =====
+      return [
+        {
+          name: "Bitcoin",
+          price: 43000,
+          slug: "bitcoin",
+          symbol: "BTC",
+        },
+        {
+          name: "Ethereum",
+          price: 2300,
+          slug: "ethereum",
+          symbol: "ETH",
+        },
+        {
+          name: "BNB",
+          price: 310,
+          slug: "binance-coin",
+          symbol: "BNB",
+        },
+        {
+          name: "Polygon",
+          price: 0.78,
+          slug: "polygon",
+          symbol: "POL",
+        },
+        {
+          name: "Toncoin",
+          price: 2.35,
+          slug: "toncoin",
+          symbol: "TON",
+        },
+      ];
+    } catch (error: any) {
+      // ===== MOCK DATA khi API lỗi =====
+      return [
+        {
+          name: "Bitcoin",
+          price: 43000,
+          slug: "bitcoin",
+          symbol: "BTC",
+        },
+        {
+          name: "Ethereum",
+          price: 2300,
+          slug: "ethereum",
+          symbol: "ETH",
+        },
+        {
+          name: "BNB",
+          price: 310,
+          slug: "binance-coin",
+          symbol: "BNB",
+        },
+        {
+          name: "Polygon",
+          price: 0.78,
+          slug: "polygon",
+          symbol: "POL",
+        },
+        {
+          name: "Toncoin",
+          price: 2.35,
+          slug: "toncoin",
+          symbol: "TON",
+        },
+      ];
+    }
+  }
 );
+
 
 // MARK: Cryptos Currency
 export const resetAllSlice = createAsyncThunk(

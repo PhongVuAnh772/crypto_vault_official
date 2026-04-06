@@ -5,7 +5,6 @@ import AppText from 'src/components/common/AppText';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import styles from './styles';
 
 type HomeButtonWithTitleType = {
@@ -24,9 +23,7 @@ const HomeButtonWithTitle: React.FC<HomeButtonWithTitleType> = props => {
                 onPress={onPress}
                 icon={icon}
                 forceStyles={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? undefined
-                        : [
+                     [
                               styles.buttonAction,
                               {
                                   backgroundColor:
@@ -40,7 +37,7 @@ const HomeButtonWithTitle: React.FC<HomeButtonWithTitleType> = props => {
                 variant={TextVariantKeys.labelTiny}
                 textColor={theme.colors.text_on_surface_text_high}
                 styles={{
-                    marginTop: GlobalUtils.getEnableRedXNewTheme() ? 4 : 0,
+                    marginTop: 0,
                 }}
             />
         </View>

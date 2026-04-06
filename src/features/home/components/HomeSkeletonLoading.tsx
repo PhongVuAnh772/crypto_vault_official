@@ -6,7 +6,6 @@ import { useAppTheme } from "src/core/hooks/useAppTheme";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 
 type HomeSkeletonLoadingType = {
   isLoading: boolean;
@@ -224,16 +223,12 @@ const useStyles = (theme: AppThemeType) =>
     },
     boxActionLoading: {
       height: 80,
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : theme.colors.surface_surface_high,
+      backgroundColor: theme.colors.surface_surface_high,
       borderRadius: 4,
       padding: 12,
     },
     skeletonListContainer: {
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : appColors.neutral.white,
+      backgroundColor:  appColors.neutral.white,
       paddingBottom: 20,
     },
     lineActionBox: {

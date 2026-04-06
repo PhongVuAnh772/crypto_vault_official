@@ -44,64 +44,78 @@ export const swapReducer = createSlice({
 export const { setPinCodeForSwap, setShowPinCodeForAuthSwap } =
     swapReducer.actions;
 
-export const getListPairAvailableThunk = createAsyncThunk(
-    'swap/getListPairAvailable',
-    async (networks: string[], { rejectWithValue }) => {
-        try {
-            const result = await sendGet<CurrencyChangeNow[] | ErrorFromBEType>(
-                {
-                    endPoint: '/mobile/request-changenow/supported-tokens',
-                    params: {
-                        networks: networks.join(','),
-                    },
-                },
-            );
+export const getListPairAvailableThunk = createAsyncThunk<
+  CurrencyChangeNow[], // fulfilled payload
+  string[], // argument
+  { rejectValue: any }
+>("swap/getListPairAvailable", async (networks, { rejectWithValue }) => {
+  try {
+    const result = await sendGet<CurrencyChangeNow[]>({
+      endPoint: "https://api.changenow.io/v2/exchange/currencies",
+      params: {
+        active: true,
+        network: networks.join(","),
+      },
+    });
 
-            if (result.status !== 200) {
-                return rejectWithValue(result.data);
-            }
+    if (result.status !== 200 || !result.data) {
+      return rejectWithValue(result);
+    }
 
-            return result.data as unknown as CurrencyChangeNow[];
-        } catch (error) {
-            console.log('🚀  getListPairAvailableThunk ~ error:', error);
-            return rejectWithValue(error);
-        }
-    },
-);
+    // ✅ luôn return CurrencyChangeNow[]
+    return result.data;
+  } catch (error) {
+    // ✅ catch BẮT BUỘC return
+    return rejectWithValue(error);
+  }
+});
 
-export const getImagePairThunk = createAsyncThunk(
-    'swap/getImagePairThunk',
-    async (_, { rejectWithValue }) => {
-        try {
-            const result = await sendGet<
-                typeof initialState.images | ErrorFromBEType
-            >({
-                endPoint: '/mobile/request-changenow/image',
-            });
+type ImagesMap = Record<string, string>;
 
-            if (result.status !== 200) {
-                return rejectWithValue(result.data);
-            }
+type ChangeNowCurrency = {
+  ticker: string;
+  image?: string;
+};
 
-            return result.data as unknown as typeof initialState.images;
-        } catch (error) {
-            console.log('🚀 ~ error:', error);
-            return rejectWithValue(error);
-        }
-    },
-);
+
+export const getImagePairThunk = createAsyncThunk<
+  ImagesMap, // fulfilled payload
+  void,
+  { rejectValue: unknown }
+>("swap/getImagePairThunk", async (_, { rejectWithValue }) => {
+  try {
+    const result = await sendGet<ChangeNowCurrency[]>({
+      endPoint: "https://api.changenow.io/v2/exchange/currencies",
+      params: {
+        active: true,
+      },
+    });
+
+    if (result.status !== 200 || !result.data) {
+      return rejectWithValue(result);
+    }
+
+    // ✅ build images map
+    const images: ImagesMap = {};
+
+    result.data.forEach((item) => {
+      if (item.ticker && item.image) {
+        images[item.ticker.toLowerCase()] = item.image;
+      }
+    });
+
+    return images;
+  } catch (error) {
+    console.log("🚀 getImagePairThunk error:", error);
+    return rejectWithValue(error);
+  }
+});
 export const getIsShowSwapFromBE = createAsyncThunk(
     'swap/getIsShow',
     async (_, { rejectWithValue }) => {
         try {
-            const result = await sendGet<boolean | ErrorFromBEType>({
-                endPoint: '/mobile/master-data',
-            });
-
-            if (result.status !== 200) {
-                return rejectWithValue(result.data);
-            }
-            return result.data as unknown as boolean;
+           
+            return true;
         } catch (error) {
             console.log('🚀 ~ error:', error);
             return rejectWithValue(error);

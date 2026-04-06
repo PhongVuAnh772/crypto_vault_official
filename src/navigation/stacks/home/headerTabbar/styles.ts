@@ -107,11 +107,9 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             ...appStyles.alignItemsCenter,
             ...appStyles.pH25,
             ...appStyles.fullWidth,
-            marginTop: GlobalUtils.getEnableRedXNewTheme() ? 0 : insets.top,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? insets.top : 0,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.main.tokyoRed
-                : undefined,
+            marginTop: insets.top,
+            paddingTop: 0,
+            backgroundColor: undefined,
         },
         ml8: {
             marginLeft: 8,

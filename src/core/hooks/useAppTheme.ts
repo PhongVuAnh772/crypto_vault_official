@@ -30,9 +30,7 @@ const useAppThemeHook = () => {
     //     return () => themSubscription.remove();
     // }, [dispatch]);
 
-    const barStyleIOS: StatusBarStyle = GlobalUtils.getEnableRedXNewTheme()
-        ? ThemeKey.light
-        : isDarkMode
+    const barStyleIOS: StatusBarStyle = isDarkMode
           ? ThemeKey.light
           : ThemeKey.dark;
     const barStyleAndroid: StatusBarStyle = isDarkMode

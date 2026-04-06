@@ -4,14 +4,12 @@ import { EdgeInsets } from "react-native-safe-area-context";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
 import PinCodeInput from "src/components/common/PinCodeInput";
-import appColors from "src/core/constants/AppColors";
 import { ArrowLeftSvgIcon } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 import CountdownTimer from "./CountdownTimer";
 import useRequirePinCode from "./requirePinCode.hook";
 
@@ -132,9 +130,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
   StyleSheet.create({
     container: {
       position: "absolute",
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? appColors.main.tokyoRed
-        : theme.colors.surface_surface_default,
+      backgroundColor: theme.colors.surface_surface_default,
       width: Utils.screenWidth,
       height: Utils.screenHeight,
       paddingTop: insets.top,
@@ -148,9 +144,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
       ...appStyles.pT60,
       ...appStyles.pH15,
 
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? theme.colors.surface_surface_default
-        : undefined,
+      backgroundColor: undefined,
     },
   });
 

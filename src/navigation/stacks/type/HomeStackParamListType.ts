@@ -55,6 +55,7 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.NotificationDetail]: NotificationDetailParamListType;
   [HomeStackScreenKey.ProjectDetail]: undefined;
   [HomeStackScreenKey.AddProtocol]: undefined;
+  [HomeStackScreenKey.ChatScreen]: undefined;
   [HomeStackScreenKey.SelectTokenEVM]:
     | SupportedTokenItemWithProtocol
     | SupportedNativeTokenWithProtocol;

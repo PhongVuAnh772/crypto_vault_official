@@ -6,7 +6,6 @@ import { ArrowDownSvgIcon } from 'src/core/constants/AppIconsSvg';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import styles from './style';
 
 type FilterSelectorProps = {
@@ -31,9 +30,7 @@ const FilterSelector: React.FC<FilterSelectorProps> = ({
                 variant={TextVariantKeys.labelMedium}
                 styles={[appStyles.textAlignLeft]}
                 textColor={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? appColors.neutral.black
-                        : appColors.neutral.n500
+                    appColors.neutral.n500
                 }
             />
             <TouchableOpacity

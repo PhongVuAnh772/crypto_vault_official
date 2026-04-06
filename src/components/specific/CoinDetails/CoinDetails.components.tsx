@@ -38,7 +38,6 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 import { LoadingSkeletonItemAction } from "src/features/home/components/HomeSkeletonLoading";
 import useStyles from "./CoinDetails.styles";
 import {
@@ -54,18 +53,14 @@ export const EmptyView: React.FC<LoadingViewType> = ({ viewMoreHistory }) => {
       <View style={appStyles.pd10}>
         <EmptySvgIcon
           color={
-            GlobalUtils.getEnableRedXNewTheme()
-              ? appColors.neutral.black
-              : appColors.neutral.n600
+            appColors.neutral.n600
           }
         />
       </View>
       <AppText
         titleWithI18n={LanguageKey.transaction_detail_empty_title}
         textColor={
-          GlobalUtils.getEnableRedXNewTheme()
-            ? appColors.neutral.black
-            : appColors.neutral.n600
+          appColors.neutral.n600
         }
         variant={TextVariantKeys.bodyRMedium}
       />

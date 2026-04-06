@@ -3,9 +3,13 @@ import {
   BottomTabNavigationProp,
 } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
-import { ParamListBase, RouteProp } from "@react-navigation/native";
+import {
+  ParamListBase,
+  RouteProp,
+  StackActions,
+} from "@react-navigation/native";
 import React from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Image, TouchableOpacity, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
@@ -200,29 +204,6 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
           )}
           {titleI18N === LanguageKey.home_tab_explore_title && (
             <View style={appStyles.flexRow}>
-              {/* <TouchableOpacity onPress={() =>
-                                    navigation.navigate(
-                                        HomeStackScreenKey.BrowseScreen,
-                                    )}>
-                                <LanguageSvgIcon
-                                    width="30"
-                                    height="30"
-                                    color={theme.colors.surface_surface_high}
-                                />
-                                 <View
-                                    style={styles.qualityConnect}>
-                                    <AppText
-                                        title={quantityBrowse+''}
-                                        textColor={
-                                            theme.colors
-                                                .text_on_surface_text_brand_2
-                                        }
-                                        variant={TextVariantKeys.bodyMTiny
-
-                                        }
-                                    />
-                                </View>
-                            </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={() =>
                   navigation.navigate(HomeStackScreenKey.ConnectionScreen)
@@ -240,6 +221,22 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
                     variant={TextVariantKeys.bodyMTiny}
                   />
                 </View>
+              </TouchableOpacity>
+            </View>
+          )}
+          {titleI18N === LanguageKey.home_tab_crypto_title && (
+            <View style={[appStyles.flexRow, appStyles.center]}>
+              <TouchableOpacity
+                onPress={() => {
+                  navigation.dispatch(
+                    StackActions.push(HomeStackScreenKey.ChatScreen),
+                  );
+                }}
+              >
+                <Image
+                  source={require("../../../../../assets/images/ai_icons.png")}
+                  style={appStyles.iconCircleSize28}
+                />
               </TouchableOpacity>
             </View>
           )}

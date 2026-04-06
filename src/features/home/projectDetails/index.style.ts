@@ -177,9 +177,7 @@ export const useTabStyles = (theme: AppThemeType, gap = 8) => {
             width: '70%',
         },
         backgroundContainer: {
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? theme.colors.surface_surface_default
-                : undefined,
+            backgroundColor:  undefined,
         },
     });
 };

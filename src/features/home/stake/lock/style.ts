@@ -67,18 +67,14 @@ const useStyle = (theme: AppThemeType, insets?: EdgeInsets) =>
         },
         buttonContainer: {
             position: 'relative',
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 20,
+            paddingBottom: 20,
         },
         boxContainerView: {
             ...appStyles.flex1,
             ...appStyles.pH25,
             ...appStyles.pT15,
             backgroundColor: theme.colors.surface_surface_default,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? 0
-                : insets?.bottom,
+            paddingBottom: insets?.bottom,
         },
     });
 

@@ -39,6 +39,7 @@ const NFTTonConfirmationSend: React.FC<RootNavigationType> = ({
       <ScreenWrapper
         enableHeader
         paddingTop
+        paddingBottom
         headerTitle={t(LanguageKey.common_text_confirmation)}
         headerTextVariant={TextVariantKeys.titleLarge}
         backgroundColor={theme.colors.surface_surface_default}

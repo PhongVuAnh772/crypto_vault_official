@@ -56,26 +56,23 @@ const initialState: BitcoinSliceType = {
 // MARK: Network Fee
 
 export const getNetworkFee = createAsyncThunk(
-    '/home/getNetworkFee',
-    async (_, { rejectWithValue }) => {
-        try {
-            const getNetworkFeeRes = await sendGet<
-                INetworkFeeRes | IBlockcypherErrorRes
-            >({
-                endPoint: 'mobile/btc/info',
-            });
-            if (getNetworkFeeRes.isSuccess) {
-                const data = getNetworkFeeRes.data as INetworkFeeRes;
-                return data;
-            } else {
-                const data = getNetworkFeeRes.data as IBlockcypherErrorRes;
-                return rejectWithValue(data.error);
-            }
-        } catch (error: any) {
-            return rejectWithValue(error?.response);
-        }
-    },
+  "/home/getNetworkFee",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch("https://api.blockcypher.com/v1/btc/main");
+      const data = await res.json();
+
+      return {
+        high_fee_per_kb: data.high_fee_per_kb,
+        medium_fee_per_kb: data.medium_fee_per_kb,
+        low_fee_per_kb: data.low_fee_per_kb,
+      };
+    } catch (e) {
+      return rejectWithValue(e);
+    }
+  },
 );
+
 
 // MARK: Bitcoin get data
 

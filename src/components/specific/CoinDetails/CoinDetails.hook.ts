@@ -85,7 +85,7 @@ export const useCoinDetails = ({
         }));
 
         setData(formatted);
-        setLoading(false);
+        
       } else if (res.status === 429) {
         console.warn("429 Too Many Requests - retry sau 1 phút...");
         setTimeout(() => fetchCoinData(retryCount + 1), 60000);
@@ -94,6 +94,9 @@ export const useCoinDetails = ({
       }
     } catch (err) {
       console.error("Fetch error:", err);
+    }
+    finally {
+      setLoading(false);
     }
   };
 

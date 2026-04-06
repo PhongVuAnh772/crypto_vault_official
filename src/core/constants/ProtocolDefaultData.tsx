@@ -37,36 +37,38 @@ const bitcoinProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
 };
 
 const ethereumProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
-    _id: '66da778a291e0ce47c6d8d5c',
-    name: 'Ethereum',
-    rpcUrl: '',
-    status: 'active',
-    symbol: 'ETH',
-    blockExplorerUrl: EnvConfig.ETH_EXPLORER_URL,
-    VM: VMType.EVM,
-    tokenTransferFee: 0.001,
-    coinTransferFee: 0.001,
-    nftTransferFee: 0.001,
-    logo: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png',
-    createdAt: '',
-    updatedAt: '',
-    slip0044: 60,
-    price: 2336.35833663544,
-    nativeToken: {
-        name: 'Ether',
-        symbol: 'ETH',
-        decimal: 18,
+  _id: "66da778a291e0ce47c6d8d5c",
+  name: "Ethereum",
+  rpcUrl: "https://ethereum-rpc.publicnode.com",
+  status: "active",
+  symbol: "ETH",
+  blockExplorerUrl: EnvConfig.ETH_EXPLORER_URL,
+  VM: VMType.EVM,
+  tokenTransferFee: 0.001,
+  coinTransferFee: 0.001,
+  nftTransferFee: 0.001,
+  logo: "https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png",
+  createdAt: "",
+  updatedAt: "",
+  slip0044: 60,
+  price: 2336.35833663544,
+  nativeToken: {
+    name: "Ether",
+    symbol: "ETH",
+    decimal: 18,
+    address: "",
+  },
+  supportedToken: [
+    {
+      decimal: 18,
+      isNativeToken: true,
+      logo: null,
+      name: "Ether",
+      symbol: "ETH",
+      contractAddress: '',
     },
-    supportedToken: [
-        {
-            decimal: 18,
-            isNativeToken: true,
-            logo: null,
-            name: 'Ether',
-            symbol: 'ETH',
-        },
-    ],
-    isDefault: true,
+  ],
+  isDefault: true,
 };
 
 const tonProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {

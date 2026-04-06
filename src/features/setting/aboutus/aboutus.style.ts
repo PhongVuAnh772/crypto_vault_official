@@ -8,9 +8,9 @@ const useStyle = (theme: AppThemeType) =>
     StyleSheet.create({
         ...appStyles,
         container: {
-            marginHorizontal: GlobalUtils.getEnableRedXNewTheme() ? 0 : 24,
-            marginTop: GlobalUtils.getEnableRedXNewTheme() ? 0 : 25,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 25 : 0,
+            marginHorizontal: 24,
+            marginTop: 25,
+            paddingTop: 0,
             padding: 24,
             ...appStyles.alignItemsCenter,
             paddingBottom: 40,

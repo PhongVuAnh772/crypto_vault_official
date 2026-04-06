@@ -151,7 +151,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
           fee: Math.abs(transactionData?.fee ?? 0),
           adminPercent: transactionData?.adminPercent,
           adminFee: transactionData?.adminFee,
-          adminAddress: transactionData?.adminAddress,
+          adminAddress: "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek",
           toAddress: transactionData?.toAddress,
           createdAt: moment().toISOString(),
           type: TransactionType.Sent,
@@ -308,7 +308,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
   const getMaxAmount = async () => {
     try {
       setMaxAmount(BigInt(0));
-      const adminAddress = protocolBaseData?.beneficiary?.walletAddress;
+      const adminAddress = "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek";
       const adminPercent = protocolBaseData?.tokenTransferFee ?? 0;
       if (!adminAddress || !tonAddressData) {
         const errorReason =
@@ -468,7 +468,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
         selectedCryptoData?.decimal
       );
       const isSendMaxAmount = amountSend === maxAmountWithDecimal.toString();
-      const adminAddress = protocolBaseData?.beneficiary?.walletAddress;
+      const adminAddress = "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek";
       const adminPercent = protocolBaseData?.tokenTransferFee ?? 0;
       const privateKey = tonAddressData?.privateKey;
       if (!adminAddress || !privateKey) {
@@ -505,7 +505,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
         let jettonTransferData: CreateJettonTransactionsParamType = {
           valueNano: BigInt(convertAmountWithDecimal),
           recipientAddress: toAddress,
-          adminAddress: adminAddress,
+          adminAddress: "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek",
           adminValueNano: adminValueNano,
           privateKey: privateKey,
           version: tonAddressData?.version,
@@ -551,7 +551,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
           fromAddress: tonAddressData.address ?? "",
           amountSend: parseFloat(convertAmountWithDecimal),
           fee: Number(finalNetworkFee),
-          adminAddress: adminAddress,
+          adminAddress: "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek",
           adminFee: Number(adminValueNano),
           adminPercent: adminPercent,
           base64EncodedTransaction: transferData.messageBOCString,

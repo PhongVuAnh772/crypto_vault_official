@@ -6,16 +6,13 @@ import { PiggyBankSvgIcon } from 'src/core/constants/AppIconsSvg';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 const StakingPoolsEmptyView: React.FC = () => {
     return (
         <View style={[appStyles.flex1, appStyles.center, appStyles.mt55]}>
             <PiggyBankSvgIcon
                 color={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? appColors.neutral.black
-                        : appColors.neutral.n500
+                    appColors.neutral.n500
                 }
                 width={28}
                 height={25}
@@ -24,9 +21,7 @@ const StakingPoolsEmptyView: React.FC = () => {
                 titleWithI18n={LanguageKey.stake_no_staking_pool_yet}
                 variant={TextVariantKeys.titleLarge}
                 textColor={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? appColors.neutral.black
-                        : appColors.neutral.n600
+                     appColors.neutral.n600
                 }
             />
             <View style={appStyles.mt12}>
@@ -36,9 +31,7 @@ const StakingPoolsEmptyView: React.FC = () => {
                     }
                     variant={TextVariantKeys.bodyRMedium}
                     textColor={
-                        GlobalUtils.getEnableRedXNewTheme()
-                            ? appColors.neutral.black
-                            : appColors.neutral.n600
+                         appColors.neutral.n600
                     }
                     styles={appStyles.textAlignCenter}
                 />

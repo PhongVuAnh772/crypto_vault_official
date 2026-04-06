@@ -91,14 +91,10 @@ const useStyles = (theme: AppThemeType, insets?: EdgeInsets) =>
             ...appStyles.mt25,
         },
         newButton: {
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 15 : 0,
-            paddingHorizontal: GlobalUtils.getEnableRedXNewTheme() ? 25 : 0,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            paddingBottom: 0,
+            paddingTop: 0,
+            paddingHorizontal: 0,
+            backgroundColor: undefined,
         },
         container: {
             ...appStyles.flex1,

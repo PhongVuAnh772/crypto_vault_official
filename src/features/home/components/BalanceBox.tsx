@@ -1,7 +1,6 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 import AppText from 'src/components/common/AppText';
-import appColors from 'src/core/constants/AppColors';
 import { appImages } from 'src/core/constants/AppImages';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
@@ -9,7 +8,6 @@ import LanguageKey from 'src/core/locales/LanguageKey';
 import { useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
 import appStyles from 'src/core/styles';
 import Utils from 'src/core/utils/commonUtils';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 type WalletAcBalanceRedXProps = {
     balance: number;
@@ -44,18 +42,13 @@ const BalanceRedX: React.FC<WalletAcBalanceRedXProps> = ({
             </>
         );
     };
-    return GlobalUtils.getEnableRedXNewTheme() ? (
-        <View style={[styles.imageBackgroundRedXBalanceContainer]}>
-            <ViewBalanceRedX />
-        </View>
-    ) : (
-        <ImageBackground
+    return <ImageBackground
             source={appImages.RedXBalanceBackground}
             imageStyle={styles.imageBackgroundRedXBalance}
             style={[styles.imageBackgroundRedXBalanceContainer]}>
             <ViewBalanceRedX />
         </ImageBackground>
-    );
+    
 };
 const styles = StyleSheet.create({
     imageBackgroundRedXBalance: {
@@ -64,13 +57,11 @@ const styles = StyleSheet.create({
     },
     imageBackgroundRedXBalanceContainer: {
         flex: 61,
-        borderRadius: GlobalUtils.getEnableRedXNewTheme() ? 0 : 4,
+        borderRadius: 4,
         paddingHorizontal: 12,
         justifyContent: 'space-between',
         paddingVertical: 16,
-        backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-            ? appColors.main.tokyoRed
-            : undefined,
+        backgroundColor:  undefined,
     },
 });
 

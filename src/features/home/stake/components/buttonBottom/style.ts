@@ -13,11 +13,9 @@ const style = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-            ? appColors.neutral.white
-            : appColors.neutral.n100,
-        paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 15 : 0,
-    },
+        backgroundColor: appColors.neutral.n100,
+        paddingTop:  0,
+    }
 });
 
 export default style;

@@ -12,9 +12,7 @@ export const useStyles = () => {
             bottom: 0,
             height: 1,
             width: '100%',
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? 'rgba(255, 255, 255, 0.24)'
-                : undefined,
+            backgroundColor: undefined,
         },
         newThemeOpacity: {
             ...StyleSheet.absoluteFillObject,

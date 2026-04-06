@@ -6,7 +6,6 @@ import { AddressListItemType } from "src/core/redux/slice/account.type";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 import BalanceRedX from "./BalanceBox";
 import WalletActions from "./WalletActions";
 import WalletInfo from "./WalletInfo";
@@ -96,7 +95,7 @@ const useStyles = (theme: AppThemeType) =>
   StyleSheet.create({
     walletView: {
       minHeight: 185,
-      marginBottom: GlobalUtils.getEnableRedXNewTheme() ? 10 : 0,
+      marginBottom:  0,
     },
     separator: {
       marginRight: 8,
@@ -113,10 +112,8 @@ const useStyles = (theme: AppThemeType) =>
       ...appStyles.justifyContentBetween,
     },
     containerAction: {
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? "transparent"
-        : theme.colors.surface_surface_high,
-      marginVertical: GlobalUtils.getEnableRedXNewTheme() ? 0 : 15,
+      backgroundColor: theme.colors.surface_surface_high,
+      marginVertical: 15,
     },
   });
 

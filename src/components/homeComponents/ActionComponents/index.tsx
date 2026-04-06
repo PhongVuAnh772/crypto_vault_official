@@ -2,17 +2,13 @@ import React from 'react';
 import { StyleProp, View, ViewStyle } from 'react-native';
 import AppSkeletonLoading from 'src/components/common/AppSkeletonLoading';
 import {
-    NewReceiveSvgIcon,
-    NewSendSvgIcon,
     PiggyBankSvgIcon,
     ReceiveSvgIcon,
-    SendSvgIcon,
-    StakeSvgIcon,
+    SendSvgIcon
 } from 'src/core/constants/AppIconsSvg';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import HomeButtonWithTitle from '../HomeButtonWithTitle';
 import useStyles from './styles';
 
@@ -67,9 +63,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
             <View style={[appStyles.flex1]}>
                 <HomeButtonWithTitle
                     icon={
-                        GlobalUtils.getEnableRedXNewTheme() ? (
-                            <NewSendSvgIcon />
-                        ) : (
+                         (
                             <SendSvgIcon style={styles.colorIcon} />
                         )
                     }
@@ -80,9 +74,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
             <View style={[appStyles.flex1]}>
                 <HomeButtonWithTitle
                     icon={
-                        GlobalUtils.getEnableRedXNewTheme() ? (
-                            <NewReceiveSvgIcon />
-                        ) : (
+                       (
                             <ReceiveSvgIcon style={styles.colorIcon} />
                         )
                     }
@@ -95,9 +87,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
                     <View style={[appStyles.flex1]}>
                         <HomeButtonWithTitle
                             icon={
-                                GlobalUtils.getEnableRedXNewTheme() ? (
-                                    <StakeSvgIcon />
-                                ) : (
+                               (
                                     <PiggyBankSvgIcon
                                         style={styles.colorIcon}
                                     />

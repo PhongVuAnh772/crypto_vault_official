@@ -5,13 +5,11 @@ import AppImage from 'src/components/common/AppImage';
 import AppText from 'src/components/common/AppText';
 import NFTTonItem from 'src/components/homeComponents/NFTTonItem';
 import ScreenWrapper from 'src/components/layout/ScreenWrapper';
-import appColors from 'src/core/constants/AppColors';
 import { ArrowRightSvgIcon } from 'src/core/constants/AppIconsSvg';
 import { appImages } from 'src/core/constants/AppImages';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import nftUtils from 'src/core/utils/nftUtils';
 import {
     ListNFTEmpty,
@@ -158,10 +156,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                                 />
                                                 <ArrowRightSvgIcon
                                                     color={
-                                                        GlobalUtils.getEnableRedXNewTheme()
-                                                            ? appColors.neutral
-                                                                  .black
-                                                            : theme.colors
+                                                         theme.colors
                                                                   .text_on_surface_text_light
                                                     }
                                                 />

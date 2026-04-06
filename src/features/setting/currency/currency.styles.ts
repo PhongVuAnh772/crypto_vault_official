@@ -10,9 +10,7 @@ const useStyles = (theme: AppThemeType) =>
         },
         container: {
             ...appStyles.pH25,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? theme.colors.surface_surface_default
-                : undefined,
+            backgroundColor: undefined,
             height: '100%',
         },
     });

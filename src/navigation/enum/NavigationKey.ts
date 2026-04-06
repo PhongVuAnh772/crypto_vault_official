@@ -17,6 +17,7 @@ enum HomeStackScreenKey {
   Transfer = "Transfer",
   BottomTab = "BottomTab",
   Bitcoin = "Bitcoin",
+  ChatScreen="ChatScreen",
   Ton = "Ton",
   Jetton = "Jetton",
   TransactionDetails = "TransactionDetails",

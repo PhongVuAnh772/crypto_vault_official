@@ -1,13 +1,11 @@
 import React from 'react';
 import { RefreshControl, ScrollView, View } from 'react-native';
 import AppText from 'src/components/common/AppText';
-import appColors from 'src/core/constants/AppColors';
 import { CoinStacked01SvgIcon } from 'src/core/constants/AppIconsSvg';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 export type EmptyCollectionProps = {
     refreshing?: boolean;
@@ -38,9 +36,7 @@ const EmptyCollection: React.FC<EmptyCollectionProps> = ({
                 ]}>
                 <CoinStacked01SvgIcon
                     color={
-                        GlobalUtils.getEnableRedXNewTheme()
-                            ? appColors.neutral.black
-                            : theme.colors.text_on_surface_text_light
+                        theme.colors.text_on_surface_text_light
                     }
                 />
                 <View style={appStyles.mv10}>
@@ -48,9 +44,7 @@ const EmptyCollection: React.FC<EmptyCollectionProps> = ({
                         titleWithI18n={LanguageKey.No_asset_found_title}
                         variant={TextVariantKeys.titleLarge}
                         textColor={
-                            GlobalUtils.getEnableRedXNewTheme()
-                                ? appColors.neutral.black
-                                : theme.colors.text_on_surface_text_medium
+                             theme.colors.text_on_surface_text_medium
                         }
                     />
                 </View>
@@ -60,9 +54,7 @@ const EmptyCollection: React.FC<EmptyCollectionProps> = ({
                     }
                     variant={TextVariantKeys.bodyRMedium}
                     textColor={
-                        GlobalUtils.getEnableRedXNewTheme()
-                            ? appColors.neutral.black
-                            : theme.colors.text_on_surface_text_light
+                         theme.colors.text_on_surface_text_light
                     }
                 />
             </View>

@@ -58,22 +58,14 @@ const useStyle = (theme: AppThemeType, insets: EdgeInsets) =>
         viewButton: {
             ...appStyles.pH25,
             ...appStyles.pT15,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom:0,
         },
         buttonConfirm: {
             ...appStyles.pH25,
             ...appStyles.pT10,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom:0,
         },
     });
 

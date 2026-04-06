@@ -280,7 +280,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     dispatch(setUpdateBalance(false));
   };
   const getBackgroundImage = () => {
-    return lightMode ? appImages.background1Dark : appImages.background1;
+    return appImages.newBgDark;
   };
 
   return {

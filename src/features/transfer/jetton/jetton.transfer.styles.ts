@@ -47,7 +47,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             marginHorizontal: 10,
         },
         buttonCancel: {
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+            borderWidth: 1,
             borderColor: theme.colors.text_on_surface_text_brand_2,
             backgroundColor: appColors.neutral.white,
         },
@@ -100,14 +100,10 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
 
         newButton: {
             marginTop: 15,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 15 : 0,
-            paddingHorizontal: GlobalUtils.getEnableRedXNewTheme() ? 25 : 0,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            paddingBottom: 0,
+            paddingTop:0,
+            paddingHorizontal:  0,
+            backgroundColor: undefined,
         },
         container: {
             ...appStyles.flex1,

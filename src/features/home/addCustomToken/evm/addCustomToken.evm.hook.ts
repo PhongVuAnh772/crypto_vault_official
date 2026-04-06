@@ -72,12 +72,12 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
 
     const validateInput = () => {
         if (
-            symbolToken.trim().length &&
-            decimalsToken.trim().length &&
-            contractAddress.trim().length &&
-            nameToken.trim().length
+          symbolToken?.trim()?.length &&
+          decimalsToken?.trim()?.length &&
+          contractAddress?.trim()?.length &&
+          nameToken?.trim()?.length
         ) {
-            return false;
+          return false;
         }
         return true;
     };

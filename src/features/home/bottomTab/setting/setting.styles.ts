@@ -62,7 +62,7 @@ const settingStyles = (theme: AppThemeType) =>
             ...appStyles.mbt15,
         },
         buttonModal_cancel: {
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+            borderWidth: 1,
             borderColor: theme.colors.text_on_surface_text_brand_2,
         },
         textAlign: {

@@ -450,7 +450,7 @@ const useSwap = ({ navigation }: RootNavigationType) => {
     };
 
     const onChangeAmountSend = (value: string) => {
-        let normalizedAmount = value.replaceAll(/,/g, '.');
+        let normalizedAmount = value.replace(/,/g, '.');
 
         setFrom(prev => {
             return {

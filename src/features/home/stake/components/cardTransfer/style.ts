@@ -17,8 +17,8 @@ const style = StyleSheet.create({
         backgroundColor: appColors.neutral.white,
         borderTopWidth: 1,
         borderTopColor: appColors.other.outline_lightest,
-        borderBottomLeftRadius: GlobalUtils.getEnableRedXNewTheme() ? 4 : 0,
-        borderBottomRightRadius: GlobalUtils.getEnableRedXNewTheme() ? 4 : 0,
+        borderBottomLeftRadius:  0,
+        borderBottomRightRadius: 0,
     },
     containerToken: {
         position: 'absolute',

@@ -10,9 +10,7 @@ const useStyles = (theme: AppThemeType) =>
             borderBottomColor: theme.colors.outline_outine_lightest,
             paddingHorizontal: 16,
             paddingVertical: 14,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? 'transparent'
-                : theme.colors.surface_surface_high,
+            backgroundColor: theme.colors.surface_surface_high,
         },
         shortCurrencyContainer: {
             paddingHorizontal: 8,

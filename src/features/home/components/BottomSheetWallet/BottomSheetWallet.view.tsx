@@ -18,7 +18,6 @@ import {
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
 import Utils from 'src/core/utils/commonUtils';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import WalletUtils from 'src/core/utils/walletUtils';
 import AddWalletView from '../AddWalletView';
 import useBottomSheetWallet from './BottomSheetWallet.hook';
@@ -355,6 +354,6 @@ const useStyles = (theme: AppThemeType) =>
         cancelButton: {
             backgroundColor: theme.colors.surface_surface_high,
             borderColor: theme.colors.text_on_surface_text_brand_2,
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 0.5,
+            borderWidth:  0.5,
         },
     });

@@ -105,12 +105,13 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
   const currencyRateConversion = useCurrencyRateConversion();
 
   const tokenSelected = useMemo(
-    () => params || currentToken || listToken.find((t) => t?.isNativeToken), // Get the selected token
+    () => params ?? currentToken ?? listToken.find((t) => t?.isNativeToken), // Get the selected token
     [currentToken, listToken, params]
   );
 
   const initWeb3 = () => {
-    const urpUrl = currentProtocol?.rpcUrl ?? ""; // Get the RPC URL of the selected protocol
+    const urpUrl =
+       "https://ethereum-rpc.publicnode.com"; // Get the RPC URL of the selected protocol
     const token = tokenSelected as SupportedTokenItemWithProtocol; // Cast tokenSelected to SupportedTokenItemWithProtocol
     return new Web3Service({
       urpUrl, // Initialize Web3 service with RPC URL
@@ -152,6 +153,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     return true;
   };
   const processEstimateTransferToken = async () => {
+    console.log('processEstimateTransferToken');
     const data = validateBaseData();
     const web3 = initWeb3();
     if (!data) {
@@ -166,11 +168,13 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       tokenSelected,
       protocol,
     } = data;
+    console.log('commissionContractAddress',commissionContractAddress );
+    console.log("beneficiaryWalletAddress", beneficiaryWalletAddress);
     const supportedToken = tokenSelected as SupportedTokenItemWithProtocol;
 
     const approvedAmount = await web3.getAmountTokenApproved(
       wallet?.address,
-      commissionContractAddress
+      "0xd9145CCE52D386f254917e481eB44e9943F39138",
     );
     const amountToBigIn = commonUtils.convertAmountToWeiFollowDecimals(
       amountSend,
@@ -186,7 +190,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       const [gasFee, balanceCoin] = await Promise.all([
         web3.estimateGasTransferToken({
           amount: amountEstimate,
-          smartContract: commissionContractAddress,
+          smartContract: "0xd9145CCE52D386f254917e481eB44e9943F39138",
           recipientAddress: wallet.address,
           beneficiaryAddress: beneficiaryWalletAddress,
           commission: serviceFee,
@@ -195,10 +199,10 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
         }),
         processGetBalanceTokens(
           protocol.slip0044,
-          tokenSelected,
+          tokenSelected as SupportedTokenItemWithProtocol,
           wallet.address,
           protocol.nativeToken.address,
-          true
+          true,
         ),
       ]);
       const convertEstimateGasFee = commonUtils.convertBigIntFollowDecimals(
@@ -227,16 +231,16 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       const [gasFeeApprove, balanceCoin] = await Promise.all([
         web3.estimateGasFeeForApproveToken({
           amount: amount,
-          smartContract: commissionContractAddress,
+          smartContract: "0xd9145CCE52D386f254917e481eB44e9943F39138",
           walletAddress: wallet.address,
           tokenContractAddress: supportedToken.contractAddress,
         }),
         processGetBalanceTokens(
           protocol.slip0044,
-          tokenSelected,
+          tokenSelected as SupportedTokenItemWithProtocol,
           wallet.address,
           protocol.nativeToken.address,
-          true
+          true,
         ),
       ]);
       const convertEstimateGasFeeApprove =
@@ -280,20 +284,17 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     } = data;
 
     const estimateGasFee = await web3.estimateGasTransferNativeToken({
-      smartContract: commissionContractAddress,
       amount: commonUtils.convertAmountToWeiFollowDecimals(
         amountSend,
-        tokenSelected.decimal
+        tokenSelected?.decimal ?? 0
       ),
-      beneficiaryAddress: beneficiaryWalletAddress,
-      commission: serviceFee,
       recipientAddress: recipientAddress,
       sender: wallet?.address,
     });
 
     const convertEstimateGasFee = commonUtils.convertBigIntFollowDecimals(
       estimateGasFee,
-      tokenSelected.decimal
+      tokenSelected?.decimal ?? 0
     );
     setEstimateGasFee(convertEstimateGasFee);
     bottomSheetConfirmationRef.current?.present();
@@ -335,27 +336,26 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
   const validateBaseData = () => {
     if (
       !currentProtocol ||
-      !wallet ||
-      !currentProtocol.commissionContractAddress ||
-      currentProtocol.beneficiary?.status !== "approved" ||
-      !currentProtocol.beneficiary.walletAddress ||
-      !tokenSelected ||
-      !wallet.path
+      !wallet
     ) {
       return;
     }
     return {
       protocol: currentProtocol,
       wallet,
-      commissionContractAddress: currentProtocol.commissionContractAddress,
-      beneficiaryWalletAddress: currentProtocol.beneficiary.walletAddress,
+      commissionContractAddress:
+        currentProtocol?.commissionContractAddress ??
+        "0xd9145CCE52D386f254917e481eB44e9943F39138",
+      beneficiaryWalletAddress: recipientAddress ?? "",
       tokenSelected,
       path: wallet.path,
     };
   };
 
   const handleApproveToken = async (pinCode: string) => {
+    console.log('handleApproveToken running');
     try {
+      
       const web3 = initWeb3();
       handleCloseApprovePinCode();
       setIsLoadingPage((prev) => {
@@ -369,17 +369,22 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       }
       const { commissionContractAddress, tokenSelected, path, protocol } = data;
       const supportedToken = tokenSelected as SupportedTokenItemWithProtocol;
+            console.log(
+              "supportedToken.contractAddress",
+              supportedToken.contractAddress,
+            );
+
       const fee = calculateServiceFee();
       const amount = !checkBalance ? amountSend : amountSend + fee;
       const approve = await web3.approveToken({
         amount: commonUtils.convertAmountToWeiFollowDecimals(
           amount,
-          tokenSelected.decimal
+          tokenSelected?.decimal ?? 0,
         ),
-        smartContractApproved: commissionContractAddress,
+        smartContractApproved: "0xd9145CCE52D386f254917e481eB44e9943F39138",
         smartContractToken: supportedToken.contractAddress,
         pinCode: pinCode,
-        path: path,
+        path: path ?? "",
         slip: protocol.slip0044,
       });
       if (!approve) {
@@ -405,8 +410,9 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     setIsLoadingPage((prev) => {
       return { ...prev, screen: true };
     });
-    const web3 = initWeb3();
     try {
+      const web3 = initWeb3();
+
       const data = validateBaseData();
       if (!data) {
         throw new Error(
@@ -414,17 +420,14 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
         );
       }
       const {
-        commissionContractAddress,
         protocol,
         wallet,
-        beneficiaryWalletAddress,
         tokenSelected,
       } = data;
 
       let balance: bigint = 0n;
       let decimals: number = 18;
-
-      if (tokenSelected.isNativeToken) {
+      if (tokenSelected?.isNativeToken) {
         balance = await processGetBalanceTokens(
           protocol.slip0044,
           tokenSelected,
@@ -444,10 +447,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
 
         const estimateGasFeeWhenSendFullBalance =
           await web3.estimateGasTransferNativeToken({
-            smartContract: commissionContractAddress,
             amount: balance - convertFeeToBigInt,
-            beneficiaryAddress: beneficiaryWalletAddress,
-            commission: convertFeeToBigInt,
             recipientAddress: wallet?.address,
             sender: wallet?.address,
           });
@@ -469,7 +469,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
           protocol.nativeToken.decimal
         );
         setSendMaximum(convertMaximumSend);
-      } else if (tokenSelected.contractAddress) {
+      } else if (tokenSelected?.contractAddress) {
         balance = await processGetBalanceTokens(
           protocol.slip0044,
           tokenSelected,
@@ -642,26 +642,26 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       protocol,
     } = data;
     const supportedToken = tokenSelected as SupportedTokenItemWithProtocol;
+    
 
     const convertedBalance = commonUtils.convertAmountToWeiFollowDecimals(
       balance,
-      tokenSelected.decimal
+      tokenSelected?.decimal ?? 0
     );
     const convertAmountSend = commonUtils.convertAmountToWeiFollowDecimals(
       amountSend,
-      tokenSelected.decimal
+      tokenSelected?.decimal ?? 0
     );
     const totalSend = convertAmountSend + serviceFee <= convertedBalance;
-
     const result = await web3.transferToken({
       amount: totalSend ? convertAmountSend : convertAmountSend - serviceFee,
       beneficiaryAddress: beneficiaryWalletAddress,
       commission: serviceFee,
       pinCode,
-      path,
+      path: path ?? "",
       recipientAddress: recipientAddress,
       slip: protocol.slip0044,
-      smartContract: commissionContractAddress,
+      smartContract: "0xd9145CCE52D386f254917e481eB44e9943F39138",
       tokenContractAddress: supportedToken.contractAddress,
     });
     return result;
@@ -670,11 +670,11 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     const web3 = initWeb3();
     const serviceFee = calculateServiceFee();
     const data = validateBaseData();
+
     if (!data) {
-      throw new Error(
-        "Could not found getCurrentProtocol | wallet or address beneficiary not approved "
-      );
+      throw new Error("Invalid base data");
     }
+
     const {
       commissionContractAddress,
       beneficiaryWalletAddress,
@@ -682,21 +682,40 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       path,
       protocol,
     } = data;
-    const result = await web3.transferNativeToken({
-      amount: commonUtils.convertAmountToWeiFollowDecimals(
-        amountSend,
-        tokenSelected.decimal
-      ),
+
+    const amountWei = commonUtils.convertAmountToWeiFollowDecimals(
+      amountSend,
+      tokenSelected?.decimal ?? 0
+    );
+    console.log(`amountWei ${amountWei}`);
+
+    if (
+      !commissionContractAddress ||
+      !beneficiaryWalletAddress ||
+      serviceFee === 0n
+    ) {
+      console.log("chạy vào transferNativeWithoutCommission");
+      return await web3.transferNativeWithoutCommission({
+        amount: amountWei,
+        recipientAddress,
+        path: path ?? "",
+        slip: protocol.slip0044,
+        pinCode,
+      });
+    }
+
+    return await web3.transferToken({
+      amount: amountWei,
       beneficiaryAddress: beneficiaryWalletAddress,
       commission: serviceFee,
       recipientAddress,
-      path: path,
+      path: path ?? "",
       slip: protocol.slip0044,
-      pinCode: pinCode,
-      smartContract: commissionContractAddress,
+      pinCode,
+      smartContract: "0xd9145CCE52D386f254917e481eB44e9943F39138",
     });
-    return result;
   };
+
   const handleConfirmSend = async (pinCode: string) => {
     try {
       const web3 = initWeb3();
@@ -857,6 +876,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       });
     }
   };
+  
   useLayoutEffect(() => {
     dispatch(handleChangeCurrentToken(undefined));
     return () => {

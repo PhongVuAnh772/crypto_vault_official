@@ -48,6 +48,7 @@ import {
   deleteTokensByWallet,
   filterTokenAvailable,
   updateBalanceTokens,
+  updateNativeBalance,
 } from "src/core/redux/slice/customToken/addCustomToken.slice";
 import { SupportTokenDataType } from "src/core/redux/slice/customToken/addCustomToken.type";
 import { TokenBalance } from "src/core/services/Moralis/type";
@@ -55,6 +56,7 @@ import { convertChainByProtocol } from "src/core/utils/evmUtils";
 import GlobalUtils from "src/core/utils/globalUtils";
 import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
 import { ListCryptoDataType, TokensObject } from "../home.type";
+import { fetchEvmBalances } from "src/core/worker/evmBalance";
 
 const batchSize = 40;
 const updateInterval = 1000;
@@ -126,7 +128,15 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     console.log("Call createCryptoData");
     console.log("==============================");
 
-    await handleGenerateListToken();
+    try {
+      await handleGenerateListToken();
+    }
+    catch (e) {
+      console.log(e);
+    }
+    finally {
+      hideSkeletonLoading();
+    }
   };
 
   const handleMigrateNFT = () => {
@@ -149,6 +159,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   const handleInitData = async () => {
     handleMigrateNFT();
     await createCryptoData();
+    
   };
 
   const handleHomeRefresh = useCallback(async () => {
@@ -156,6 +167,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       try {
         setRefreshingHome(true);
         await createCryptoData();
+        fetchNativeBalanceOnce();
         setRefreshingHome(false);
       } catch (error) {
         console.error("handleHomeRefresh Error:", error);
@@ -166,14 +178,6 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   }, [accountProtocolSelected, listToken]);
 
   const goToSendScreen = () => {
-    if (protocolBaseData?.isDefault) {
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-        contentOffSet: contentOffsetToast,
-      });
-      return;
-    }
     navigation.navigate(HomeStackScreenKey.Transfer);
   };
   const goToMangeCryptoScreen = () => {
@@ -262,6 +266,28 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     }
     onCloseMenuWallet();
   };
+
+  const fetchNativeBalanceOnce = async () => {
+    if (!wallet?.address || !protocolBaseData?.rpcUrl) return;
+
+    const balances = await fetchEvmBalances({
+      rpcUrl: protocolBaseData.rpcUrl,
+      walletAddress: wallet.address,
+      tokens: [], // 👈 chỉ native
+    });
+
+    if (balances.native) {
+      dispatch(
+        updateNativeBalance({
+          walletAddress: wallet.address,
+          protocolData: protocolBaseData,
+          balance: balances.native.balance,
+          usd_price: balances.native.usd_price,
+        })
+      );
+    }
+  };
+  
   const handleGenerateListToken = useCallback(async () => {
     try {
       if (listToken.length === 0) {
@@ -284,6 +310,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
           return data;
         });
         setListCryptoData(listCustomCryptoConverted);
+        fetchNativeBalanceOnce();
         hideSkeletonLoading();
         await processUpdateToken();
       }
@@ -474,10 +501,9 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   }, []);
 
   useEffect(() => {
-    if (listCryptoData.length) {
       const balance = getTotalBalanceToCurrency(listCryptoData);
       setWalletBalanceCurrency(balance);
-    }
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listCryptoData, selectedCurrencySetting.rate]);
 
@@ -533,16 +559,49 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet?.address]);
+  
+useEffect(() => {
+  
+  if (!listCryptoData.length || !listToken.length) return;
+
+  const nativeBalance = listToken.find((item) => item.isNativeToken === true);
+
+  console.log(`nativeBalance ${nativeBalance?.isNativeToken}`);
+
+  if (!nativeBalance) return;
+
+  setListCryptoData((prev) =>
+    prev.map((token) => {
+      if (!token.isNative) return token;
+
+      return {
+        ...token,
+        balance: nativeBalance.balance ?? token.balance,
+        rateCurrency: nativeBalance.balanceCurrency ?? token.rateCurrency,
+      };
+    })
+  );
+}, [listToken]);
+
+
 
   useEffect(() => {
-    if (updateBalanceState) {
+    try {
+      if (updateBalanceState) {
       console.log("===================");
       console.log("Update Balance");
       console.log("===================");
       updateBalance();
+      fetchNativeBalanceOnce();
+    }
+    }
+    catch (e) {
+      console.log(e);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceState]);
+ 
+  
   const getBackgroundImage = () => {
     return lightMode ? appImages.background1Dark : appImages.background1;
   };

@@ -11,12 +11,10 @@ import React from "react";
 import { TouchableOpacity, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import AppText from "src/components/common/AppText";
-import appColors from "src/core/constants/AppColors";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
-import Utils from "src/core/utils/commonUtils";
 import styles from "./styles";
 import { bottomTabIcon } from "./TabIcon";
 
@@ -41,10 +39,24 @@ const AppTabBar = ({
     <View
       style={[
         styles.bottomTabContainer,
-        appStyles.justifyContentAround,
         {
-          paddingBottom: Utils.isAndroid ? 10 : insets.bottom,
-          backgroundColor: theme.colors.surface_surface_nav,
+          position: "absolute",
+          bottom: 20,
+          alignSelf: "center",
+          paddingVertical: 10,
+          width: "95%",
+          backgroundColor: "rgba(255,255,255,0.1)",
+          borderRadius: 100,
+          shadowColor: "#020202",
+          shadowOpacity: 0.16,
+          shadowRadius: 20,
+          shadowOffset: {
+            width: 4,
+            height: 8,
+          },
+
+          // Android Shadow
+          elevation: 12,
         },
       ]}
       onLayout={({ nativeEvent: { layout } }) => {
@@ -84,30 +96,38 @@ const AppTabBar = ({
             onPress={onPress}
             onLongPress={onLongPress}
             style={[
-              appStyles.flexRow,
+              // appStyles.flexRow,
               appStyles.center,
-              appStyles.pV15,
-              !isFocused && appStyles.flex1,
-              { position: "relative" },
+              { flex: 1 },
+              // { position: "relative" },
             ]}
           >
-            {route.name === LanguageKey.home_tab_explore_title
-              ? <View style={styles.iconCenterContainer}>
-                  
-              </View>
-              : bottomTabIcon(route.name, isFocused)}
-            {isFocused && route.name !== LanguageKey.home_tab_explore_title ? (
-              <View style={appStyles.ml10}>
-                <AppText
-                  titleWithI18n={route.name}
-                  textColor={appColors.main.tokyoRed}
-                  variant={TextVariantKeys.labelSmall}
-                />
-              </View>
-            ) : null}
-            {enableBadge && isExploreTab && isFocused ? (
-              <View style={styles.badgeContainer}></View>
-            ) : null}
+            {bottomTabIcon(route.name, isFocused)}
+            {route.name !== LanguageKey.home_tab_explore_title && (
+              <AppText
+                title={(() => {
+                  switch (route.name) {
+                    case LanguageKey.home_tab_nft_collection_title:
+                      return "NFTs";
+                    case LanguageKey.home_tab_transaction_title:
+                      return "History";
+                    default:
+                      return undefined;
+                  }
+                })()}
+                titleWithI18n={(() => {
+                  switch (route.name) {
+                    case LanguageKey.home_tab_nft_collection_title:
+                    case LanguageKey.home_tab_transaction_title:
+                      return undefined; // vì đã override title
+                    default:
+                      return route.name; // dùng i18n
+                  }
+                })()}
+                textColor={'white'}
+                variant={TextVariantKeys.labelTiny}
+              />
+            )}
           </TouchableOpacity>
         );
       })}

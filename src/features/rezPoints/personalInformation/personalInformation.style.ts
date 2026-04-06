@@ -36,7 +36,7 @@ export const useStyles = (theme: AppThemeType) => {
         cancelButton: {
             backgroundColor: theme.colors.surface_surface_high,
             borderColor: theme.colors.text_on_surface_text_brand_2,
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 0.5,
+            borderWidth: 0.5,
         },
         h16: {
             height: 16,

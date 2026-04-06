@@ -17,7 +17,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         button: {
             backgroundColor: appColors.main.tokyoRed,
             minHeight: 48,
-            marginBottom: GlobalUtils.getEnableRedXNewTheme() ? 0 : 10,
+            marginBottom:  10,
         },
 
         hideCanvas: {
@@ -28,12 +28,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         viewButton: {
             ...appStyles.pH25,
             ...appStyles.pT15,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets.bottom
-                : 30,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            backgroundColor:  undefined,
         },
     });
 

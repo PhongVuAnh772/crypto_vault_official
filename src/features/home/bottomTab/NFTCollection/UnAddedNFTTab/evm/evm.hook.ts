@@ -281,7 +281,7 @@ const useUnAddedNFTTab = ({ navigation }: RootNavigationType) => {
             limit: 10,
           })
         );
-        if (getCollectionsMoralisThunk.fulfilled.match(response)) {
+      if (getCollectionsMoralisThunk.fulfilled.match(response)) {
           if (response.payload.data && "result" in response.payload.data) {
             if (typeSelect === UnAddedType.UnArchive) {
               const filteredCollections = response.payload.data.result.filter(

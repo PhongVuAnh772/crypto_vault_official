@@ -21,7 +21,7 @@ const useStyles = (theme: AppThemeType) =>
             marginTop: 16,
             marginBottom: 32,
             backgroundColor: theme.colors.label_surface_button_primary,
-            paddingVertical: GlobalUtils.getEnableRedXNewTheme() ? 0 : 13,
+            paddingVertical: 13,
         },
         buttonHeader: {
             width: 32,

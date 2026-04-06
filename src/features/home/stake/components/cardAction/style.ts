@@ -6,8 +6,8 @@ const style = StyleSheet.create({
     container: {
         backgroundColor: appColors.other.outline_lightest,
         padding: 16,
-        borderTopRightRadius: GlobalUtils.getEnableRedXNewTheme() ? 4 : 0,
-        borderTopLeftRadius: GlobalUtils.getEnableRedXNewTheme() ? 4 : 0,
+        borderTopRightRadius:  0,
+        borderTopLeftRadius:  0,
     },
     button: {
         backgroundColor: appColors.main.tokyoRed,

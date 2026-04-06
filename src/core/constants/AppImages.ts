@@ -20,4 +20,6 @@ export const appImages = {
   RezPointMainBackground: require("src/assets/images/rez_point_main_bg.png"),
   newBackground1: require("../../assets/images/background_new.png"),
   newBg: require("../../assets/images/bg.png"),
+  newBgDark: require("../../assets/images/bg_new.png"),
+  fgCard: require("../../assets/images/fg_card.png"),
 };

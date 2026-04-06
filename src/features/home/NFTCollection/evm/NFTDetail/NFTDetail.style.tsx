@@ -3,7 +3,6 @@ import { EdgeInsets } from 'react-native-safe-area-context';
 import appColors from 'src/core/constants/AppColors';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 const box = {
     borderRadius: 4,
@@ -136,12 +135,8 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             ...appStyles.pH25,
             ...appStyles.pT15,
 
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom:  0,
         },
     });
 

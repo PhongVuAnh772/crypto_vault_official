@@ -164,12 +164,8 @@ const useNFTImportStyles = (insets: EdgeInsets) =>
         containerButton: {
             paddingTop: 20,
             paddingHorizontal: 25,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets.bottom
-                : 0,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            paddingBottom:0,
+            backgroundColor: undefined,
         },
     });
 

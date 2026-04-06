@@ -29,10 +29,8 @@ const useStyles = (theme: AppThemeType) =>
     secretPhraseItemViewIndex: {
       ...appStyles.center,
       height: 40,
-      width: GlobalUtils.getEnableRedXNewTheme() ? 26 : 22,
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : theme.colors.surface_surface_high,
+      width: 22,
+      backgroundColor: theme.colors.surface_surface_high,
       borderTopLeftRadius: 4,
       borderBottomLeftRadius: 4,
       marginRight: 2,
@@ -46,12 +44,10 @@ const useStyles = (theme: AppThemeType) =>
     },
     secretPhraseItemViewPhrase2: {
       ...appStyles.justifyContentCenter,
-      paddingLeft: GlobalUtils.getEnableRedXNewTheme() ? 0 : 8,
+      paddingLeft: 8,
       height: 40,
       width: "100%",
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : theme.colors.surface_surface_high,
+      backgroundColor: theme.colors.surface_surface_high,
       borderBottomRightRadius: 4,
       borderTopRightRadius: 4,
     },

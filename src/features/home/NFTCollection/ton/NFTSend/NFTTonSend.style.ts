@@ -24,7 +24,7 @@ const useStyle = (insets: EdgeInsets, theme: AppThemeType) =>
         button: {
             backgroundColor: appColors.main.tokyoRed,
             minHeight: 48,
-            marginBottom: GlobalUtils.getEnableRedXNewTheme() ? 0 : 10,
+            marginBottom:  10,
         },
         modalButton: {
             backgroundColor: appColors.main.tokyoRed,
@@ -100,12 +100,8 @@ const useStyle = (insets: EdgeInsets, theme: AppThemeType) =>
             minHeight: 44,
         },
         containerButton: {
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom:0,
         },
     });
 

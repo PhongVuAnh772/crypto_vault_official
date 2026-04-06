@@ -431,16 +431,6 @@ export const useBitcoinTransfer = ({ navigation }: RootNavigationType) => {
     setInputAmountError(false);
     setAmountSend(BitcoinUtils.getBitcoinFromSatoshi(maxAmount.toString()));
   };
-  useEffect(() => {
-    if (blockBitcoinTransfer) {
-      navigation.goBack();
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockBitcoinTransfer]);
   return {
     coinType,
     balanceTitle,

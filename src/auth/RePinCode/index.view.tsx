@@ -31,7 +31,6 @@ const RePinCode = () => {
         navigation.navigate(AuthStackScreenKey.CreateNewWallet, {
           pinCode: pinCode,
         });
-        console.log("thành công", result);
       } else {
       }
     } catch (error) {

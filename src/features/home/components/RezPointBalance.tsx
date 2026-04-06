@@ -17,7 +17,6 @@ import {
     getUserInfo,
 } from 'src/core/redux/slice/rezPoint/rezPoint.slice';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import { rezPointUtils } from 'src/core/utils/rezPoint';
 import useLogin from 'src/features/rezPoints/auth/login/login.hook';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
@@ -118,20 +117,14 @@ const RezPointBalance: React.FC<RootNavigationType> = ({ navigation }) => {
         <Pressable
             onPress={onPress}
             style={styles.imageBackgroundRezPointBalance}>
-            {GlobalUtils.getEnableRedXNewTheme() ? (
-                <LinearGradient
-                    colors={colors}
-                    style={styles.imageBackgroundRezPointBalanceContainer}>
-                    <ViewRezPoint />
-                </LinearGradient>
-            ) : (
+            
                 <ImageBackground
                     source={appImages.RezPointBalanceBackground}
                     imageStyle={styles.imageBackgroundRezPointBalance}
                     style={[styles.imageBackgroundRezPointBalanceContainer]}>
                     <ViewRezPoint />
                 </ImageBackground>
-            )}
+            
         </Pressable>
     );
 };
@@ -149,7 +142,7 @@ const styles = StyleSheet.create({
     },
     imageBackgroundRezPointBalanceContainer: {
         flex: 34,
-        borderRadius: GlobalUtils.getEnableRedXNewTheme() ? 0 : 4,
+        borderRadius: 4,
         paddingHorizontal: 12,
         justifyContent: 'space-between',
         paddingVertical: 16,

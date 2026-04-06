@@ -13,8 +13,10 @@ import {
   SupportedTokenItemWithProtocol,
   SupportTokenDataType,
   TokenType,
+  UpdateNativeBalancePayload,
   UpdateTokenBalances,
 } from "./addCustomToken.type";
+
 
 const initialState: LocalTokenReducerType = {
   listTokenByProtocol: {},
@@ -59,6 +61,41 @@ export const localTokenReducer = createSlice({
         });
       }
     },
+    updateNativeBalance: (
+      state,
+      action: PayloadAction<UpdateNativeBalancePayload>
+    ) => {
+      const { walletAddress, protocolData, balance, usd_price } =
+        action.payload;
+
+      /** -----------------
+       * UPDATE BE TOKENS
+       * ----------------- */
+      state.listTokenFromBE[protocolData._id] = state.listTokenFromBE[
+        protocolData._id
+      ]?.map((token) => {
+        if (token.isNativeToken) {
+          token.balance = +balance;
+          token.balanceCurrency = usd_price;
+        }
+        return token;
+      });
+
+      /** -----------------
+       * UPDATE LOCAL TOKENS
+       * ----------------- */
+      const id = `${walletAddress}_${protocolData.slip0044}`;
+      state.listTokenByProtocol[id] = state.listTokenByProtocol[id]?.map(
+        (token) => {
+          if (token.isNativeToken) {
+            token.balance = +balance;
+            token.balanceCurrency = usd_price;
+          }
+          return token;
+        }
+      );
+    },
+
     onChangeActiveJetton: (
       state,
       action: PayloadAction<ChangeActiveTokenType>
@@ -317,7 +354,7 @@ export const getCurrentWalletAndProtocol = createSelector(
     );
 
     if (!addRessData) return;
-
+    console.log(`currentProtocolBaseData ${currentProtocolBaseData}`);
     return {
       currentProtocol: currentProtocolBaseData,
       currentWallet: addRessData,
@@ -335,6 +372,8 @@ export const getFullListTokens = createSelector(
   (data, listTokenByProtocol, listTokenBE) => {
     if (!data) return [];
     const { currentProtocol, currentWallet } = data;
+
+    console.log("currentProtocol getFullListTokens ${getFullListTokens");
 
     const listLocal =
       listTokenByProtocol[
@@ -356,8 +395,10 @@ export const filterTokenByWalletAddress = createSelector(
     (state: RootState) => state.tokenLocal.listTokenFromBE,
   ],
   (data, listTokenByProtocol, listTokenFromBE) => {
+    console.log(`listTokenFromBE ${listTokenFromBE}`);
     if (!data) return [];
     const { currentProtocol, currentWallet } = data;
+    
     const customTokens =
       listTokenByProtocol[
         `${currentWallet.address}_${currentProtocol.slip0044}`
@@ -376,7 +417,9 @@ export const filterTokenByWalletAddress = createSelector(
         };
       }) || [];
 
-    const mergedTokens = [...backendTokens, ...customTokens];
+    const mergedTokens = [
+      ...backendTokens, 
+      ...customTokens];
 
     const seenAddresses = new Set();
 
@@ -408,6 +451,7 @@ export const filterTokenByWalletAddress = createSelector(
       }
       return item;
     });
+    console.log(`checkTokenData ${checkTokenData}`);
 
     return checkTokenData;
   }
@@ -432,7 +476,9 @@ export const filterTokenAvailable = createSelector(
       .sort((a, b) => (b.isNativeToken ? 1 : 0) - (a.isNativeToken ? 1 : 0));
     const filterToken = customTokens.filter((token) => token?.active);
 
-    const allToken = [...filterListBETokens, ...filterToken];
+    const allToken = [
+      ...filterListBETokens, 
+      ...filterToken];
 
     const seenAddresses = new Set();
 
@@ -460,6 +506,7 @@ export const {
   updateBalanceTokens,
   activeJettonFromBE,
   onChangeActiveJetton,
+  updateNativeBalance,
 } = localTokenReducer.actions;
 const localTokenReducerExport = localTokenReducer.reducer;
 

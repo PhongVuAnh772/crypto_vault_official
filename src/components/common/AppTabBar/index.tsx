@@ -51,6 +51,7 @@ const AppTabBar: React.FC<TabBarProps<ParamListBase, string>> = ({
   return (
     <ScreenWrapper
       paddingTop
+      paddingBottom
       backgroundImage={appImages.background1}
       backgroundColor={undefined}
       subStyle={[appStyles.flex1, containerStyles]}

@@ -42,13 +42,9 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             backgroundColor: appColors.neutral.n100,
         },
         viewButton: {
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 16 : 0,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor:  undefined,
+            paddingTop: 0,
+            paddingBottom: 0,
             ...appStyles.pH15,
         },
         loadingContainer: {
