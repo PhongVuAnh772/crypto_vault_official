@@ -6,7 +6,6 @@ import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import AppButton from '../AppButton';
 
 type ViewModeButtonType = {
@@ -31,17 +30,13 @@ const ViewModeButton: React.FC<ViewModeButtonType> = ({ viewMoreHistory }) => {
                 }
                 textVariant={TextVariantKeys.titleSmall}
                 textColor={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? appColors.neutral.black
-                        : theme.colors.surface_surface_brand
+                    theme.colors.surface_surface_brand
                 }
                 rightIcon={
                     <View style={appStyles.ml10}>
                         <ArrowSvgIcon
                             color={
-                                GlobalUtils.getEnableRedXNewTheme()
-                                    ? appColors.neutral.black
-                                    : appColors.main.tokyoRed
+                               appColors.main.tokyoRed
                             }
                         />
                     </View>

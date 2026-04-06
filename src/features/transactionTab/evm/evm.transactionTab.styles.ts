@@ -29,13 +29,14 @@ export const useStyles = (theme: AppThemeType, gap = 8) =>
             height: 20,
         },
         header: {
-            paddingVertical: 10,
-            backgroundColor: theme.colors.surface_surface_default,
+            paddingVertical: 15,
+            paddingHorizontal: 20,
+            backgroundColor: 'transparent',
         },
         headerText: {
-            fontSize: 12,
-            fontWeight: 'bold',
-            color: theme.colors.text_on_surface_text_light,
+            fontSize: 14,
+            fontWeight: '600',
+            color: '#8E8E93',
         },
         transactionHistoryItem: {
             ...appStyles.flexRow,

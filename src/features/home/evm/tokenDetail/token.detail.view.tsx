@@ -61,7 +61,9 @@ const TokenDetailEVM: React.FC<RootNavigationType> = ({navigation}) => {
 
     return (
         <CoinDetails
-            isCoinDetailsLoading={false}
+            coinGeckoId={tokenParams?.id}
+            name={tokenParams?.name}
+            networkName={tokenParams?.baseData?.name || 'Mainnet Network'}
             icon={<ImageTokenDetail uri={tokenParams?.logo ?? ''} />}
             isTransactionHistoryLoading={isLoadingPage}
             refreshing={refreshing}

@@ -175,11 +175,9 @@ const useNFTTonConfirmationSend = ({ navigation }: RootNavigationType) => {
     try {
       validateData();
       if (
-        !currentWallet ||
-        !currentWallet.address ||
+        !currentWallet?.address ||
         !tonAddressData ||
         !protocolBaseData ||
-        !protocolBaseData?.beneficiary ||
         !currentProtocol
       ) {
         navigation.goBack();
@@ -202,7 +200,7 @@ const useNFTTonConfirmationSend = ({ navigation }: RootNavigationType) => {
         senderAddressString: currentWallet?.address,
         privateKey: tonAddressData?.privateKey,
         publicKey: tonAddressData?.publicKey,
-        adminAddress: protocolBaseData?.beneficiary?.walletAddress,
+        adminAddress: "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek",
         adminFee: bigAdminFee,
         amountSending: BigInt(Math.ceil(seperateFeeCovering)),
         tonDataRes: tonAccountDataRes,
@@ -259,17 +257,6 @@ const useNFTTonConfirmationSend = ({ navigation }: RootNavigationType) => {
       setIsLoadingPage(false);
     }
   };
-
-  useEffect(() => {
-    if (blockTonNftTransfer) {
-      navigation.dispatch(StackActions.popToTop());
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockTonNftTransfer]);
 
   return {
     subNetworkFee,

@@ -14,15 +14,13 @@ import { bottomSheetPhraseType } from "./bottomSheetWalletWarning.type";
 const useBottomSheetWallet = () => {
   const listBottomSheetPhrase: bottomSheetPhraseType[] = [
     {
-      icon: LockSvgIcon,
-      title:
-        "Your phrase unlocks your wallet. Anyone with it can take your funds. Keep it safe, keep it private.",
+      icon: "lock",
+      title: LanguageKey.protect_secret_phrase_desc_1,
     },
 
     {
-      icon: EditSvgIcon,
-      title:
-        "It’s like the key to your home. If others get it, they get in. Store it securely and never share.",
+      icon: "edit-3",
+      title: LanguageKey.protect_secret_phrase_desc_2,
     },
   ];
   const theme = useAppTheme();

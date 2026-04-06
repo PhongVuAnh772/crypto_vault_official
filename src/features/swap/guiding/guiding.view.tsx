@@ -13,7 +13,7 @@ import {
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import ButtonBottom from 'src/features/home/stake/components/buttonBottom';
+import ButtonBottom from 'src/components/specific/ButtonBottom';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import useGuiding from './guiding.hook';
 import useGuidingStyles from './guiding.styles';

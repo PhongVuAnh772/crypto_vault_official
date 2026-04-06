@@ -38,7 +38,6 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 import { LoadingSkeletonItemAction } from "src/features/home/components/HomeSkeletonLoading";
 import useStyles from "./CoinDetails.styles";
 import {
@@ -54,18 +53,14 @@ export const EmptyView: React.FC<LoadingViewType> = ({ viewMoreHistory }) => {
       <View style={appStyles.pd10}>
         <EmptySvgIcon
           color={
-            GlobalUtils.getEnableRedXNewTheme()
-              ? appColors.neutral.black
-              : appColors.neutral.n600
+            appColors.neutral.n600
           }
         />
       </View>
       <AppText
         titleWithI18n={LanguageKey.transaction_detail_empty_title}
         textColor={
-          GlobalUtils.getEnableRedXNewTheme()
-            ? appColors.neutral.black
-            : appColors.neutral.n600
+          appColors.neutral.n600
         }
         variant={TextVariantKeys.bodyRMedium}
       />
@@ -200,11 +195,11 @@ export const CoinDetailComponent: React.FC<CoinHeaderType> = ({
               ]}
             >
               <TouchableOpacity onPress={onSendPress}>
-                <SendSvgIcon style={styles.colorIconWhite} />
+                <SendSvgIcon color={appColors.neutral.white} />
               </TouchableOpacity>
               <View style={styles.w20} />
               <TouchableOpacity onPress={onReceivePress}>
-                <ReceiveSvgIcon style={styles.colorIconWhite} />
+                <ReceiveSvgIcon color={appColors.neutral.white} />
               </TouchableOpacity>
             </Animated.View>
           </View>
@@ -243,7 +238,7 @@ export const CoinDetailComponent: React.FC<CoinHeaderType> = ({
                     <Animated.View style={[appStyles.alignItemsCenter]}>
                       <TouchableOpacity onPress={onSendPress}>
                         <View style={[styles.featureIcon]}>
-                          {<SendSvgIcon style={styles.colorIcon} />}
+                          <SendSvgIcon color={appColors.neutral.n700} />
                         </View>
                       </TouchableOpacity>
 
@@ -260,7 +255,7 @@ export const CoinDetailComponent: React.FC<CoinHeaderType> = ({
                 <View style={[appStyles.alignItemsCenter]}>
                   <View style={[styles.featureIcon]}>
                     <TouchableOpacity onPress={onReceivePress}>
-                      {<ReceiveSvgIcon style={styles.colorIcon} />}
+                      <ReceiveSvgIcon color={appColors.neutral.n700} />
                     </TouchableOpacity>
                   </View>
 
@@ -427,7 +422,21 @@ export const ListButtonTokenTracking: React.FC<
   );
 };
 
-export const TokenInfoTracking: React.FC = () => {
+export const TokenInfoTracking: React.FC<{ marketData?: any }> = ({ marketData }) => {
+  if (!marketData) return null;
+  
+  const {
+    market_cap,
+    total_volume,
+    circulating_supply,
+    ath,
+    atl,
+  } = marketData;
+
+  const volumeToCap = total_volume?.usd && market_cap?.usd 
+    ? ((total_volume.usd / market_cap.usd) * 100).toFixed(2) + "%"
+    : "-";
+
   return (
     <View style={styles.marketInfoContainer}>
       <AppText
@@ -440,13 +449,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.market_cap}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="$175,118,733,466.06"
-          variant={TextVariantKeys.labelTiny}
+          title={market_cap?.usd ? `$${Utils.fiatFormat(market_cap.usd)}` : "-"}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -455,13 +464,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.volume_24h}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="$103,285,293,336.80"
-          variant={TextVariantKeys.labelTiny}
+          title={total_volume?.usd ? `$${Utils.fiatFormat(total_volume.usd)}` : "-"}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -470,13 +479,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.volume_to_marketcap}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="58.98%"
-          variant={TextVariantKeys.labelTiny}
+          title={volumeToCap}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -485,13 +494,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.circulating_supply}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="174,921,926,112.34"
-          variant={TextVariantKeys.labelTiny}
+          title={circulating_supply ? Utils.formattedBalanceCurrency(circulating_supply) : "-"}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -500,13 +509,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.all_time_high}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="$1.32"
-          variant={TextVariantKeys.labelTiny}
+          title={ath?.usd ? `$${ath.usd}` : "-"}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -515,13 +524,13 @@ export const TokenInfoTracking: React.FC = () => {
       <View style={styles.marketInfoRow}>
         <AppText
           titleWithI18n={LanguageKey.all_time_low}
-          variant={TextVariantKeys.labelTiny}
-          textColor={appColors.neutral.black}
+          variant={TextVariantKeys.labelSmall}
+          textColor={appColors.neutral.n600}
           styles={styles.marketInfoLabelText}
         />
         <AppText
-          title="$0.57"
-          variant={TextVariantKeys.labelTiny}
+          title={atl?.usd ? `$${atl.usd}` : "-"}
+          variant={TextVariantKeys.labelSmall}
           textColor={appColors.neutral.black}
           styles={styles.marketInfoValueText}
         />
@@ -540,7 +549,11 @@ export const TokenBalanceCard = ({
   return (
     <View style={styles.cardContainer}>
       {/* Logo */}
-      <Image source={logo} style={styles.logo} />
+      {typeof logo === 'string' ? (
+        <Image source={{ uri: logo }} style={styles.logo} />
+      ) : (
+        <Image source={logo} style={styles.logo} />
+      )}
 
       {/* Info */}
       <View style={styles.infoContainer}>

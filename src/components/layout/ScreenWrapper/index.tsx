@@ -24,7 +24,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = (props) => {
     scrollEnabled = false,
     bounces = false,
     paddingTop = false,
-    paddingBottom = false,
+    paddingBottom = true,
     mainStyle = appStyles.flex1,
     subStyle = appStyles.flex1,
     theme,

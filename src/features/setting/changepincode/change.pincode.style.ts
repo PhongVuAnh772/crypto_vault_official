@@ -7,8 +7,23 @@ const useStyles = (theme: AppThemeType) =>
         boxPinCode: {
             ...appStyles.pT60,
             ...appStyles.flex1,
-
             backgroundColor: theme.colors.surface_surface_default,
+        },
+        content: {
+            alignItems: 'center',
+            marginTop: 40,
+        },
+        title: {
+            marginBottom: 20,
+            fontWeight: '400',
+        },
+        errorText: {
+            marginTop: 10,
+        },
+        keypadWrapper: {
+            flex: 1,
+            justifyContent: 'flex-end',
+            paddingBottom: 20,
         },
     });
 

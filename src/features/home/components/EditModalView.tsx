@@ -12,7 +12,6 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
-import GlobalUtils from "src/core/utils/globalUtils";
 
 type EditModalType = {
   onCancel: () => void;
@@ -111,7 +110,7 @@ const useStyles = (theme: AppThemeType) =>
     },
     buttonCancel: {
       ...appStyles.center,
-      borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+      borderWidth: 1,
       borderColor: appColors.main.tokyoRed,
       flex: 1,
       marginRight: 10,

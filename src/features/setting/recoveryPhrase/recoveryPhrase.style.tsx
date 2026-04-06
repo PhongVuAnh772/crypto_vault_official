@@ -3,7 +3,6 @@ import { EdgeInsets } from "react-native-safe-area-context";
 import appColors from "src/core/constants/AppColors";
 import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
-import GlobalUtils from "src/core/utils/globalUtils";
 
 const { width } = Dimensions.get("window");
 const NUM_COLUMNS = 3; // số cột muốn hiển thị
@@ -29,10 +28,8 @@ const useStyle = (theme: AppThemeType, insets: EdgeInsets) =>
     secretPhraseItemViewIndex: {
       ...appStyles.center,
       height: 40,
-      width: GlobalUtils.getEnableRedXNewTheme() ? 26 : 32,
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : theme.colors.surface_surface_high,
+      width:  32,
+      backgroundColor: theme.colors.surface_surface_high,
       borderTopLeftRadius: 4,
       borderBottomLeftRadius: 4,
       marginRight: 2,
@@ -45,12 +42,10 @@ const useStyle = (theme: AppThemeType, insets: EdgeInsets) =>
     },
     secretPhraseItemViewPhrase2: {
       ...appStyles.justifyContentCenter,
-      paddingLeft: GlobalUtils.getEnableRedXNewTheme() ? 0 : 8,
+      paddingLeft: 8,
       height: 40,
       width: "100%",
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : theme.colors.surface_surface_high,
+      backgroundColor:  theme.colors.surface_surface_high,
       borderBottomRightRadius: 4,
       borderTopRightRadius: 4,
     },

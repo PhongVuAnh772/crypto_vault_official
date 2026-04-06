@@ -76,8 +76,10 @@ const BitcoinScreen: React.FC<RootNavigationType> = ({navigation}) => {
 
     return (
         <CoinDetails
+            coinGeckoId="bitcoin"
+            name="Bitcoin"
+            networkName="Bitcoin Network"
             refModalShowType={showTypeBottomSheetRef}
-            isCoinDetailsLoading={false}
             icon={<BitcoinSvgIcon width={50} height={50} />}
             isTransactionHistoryLoading={isTransactionHistoryLoading}
             refreshing={refreshing}

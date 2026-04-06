@@ -17,6 +17,7 @@ enum HomeStackScreenKey {
   Transfer = "Transfer",
   BottomTab = "BottomTab",
   Bitcoin = "Bitcoin",
+  ChatScreen = "ChatScreen",
   Ton = "Ton",
   Jetton = "Jetton",
   TransactionDetails = "TransactionDetails",
@@ -54,19 +55,13 @@ enum HomeStackScreenKey {
   ClaimDetailList = "ClaimDetailList",
   NFTCollectionStats = "NFTCollectionStats",
   NFTUnAddedDetail = "NFTUnAddedDetail",
-  RezPointStack = "RezPointStack",
+
   NFTTonDetail = "NFTTonDetail",
   NFTTonList = "NFTTonList",
   NFTTonImport = "NFTTonImport",
   NFTTonSend = "NFTTonSend",
   NFTTonSendDetail = "NFTTonSendDetail",
   NFTTonConfirmationSend = "NFTTonConfirmationSend",
-  Stake = "stake",
-  StakingPoolDetail = "StakingPoolDetail",
-  LockScreen = "LockScreen",
-  StakingTransaction = "StakingTransaction",
-  StakingDetail = "StakingDetail",
-  Guiding = "Guiding",
   Top10EVMs = "Top10EVMs",
   Top10Tokens = "Top10Tokens",
   Swap = "SwapCurrency",
@@ -79,6 +74,15 @@ enum HomeStackScreenKey {
   Scan = "Scan",
   ScanEvm = "ScanEvm",
   MintNftScreen = "MintNftScreen",
+  MoreActionScreen = "MoreActionScreen",
+  NFTMarketplace = "NFTMarketplace",
+  NFTCollection = "NFTCollection",
+  AIDetailScreen = "AIDetailScreen",
+  NFTMarketplaceCollectionDetail = "NFTMarketplaceCollectionDetail",
+  DepositOptions = "DepositOptions",
+  P2PMarket = "P2PMarket",
+  P2PBuyDetail = "P2PBuyDetail",
+  P2POrderDetails = "P2POrderDetails",
 }
 
 enum CreateWalletStackScreenKey {
@@ -101,16 +105,7 @@ enum BottomTabScreenKey {
   Explore = "Explore",
   Setting = "Setting",
 }
-enum RezPointStackScreenKey {
-  RezPointMainScreen = "RezPointMainScreen",
-  RezPointSignIn = "RezPointSignIn",
-  RezPointHistoryScreen = "RezPointHistoryScreen",
-  PersonalInformation = "PersonalInformation",
-  PointHistory = "PointHistory",
-  AboutRezPoint = "AboutRezPoint",
-  EmailVerification = "EmailVerification",
-  EmailVerifiedSuccessfully = "EmailVerifiedSuccessfully",
-}
+
 export {
   AuthStackScreenKey,
   BottomTabScreenKey,
@@ -119,5 +114,5 @@ export {
   NavigationStackKey,
   PinCodeStackScreenKey,
   RestoreWalletStackScreenKey,
-  RezPointStackScreenKey,
+
 };

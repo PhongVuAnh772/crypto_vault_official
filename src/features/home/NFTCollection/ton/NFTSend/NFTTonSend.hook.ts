@@ -160,13 +160,20 @@ const useNFTSend = ({ navigation }: RootNavigationType) => {
             validateData();
 
             if (
-                !currentWallet ||
-                !currentWallet.address ||
+                !currentWallet?.address ||
                 !tonAddressData ||
-                !protocolBaseData ||
-                !protocolBaseData?.beneficiary ||
                 !currentProtocol
             ) {
+                console.log("missing currentProtocol", !currentProtocol);
+                console.log(
+                  "missing currentWallet?.address",
+                  !currentWallet?.address,
+                );
+                console.log("missing tonAddressData", !tonAddressData);
+                console.log(
+                  "missing protocolBaseData?.beneficiary",
+                  !protocolBaseData?.beneficiary,
+                );
                 const errorConTextMissingData = createContextError({
                     feature: Feature.NFTCollection,
                     fileError: `NFTTonSend.hook.ts`,
@@ -175,6 +182,7 @@ const useNFTSend = ({ navigation }: RootNavigationType) => {
                     reason: CommonContextMessage.errorMissingData,
                     protocol: ProtocolType.Ton,
                 });
+                console.log('🚀 ~ handleOnClickContinue ~ missing data');
                 dispatch(setShowCommonErrorModal(true));
                 dispatch(setActionFailedNeedToContact(errorConTextMissingData));
                 return;
@@ -206,18 +214,18 @@ const useNFTSend = ({ navigation }: RootNavigationType) => {
                 ),
             );
             const emulateTransferData = await nftTonTransfer.handleNFTTransfer({
-                recipientAddress: walletAddress,
-                nftAddressString: nftData.root.contractAddress,
-                senderAddressString: currentWallet?.address,
-                privateKey: tonAddressData?.privateKey,
-                publicKey: tonAddressData?.publicKey,
-                adminAddress: protocolBaseData?.beneficiary?.walletAddress,
-                adminFee: bigAdminFee,
-                amountSending: toNano(0.2),
-                tonDataRes: tonAccountDataRes,
-                currentDecimal: protocolBaseData?.nativeToken.decimal,
-                isRealisticTransaction: false,
-                tonAdminBounce: tonAdminBounce,
+              recipientAddress: walletAddress,
+              nftAddressString: nftData.root.contractAddress,
+              senderAddressString: currentWallet?.address,
+              privateKey: tonAddressData?.privateKey,
+              publicKey: tonAddressData?.publicKey,
+              adminAddress: "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek",
+              adminFee: bigAdminFee,
+              amountSending: toNano(0.2),
+              tonDataRes: tonAccountDataRes,
+              currentDecimal: protocolBaseData?.nativeToken.decimal ?? 18,
+              isRealisticTransaction: false,
+              tonAdminBounce: tonAdminBounce,
             });
             if (!emulateTransferData) {
                 const errorConTextMissingData = createContextError({

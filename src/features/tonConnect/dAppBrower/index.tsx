@@ -16,7 +16,6 @@ import TonConnectUtils from 'src/core/services/TonConnect/TonConnectUntil';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
 import Utils from 'src/core/utils/commonUtils';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import {
     ConFirmTransactionView,
     TonConnectView,
@@ -236,7 +235,7 @@ const useStyles = (theme: AppThemeType) =>
             ...appStyles.flex1,
         },
         buttonCancel: {
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+            borderWidth: 1,
             borderColor: theme.colors.text_on_surface_text_brand_2,
         },
         box: {

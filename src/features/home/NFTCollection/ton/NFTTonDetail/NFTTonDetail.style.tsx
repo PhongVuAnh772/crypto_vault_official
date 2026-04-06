@@ -4,7 +4,6 @@ import appColors from 'src/core/constants/AppColors';
 import { PlatformOS } from 'src/core/enum/PlatformOS';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 const box = {
     borderRadius: 4,
@@ -131,9 +130,7 @@ const useStyle = (theme: AppThemeType, insets: EdgeInsets) =>
         buttonSend: {
             ...appStyles.pH25,
             ...appStyles.pT15,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            backgroundColor: undefined,
             paddingBottom: insets.bottom,
         },
         container: {

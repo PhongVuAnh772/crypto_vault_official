@@ -2,19 +2,18 @@ import { StyleSheet } from 'react-native';
 import appColors from 'src/core/constants/AppColors';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 const useStyle = (theme: AppThemeType) =>
     StyleSheet.create({
         ...appStyles,
         container: {
-            paddingHorizontal: GlobalUtils.getEnableRedXNewTheme() ? 24 : 0,
-            marginHorizontal: GlobalUtils.getEnableRedXNewTheme() ? 0 : 24,
-            marginTop: GlobalUtils.getEnableRedXNewTheme() ? 0 : 16,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 20 : 0,
+            paddingHorizontal:  0,
+            marginHorizontal:  24,
+            marginTop:  16,
+            paddingTop:  0,
             justifyContent: 'space-between',
             flex: 1,
-            marginBottom: GlobalUtils.getEnableRedXNewTheme() ? 0 : 26,
+            marginBottom:  26,
             backgroundColor: appColors.neutral.white,
         },
         lastUpdate: {
@@ -37,7 +36,7 @@ const useStyle = (theme: AppThemeType) =>
         },
         button: {
             backgroundColor: appColors.main.tokyoRed,
-            marginBottom: GlobalUtils.getEnableRedXNewTheme() ? 40 : 10,
+            marginBottom:  10,
             minHeight: 48,
         },
         inquiry: {

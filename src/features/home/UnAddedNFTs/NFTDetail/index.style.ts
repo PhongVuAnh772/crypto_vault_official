@@ -147,9 +147,7 @@ const NFTUnAddedDetailStyles = (insets: EdgeInsets, theme: AppThemeType) => {
         buttonAddCollection: {
             ...appStyles.pH25,
             ...appStyles.pT10,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            backgroundColor: undefined,
             paddingBottom: insets?.bottom,
         },
         containerUnAddedDetail: {

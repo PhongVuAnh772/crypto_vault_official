@@ -34,6 +34,7 @@ const ManageCryptoScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   return (
     <ScreenWrapper
       paddingTop
+      paddingBottom={false}
       headerTextColor={undefined}
       backButtonColor={undefined}
       backgroundColor={theme.colors.surface_surface_default}

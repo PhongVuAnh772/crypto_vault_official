@@ -5,14 +5,41 @@ import GlobalUtils from 'src/core/utils/globalUtils';
 
 const useStyles = (theme: AppThemeType) =>
     StyleSheet.create({
-        container: {
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.outline_outine_lightest,
-            paddingHorizontal: 16,
-            paddingVertical: 14,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? 'transparent'
-                : theme.colors.surface_surface_high,
+        itemContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 12,
+        },
+        iconWrapper: {
+            marginRight: 15,
+        },
+        itemInfo: {
+            flex: 1,
+            justifyContent: 'center',
+        },
+        itemTitle: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: '#1C1C1E',
+            marginBottom: 2,
+        },
+        itemSub: {
+            fontSize: 12,
+            color: '#8E8E93',
+            marginBottom: 2,
+        },
+        itemStatus: {
+            fontSize: 12,
+            color: '#8E8E93',
+        },
+        amountInfo: {
+            alignItems: 'flex-end',
+            justifyContent: 'center',
+        },
+        itemAmount: {
+            fontSize: 16,
+            fontWeight: '600',
+            color: '#1C1C1E',
         },
         shortCurrencyContainer: {
             paddingHorizontal: 8,

@@ -126,12 +126,7 @@ const useNFTTonDetail = (
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [collectionStore]);
     const onClickSendButton = () => {
-        if (blockTonNftTransfer || currentProtocol?.isDefault) {
-            return Utils.showToast({
-                msg: t(LanguageKey.common_server_busy),
-                type: AppToastType.error,
-            });
-        }
+        
         navigation.dispatch(
             StackActions.push(HomeStackScreenKey.NFTTonSend, data),
         );

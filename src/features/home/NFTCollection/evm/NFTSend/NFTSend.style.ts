@@ -93,12 +93,8 @@ const useNFTSendStyles = (insets: EdgeInsets) =>
             minHeight: 44,
         },
         buttonContinue: {
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom:  0,
         },
     });
 

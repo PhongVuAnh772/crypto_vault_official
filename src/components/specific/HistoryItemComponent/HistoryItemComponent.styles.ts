@@ -7,19 +7,33 @@ const useStyles = (theme: AppThemeType) =>
     StyleSheet.create({
         transactionHistoryItem: {
             ...appStyles.flexRow,
-            ...appStyles.pd15,
             ...appStyles.alignItemsCenter,
-            backgroundColor: appColors.neutral.white,
-            borderColor: appColors.neutral.n300,
-            // borderBottomWidth: 0.5,
+            backgroundColor: '#fff',
+            paddingVertical: 20,
+            paddingHorizontal: 15,
+            borderRadius: 16,
+            marginBottom: 12,
+            marginHorizontal: 20, // Add margin from screen edges
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.05,
+            shadowRadius: 10,
+            elevation: 2,
+        },
+        iconWrapper: {
+            width: 54,
+            height: 54,
+            borderRadius: 27,
+            backgroundColor: '#F2F2F7',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'hidden',
         },
         bottomItem: {
-            borderBottomRightRadius: 4,
-            borderBottomLeftRadius: 4,
+            // No longer needed for cards
         },
         topItem: {
-            borderTopRightRadius: 4,
-            borderTopLeftRadius: 4,
+            // No longer needed for cards
         },
         containerStatus: {
             paddingHorizontal: 8,
@@ -36,16 +50,10 @@ const useStyles = (theme: AppThemeType) =>
             backgroundColor: appColors.light.yellow,
         },
         maxHeigh: {
-            ...appStyles.pH15,
+            // ...appStyles.pH15,
         },
         listShadow: {
-            borderRadius: 4,
-            shadowColor: appColors.neutral.n300,
-            shadowOffset: {width: 0, height: 4},
-            shadowOpacity: 1,
-            shadowRadius: 4,
-            elevation: 4,
-            ...appStyles.pB50,
+            // ...appStyles.pB50,
         },
         typeModalContainer: {
             alignItems: 'flex-end',

@@ -11,8 +11,8 @@ import { SwapSvgIcon } from 'src/core/constants/AppIconsSvg';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import ButtonBottom from 'src/features/home/stake/components/buttonBottom';
-import RowItem from 'src/features/home/stake/components/rowItem';
+import ButtonBottom from 'src/components/specific/ButtonBottom';
+import RowItem from 'src/components/specific/RowItem';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import {
     getBackgroundColorSwapHistoryDetail,

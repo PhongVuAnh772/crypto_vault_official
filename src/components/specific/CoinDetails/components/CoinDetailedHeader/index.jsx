@@ -11,7 +11,7 @@ import Feather from "@expo/vector-icons/Feather";
 import * as DropdownMenu from "zeego/dropdown-menu";
 
 const CoinDetailedHeader = (props) => {
-  const { coinId, image, symbol, marketCapRank } = props;
+  const { coinId, image, symbol, name, networkName } = props;
   const navigation = useNavigation();
   const { watchlistCoinIds, storeWatchlistCoinId, removeWatchlistCoinId } =
     useWatchlist();
@@ -36,14 +36,14 @@ const CoinDetailedHeader = (props) => {
       />
       <View style={styles.tickerContainer}>
         <AppText
-          title={"Etherium"}
+          title={name || symbol || "Coin"}
           variant={TextVariantKeys.TitleMedium}
           textColor={appColors.neutral.black}
-          styles={{ fontWeight: "700" }}
+          style={{ fontWeight: "700" }}
         />
         <View style={{ height: 4 }} />
         <AppText
-          title={"Etherium Mainnet Network"}
+          title={networkName || "Network"}
           variant={TextVariantKeys.bodyRSmall}
           textColor={"rgb(153, 157, 166)"}
         />
@@ -57,7 +57,6 @@ const CoinDetailedHeader = (props) => {
           {/* Nhãn (optional) */}
           <DropdownMenu.Label>Options</DropdownMenu.Label>
 
-          {/* Item toggle watchlist */}
           <DropdownMenu.Item key="watchlist" onSelect={handleWatchlistCoin}>
             <DropdownMenu.ItemTitle>
               {checkIfCoinIsWatchlisted()
@@ -83,12 +82,11 @@ const CoinDetailedHeader = (props) => {
             <DropdownMenu.ItemTitle>Enable Alerts</DropdownMenu.ItemTitle>
           </DropdownMenu.CheckboxItem>
 
-          {/* Submenu */}
-          <DropdownMenu.Sub>
-            <DropdownMenu.SubTrigger>
+          <DropdownMenu.Sub key="more_sub">
+            <DropdownMenu.SubTrigger key="more_trigger">
               <DropdownMenu.ItemTitle>More</DropdownMenu.ItemTitle>
             </DropdownMenu.SubTrigger>
-            <DropdownMenu.SubContent>
+            <DropdownMenu.SubContent key="more_content">
               <DropdownMenu.Item key="share">
                 <DropdownMenu.ItemTitle>Share</DropdownMenu.ItemTitle>
               </DropdownMenu.Item>

@@ -32,7 +32,6 @@ import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import { NFTTokenStandard } from 'src/core/services/Web3/type';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import useStyles from '../evm/NFTDetail/NFTDetail.style';
 import {
     AvatarNFTType,
@@ -512,9 +511,7 @@ const DeleteNFTModal = ({
             buttonTitleWithI18n2={LanguageKey.common_text_cancel}
             textButtonSecondColor={theme.colors.text_on_surface_text_brand_2}
             buttonSecondContainerStyle={
-                GlobalUtils.getEnableRedXNewTheme()
-                    ? undefined
-                    : NFTDetailStyle.cancelButton
+                NFTDetailStyle.cancelButton
             }
             onPress={onConfirm}
             onPress2={onCancel}
@@ -529,5 +526,6 @@ export {
     MenuOptionIcon,
     NFTImportContent,
     SendNFTSkeletonLoading,
-    TopContentNFTDetails,
+    TopContentNFTDetails
 };
+

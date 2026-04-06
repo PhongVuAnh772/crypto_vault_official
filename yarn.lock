@@ -1257,6 +1257,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo-google-fonts/inter@npm:^0.4.2":
+  version: 0.4.2
+  resolution: "@expo-google-fonts/inter@npm:0.4.2"
+  checksum: 10c0/a88e6d1321584055d2fa265861795d55ec04b64d9726ecb60fd11a970252d23a1fd8c1febab7b587eb8ec699071d35c38c591625e44a2826c1e0e18bb1aa1946
+  languageName: node
+  linkType: hard
+
 "@expo/bunyan@npm:^4.0.0":
   version: 4.0.1
   resolution: "@expo/bunyan@npm:4.0.1"
@@ -1636,6 +1643,18 @@ __metadata:
   peerDependencies:
     expo-modules-autolinking: ">=0.8.1"
   checksum: 10c0/aa1ebd22bdcaaecbe42526c00f6109007531daa10db80224394f030dc87c8b238d46ccac4130ccac32540a448a5f3b637a84e326e66ee6425f18b63a2f32cb7b
+  languageName: node
+  linkType: hard
+
+"@expo/react-native-action-sheet@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "@expo/react-native-action-sheet@npm:4.1.1"
+  dependencies:
+    "@types/hoist-non-react-statics": "npm:^3.3.1"
+    hoist-non-react-statics: "npm:^3.3.0"
+  peerDependencies:
+    react: ">=18.0.0"
+  checksum: 10c0/65a3ec63509c64aefaee4cc128f8b2e897a0a3f04702a0f22ba82bbd9c3fa1873ecc2f39ade44e089d6a209385b59c4af10389a097739c0eeea7c091bd95b4a2
   languageName: node
   linkType: hard
 
@@ -4633,6 +4652,75 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@supabase/auth-js@npm:2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/auth-js@npm:2.101.1"
+  dependencies:
+    tslib: "npm:2.8.1"
+  checksum: 10c0/82821b6e1a8f96a53f2d3c05e1b0bd597ad044dbc1562f826fbe93f354d0ca1f149b9ff2e4f8f02908b17468edad15014ed264667eec076016ab6c9c3294f571
+  languageName: node
+  linkType: hard
+
+"@supabase/functions-js@npm:2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/functions-js@npm:2.101.1"
+  dependencies:
+    tslib: "npm:2.8.1"
+  checksum: 10c0/0c00d58a9b1ff11cd686c085d73e6e330b71f5232bf630a10689f4eae61c7496b1235cb65f7c79b54cb2ce50e87ed0b9a5e2736d61227997fa395f4dc2f8e946
+  languageName: node
+  linkType: hard
+
+"@supabase/phoenix@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "@supabase/phoenix@npm:0.4.0"
+  checksum: 10c0/67973ccace7c8ca2ecdc13dc14f9e80f8b957daa56e75642c6265302287e7124ced3aa9df740dd31e6905e51f0f60d271351117a9e946743ad30ec21210a9421
+  languageName: node
+  linkType: hard
+
+"@supabase/postgrest-js@npm:2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/postgrest-js@npm:2.101.1"
+  dependencies:
+    tslib: "npm:2.8.1"
+  checksum: 10c0/ba6403768d6cd840032b0193f0839d95a2d8e3bb1c0256c13fc343219adf442904c8797c37da1c05174ed339bc301fdefb73324d676e266922ad6858a09a5275
+  languageName: node
+  linkType: hard
+
+"@supabase/realtime-js@npm:2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/realtime-js@npm:2.101.1"
+  dependencies:
+    "@supabase/phoenix": "npm:^0.4.0"
+    "@types/ws": "npm:^8.18.1"
+    tslib: "npm:2.8.1"
+    ws: "npm:^8.18.2"
+  checksum: 10c0/0317723fa6cc5d554f1d16dcc5683cb86e7339e3a89db0aac6895629b59b2a6423ea24f0995e369cb1453215053db3868f094ff3cad87701a8551f827925c4be
+  languageName: node
+  linkType: hard
+
+"@supabase/storage-js@npm:2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/storage-js@npm:2.101.1"
+  dependencies:
+    iceberg-js: "npm:^0.8.1"
+    tslib: "npm:2.8.1"
+  checksum: 10c0/02ecbf2f6e02b62785924a9b498b7b990c9a7710d4468a7a9a8b34bbf66dde0c4c061cc91ed661b62db6ee2b84053e33f0e6cfc973bb68b61811123ddf95aae3
+  languageName: node
+  linkType: hard
+
+"@supabase/supabase-js@npm:^2.101.1":
+  version: 2.101.1
+  resolution: "@supabase/supabase-js@npm:2.101.1"
+  dependencies:
+    "@supabase/auth-js": "npm:2.101.1"
+    "@supabase/functions-js": "npm:2.101.1"
+    "@supabase/postgrest-js": "npm:2.101.1"
+    "@supabase/realtime-js": "npm:2.101.1"
+    "@supabase/storage-js": "npm:2.101.1"
+  checksum: 10c0/0bec714d55d56c5d12ff81470c44a5954f59c4bbcce838211f01c019ffcaf48b88d4f9e6c46bb78a4740bc0194effe839bbd535f62448d0506ba3fa0980f25f4
+  languageName: node
+  linkType: hard
+
 "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0":
   version: 8.0.0
   resolution: "@svgr/babel-plugin-add-jsx-attribute@npm:8.0.0"
@@ -4964,6 +5052,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/hoist-non-react-statics@npm:^3.3.1":
+  version: 3.3.7
+  resolution: "@types/hoist-non-react-statics@npm:3.3.7"
+  dependencies:
+    hoist-non-react-statics: "npm:^3.3.0"
+  peerDependencies:
+    "@types/react": "*"
+  checksum: 10c0/ed8f4e88338f7d021d0f956adf6089d2a12b2e254a03c05292324f2e986d2376eb9efdb8a4f04596823e8fca88c9d06361d20dab4a2a00dc935fb36ac911de55
+  languageName: node
+  linkType: hard
+
 "@types/istanbul-lib-coverage@npm:*, @types/istanbul-lib-coverage@npm:^2.0.0":
   version: 2.0.6
   resolution: "@types/istanbul-lib-coverage@npm:2.0.6"
@@ -5010,6 +5109,22 @@ __metadata:
   version: 0.0.29
   resolution: "@types/json5@npm:0.0.29"
   checksum: 10c0/6bf5337bc447b706bb5b4431d37686aa2ea6d07cfd6f79cc31de80170d6ff9b1c7384a9c0ccbc45b3f512bae9e9f75c2e12109806a15331dc94e8a8db6dbb4ac
+  languageName: node
+  linkType: hard
+
+"@types/lodash.isequal@npm:^4.5.8":
+  version: 4.5.8
+  resolution: "@types/lodash.isequal@npm:4.5.8"
+  dependencies:
+    "@types/lodash": "npm:*"
+  checksum: 10c0/6db28cacf165d55421fbf2970ccfb1682a7b82b743bb7aba4398fa8ab98f1711fca2fe4afa1aa2b7b4afb3eff76c8aca13b22206f5efeb038d99e41300589bca
+  languageName: node
+  linkType: hard
+
+"@types/lodash@npm:*":
+  version: 4.17.23
+  resolution: "@types/lodash@npm:4.17.23"
+  checksum: 10c0/9d9cbfb684e064a2b78aab9e220d398c9c2a7d36bc51a07b184ff382fa043a99b3d00c16c7f109b4eb8614118f4869678dbae7d5c6700ed16fb9340e26cc0bf6
   languageName: node
   linkType: hard
 
@@ -5155,6 +5270,15 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/af36857b804e6df615b401bacf34e9312f073ed9dbeda35be16ee3352d18a4449f27066169893166a6ec17ae51557c3adf8d232ac4a4a0226aafb3267e1f1b39
+  languageName: node
+  linkType: hard
+
+"@types/ws@npm:^8.18.1":
+  version: 8.18.1
+  resolution: "@types/ws@npm:8.18.1"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/61aff1129143fcc4312f083bc9e9e168aa3026b7dd6e70796276dcfb2c8211c4292603f9c4864fae702f2ed86e4abd4d38aa421831c2fd7f856c931a481afbab
   languageName: node
   linkType: hard
 
@@ -7871,6 +7995,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:^1.11.19":
+  version: 1.11.19
+  resolution: "dayjs@npm:1.11.19"
+  checksum: 10c0/7d8a6074a343f821f81ea284d700bd34ea6c7abbe8d93bce7aba818948957c1b7f56131702e5e890a5622cdfc05dcebe8aed0b8313bdc6838a594d7846b0b000
+  languageName: node
+  linkType: hard
+
 "dayjs@npm:^1.8.15":
   version: 1.11.18
   resolution: "dayjs@npm:1.11.18"
@@ -10503,6 +10634,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"iceberg-js@npm:^0.8.1":
+  version: 0.8.1
+  resolution: "iceberg-js@npm:0.8.1"
+  checksum: 10c0/e504da64cc26e8ad7c5344353a7203c671a740c14eb6086f20505f5e9739cab774493e616032530c962df97f2a855115cc2e89a47dd81581df5917b21a69ec48
+  languageName: node
+  linkType: hard
+
 "iconv-lite@npm:0.4.24":
   version: 0.4.24
   resolution: "iconv-lite@npm:0.4.24"
@@ -11785,6 +11923,13 @@ __metadata:
   version: 4.0.8
   resolution: "lodash.debounce@npm:4.0.8"
   checksum: 10c0/762998a63e095412b6099b8290903e0a8ddcb353ac6e2e0f2d7e7d03abd4275fe3c689d88960eb90b0dde4f177554d51a690f22a343932ecbc50a5d111849987
+  languageName: node
+  linkType: hard
+
+"lodash.isequal@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "lodash.isequal@npm:4.5.0"
+  checksum: 10c0/dfdb2356db19631a4b445d5f37868a095e2402292d59539a987f134a8778c62a2810c2452d11ae9e6dcac71fc9de40a6fedcb20e2952a15b431ad8b29e50e28f
   languageName: node
   linkType: hard
 
@@ -14312,19 +14457,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-gesture-handler@npm:~2.16.1":
-  version: 2.16.2
-  resolution: "react-native-gesture-handler@npm:2.16.2"
+"react-native-gesture-handler@npm:^2.30.0":
+  version: 2.30.0
+  resolution: "react-native-gesture-handler@npm:2.30.0"
   dependencies:
     "@egjs/hammerjs": "npm:^2.0.17"
     hoist-non-react-statics: "npm:^3.3.0"
     invariant: "npm:^2.2.4"
-    lodash: "npm:^4.17.21"
-    prop-types: "npm:^15.7.2"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/cd31794870edc51bc7051bf22893b19cebda5754c2fbd381f72e6ae6a718c26c5cf6966ad2f80e15e3a3217d09cc3e2e1637132f70bf44aacf62ea15a7636c98
+  checksum: 10c0/26b94b0f97433fc6fb5b1c196ef29fce4f5a66c77fabb1bc33db91099357fbd44a5220783fcbb91d42700bcd578f2fd114314029d9e0d4674878767d9b7f5df6
   languageName: node
   linkType: hard
 
@@ -14336,6 +14479,26 @@ __metadata:
   peerDependencies:
     react-native: ">=0.56"
   checksum: 10c0/2ce71f1ab7f5b36d4a9dd59cc80b4aa75526f047c6680a7f1a388fa8b9a62efdacaf7b7de3be593c73e882773b2eee74916b00f7c8b158e40b46388998218586
+  languageName: node
+  linkType: hard
+
+"react-native-gifted-chat@npm:^3.3.2":
+  version: 3.3.2
+  resolution: "react-native-gifted-chat@npm:3.3.2"
+  dependencies:
+    "@expo/react-native-action-sheet": "npm:^4.1.1"
+    "@types/lodash.isequal": "npm:^4.5.8"
+    dayjs: "npm:^1.11.19"
+    lodash.isequal: "npm:^4.5.0"
+    react-native-zoom-reanimated: "npm:^1.5.2"
+  peerDependencies:
+    react: ">=18.0.0"
+    react-native: "*"
+    react-native-gesture-handler: ">=2.0.0"
+    react-native-keyboard-controller: ">=1.0.0"
+    react-native-reanimated: ">=3.0.0 || ^4.0.0"
+    react-native-safe-area-context: ">=5.0.0"
+  checksum: 10c0/8e0d15826c40c4e7e5a564cb402886be52625a1d6334b9970f967dca5fb31a9e62dfdac0e3e10386109c039a9ce70b367f2c8703db4b6660f529f3379ae4d070
   languageName: node
   linkType: hard
 
@@ -14404,10 +14567,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-keyboard-controller@npm:^1.20.7":
+  version: 1.20.7
+  resolution: "react-native-keyboard-controller@npm:1.20.7"
+  dependencies:
+    react-native-is-edge-to-edge: "npm:^1.2.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 10c0/f3a1682552ed90f086f4442ba2eebfb2080451e4c9d686345ba92b8fbeca3498172e6b302a413406fabe9ab06cc19c67dbec22a7703b72342f89d39fce136db3
+  languageName: node
+  linkType: hard
+
 "react-native-keychain@npm:^8.2.0":
   version: 8.2.0
   resolution: "react-native-keychain@npm:8.2.0"
   checksum: 10c0/7c32335f673c60bd64576bd21b087cdf601087f1588296367546b5fca15aa83be86723d5414ea90667ebc251237918853f65147de7f8df0707b228e6a13ab829
+  languageName: node
+  linkType: hard
+
+"react-native-linear-gradient@npm:^2.8.3":
+  version: 2.8.3
+  resolution: "react-native-linear-gradient@npm:2.8.3"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/cd41bf28e9f468173f1e5e768685128ebf8bbf9077710e43b63482c1a76f37bff8ab3d1d6adfd7b4d54e648672356c02bea46c47cdbdb1844ebe5c5caf720114
   languageName: node
   linkType: hard
 
@@ -14741,6 +14927,16 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/813c3cb176effd65f8d9b45eb00732ac87bfab2d0b1c4016f0d43e95f9a287e495913540ebe4f47da868c804f6fdcb2246a2156d6e31712bd426b43bcecc8e7f
+  languageName: node
+  linkType: hard
+
+"react-native-zoom-reanimated@npm:^1.5.2":
+  version: 1.5.2
+  resolution: "react-native-zoom-reanimated@npm:1.5.2"
+  peerDependencies:
+    react-native-gesture-handler: ">= 2.0.0"
+    react-native-reanimated: ">=3.0.0"
+  checksum: 10c0/7172e7074698392c97c155bb8e352b801f02707be799ff5de20522b436ed97e60040739db6a25927dd6ea688ee971327596be6784de04ebf99270606d674e0fb
   languageName: node
   linkType: hard
 
@@ -16731,6 +16927,7 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@craftzdog/react-native-buffer": "npm:^6.0.5"
     "@dev-plugins/react-navigation": "npm:^0.0.6"
+    "@expo-google-fonts/inter": "npm:^0.4.2"
     "@gorhom/bottom-sheet": "npm:^4.6.4"
     "@notifee/react-native": "npm:^9.1.1"
     "@react-native-async-storage/async-storage": "npm:1.23.1"
@@ -16750,6 +16947,7 @@ __metadata:
     "@reown/walletkit": "npm:^1.2.1"
     "@rneui/base": "npm:^4.0.0-rc.8"
     "@rneui/themed": "npm:^4.0.0-rc.8"
+    "@supabase/supabase-js": "npm:^2.101.1"
     "@ton-api/client": "npm:^0.2.0"
     "@ton-api/ton-adapter": "npm:^0.2.0"
     "@ton/core": "npm:^0.59.0"
@@ -16810,13 +17008,16 @@ __metadata:
     react-native-dotenv: "npm:^3.4.11"
     react-native-fast-image: "npm:^8.6.3"
     react-native-fast-pbkdf2: "npm:^0.3.1"
-    react-native-gesture-handler: "npm:~2.16.1"
+    react-native-gesture-handler: "npm:^2.30.0"
     react-native-get-random-values: "npm:^1.11.0"
+    react-native-gifted-chat: "npm:^3.3.2"
     react-native-haptic-feedback: "npm:^2.3.3"
     react-native-image-picker: "npm:^8.2.1"
     react-native-ios-context-menu: "npm:3.1.0"
     react-native-ios-utilities: "npm:5.1.2"
+    react-native-keyboard-controller: "npm:^1.20.7"
     react-native-keychain: "npm:^8.2.0"
+    react-native-linear-gradient: "npm:^2.8.3"
     react-native-pager-view: "npm:^6.4.1"
     react-native-paper: "npm:^5.12.5"
     react-native-permissions: "npm:^4.1.5"
@@ -16905,7 +17106,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
+"tslib@npm:2.8.1, tslib@npm:^2.0.0, tslib@npm:^2.0.1, tslib@npm:^2.0.3, tslib@npm:^2.1.0, tslib@npm:^2.3.1, tslib@npm:^2.4.0":
   version: 2.8.1
   resolution: "tslib@npm:2.8.1"
   checksum: 10c0/9c4759110a19c53f992d9aae23aac5ced636e99887b51b9e61def52611732872ff7668757d4e4c61f19691e36f4da981cd9485e869b4a7408d689f6bf1f14e62
@@ -18609,6 +18810,21 @@ __metadata:
     utf-8-validate:
       optional: true
   checksum: 10c0/bd7d5f4aaf04fae7960c23dcb6c6375d525e00f795dd20b9385902bd008c40a94d3db3ce97d878acc7573df852056ca546328b27b39f47609f80fb22a0a9b61d
+  languageName: node
+  linkType: hard
+
+"ws@npm:^8.18.2":
+  version: 8.20.0
+  resolution: "ws@npm:8.20.0"
+  peerDependencies:
+    bufferutil: ^4.0.1
+    utf-8-validate: ">=5.0.2"
+  peerDependenciesMeta:
+    bufferutil:
+      optional: true
+    utf-8-validate:
+      optional: true
+  checksum: 10c0/956ac5f11738c914089b65878b9223692ace77337ba55379ae68e1ecbeae9b47a0c6eb9403688f609999a58c80d83d99865fe0029b229d308b08c1ef93d4ea14
   languageName: node
   linkType: hard
 

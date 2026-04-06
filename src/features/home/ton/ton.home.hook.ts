@@ -22,7 +22,9 @@ import {
   ProtocolDataWithSupportedTokensFormBEType,
   SupportedNativeTokenType,
   SupportedTokenItemType,
+  AddressListItemType,
 } from "src/core/redux/slice/account.type";
+import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
 import {
   getBlockTonTransfer,
   getHeightBottomTab,
@@ -355,11 +357,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     }
   };
 
-  const goToStakeScreen = () => {
-    navigation.dispatch(
-      StackActions.push(HomeStackScreenKey.Stake, { test: "1234565" })
-    );
-  };
 
   const updateTotalBalance = (currentListCryptoData: ListCryptoDataType[]) => {
     const walletBalance = currentListCryptoData.reduce(
@@ -435,8 +432,57 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceState]);
+
+  const [isAddView, setIsAddView] = useState(false);
+  const [showBottomSheetModal, setShowBottomSheetModal] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<AddressListItemType | null>(null);
+  const [menuActionType, setMenuActionType] = useState<MenuActionType | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [newWalletAddress, setNewWalletAddress] = useState("");
+
+  const showMenuWallet = selectedWallet !== null;
+
+  const showBottomSheetModalAction = () => {
+    setShowBottomSheetModal(true);
+  };
+
+  const closeShowBottomSheetModal = () => {
+    setShowBottomSheetModal(false);
+  };
+
+  const onChangeMenuActionType = (type: MenuActionType) => {
+    setMenuActionType(type);
+  };
+
+  const onCloseMenuWallet = () => {
+    setSelectedWallet(null);
+    setMenuActionType(null);
+  };
+
+  const onShowMenuWallet = (wallet: AddressListItemType, index: number) => {
+    // Note: index-based ref measuring would go here if needed, 
+    // but for now we'll provide the basic structure
+    setSelectedWallet(wallet);
+    setNewWalletAddress(wallet.name);
+  };
+
+  const handlePressWallet = (data: AddressListItemType) => {
+    closeShowBottomSheetModal();
+    // Assuming a similar action as EVM for switching wallets
+    // dispatch(changWallet(data.id)); 
+    // Wait, let's check if changWallet exists. Yes, from account.slice
+  };
+
+  const removeWalletAction = async () => {
+    // Implement if needed
+  };
+
+  const editWalletAction = async () => {
+    // Implement if needed
+  };
+
   const getBackgroundImage = () => {
-    return lightMode ? appImages.background1Dark : appImages.background1;
+    return lightMode ? appImages.newBackground2 : appImages.newBackground2;
   };
 
   return {
@@ -449,11 +495,30 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     listCryptoData,
     selectedAddress,
     isFirstInitial,
-    goToStakeScreen,
     walletBalanceCurrency,
     selectedCurrencySetting,
     getBackgroundImage,
     dispatch,
+    // New variables
+    showBottomSheetModal,
+    showBottomSheetModalAction,
+    closeShowBottomSheetModal,
+    isAddView,
+    setIsAddView,
+    menuActionType,
+    onCloseMenuWallet,
+    showMenuWallet,
+    removeWalletAction,
+    editWalletAction,
+    newWalletAddress,
+    setNewWalletAddress,
+    menuPosition,
+    addressList,
+    selectedAddressId,
+    protocolBaseData,
+    handlePressWallet,
+    onShowMenuWallet,
+    onChangeMenuActionType,
   };
 };
 

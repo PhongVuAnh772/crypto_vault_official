@@ -8,6 +8,8 @@ PODS:
     - JWTDecode (~> 3.1)
     - SimpleKeychain (~> 1.1)
   - boost (1.83.0)
+  - BVLinearGradient (2.8.3):
+    - React-Core
   - ComputableLayout (0.7.0):
     - DGSwiftUtilities (~> 0.11)
   - ContextMenuAuxiliaryPreview (0.5.2):
@@ -1502,6 +1504,27 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
+  - react-native-keyboard-controller (1.20.7):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2024.01.01.00)
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Codegen
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-rendererdebug
+    - React-utils
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - Yoga
   - react-native-menu (1.2.2):
     - React
   - react-native-netinfo (11.4.1):
@@ -1814,7 +1837,7 @@ PODS:
     - Firebase/RemoteConfig (= 11.11.0)
     - React-Core
     - RNFBApp
-  - RNGestureHandler (2.16.2):
+  - RNGestureHandler (2.30.0):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1986,7 +2009,7 @@ PODS:
     - SDWebImage/Core (~> 5.10)
   - SimpleKeychain (1.1.0)
   - SocketRocket (0.7.0)
-  - SwiftProtobuf (1.31.1)
+  - SwiftProtobuf (1.36.1)
   - TrustWalletCore (4.1.5):
     - TrustWalletCore/Core (= 4.1.5)
   - TrustWalletCore/Core (4.1.5):
@@ -2004,6 +2027,7 @@ PODS:
 DEPENDENCIES:
   - A0Auth0 (from `../node_modules/react-native-auth0`)
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
+  - BVLinearGradient (from `../node_modules/react-native-linear-gradient`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXAV (from `../node_modules/expo-av/ios`)
   - EXConstants (from `../node_modules/expo-constants/ios`)
@@ -2075,6 +2099,7 @@ DEPENDENCIES:
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-ios-context-menu (from `../node_modules/react-native-ios-context-menu`)
   - react-native-ios-utilities (from `../node_modules/react-native-ios-utilities`)
+  - react-native-keyboard-controller (from `../node_modules/react-native-keyboard-controller`)
   - "react-native-menu (from `../node_modules/@react-native-menu/menu`)"
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../node_modules/react-native-pager-view`)
@@ -2167,6 +2192,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-auth0"
   boost:
     :podspec: "../node_modules/react-native/third-party-podspecs/boost.podspec"
+  BVLinearGradient:
+    :path: "../node_modules/react-native-linear-gradient"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   EXAV:
@@ -2284,6 +2311,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-ios-context-menu"
   react-native-ios-utilities:
     :path: "../node_modules/react-native-ios-utilities"
+  react-native-keyboard-controller:
+    :path: "../node_modules/react-native-keyboard-controller"
   react-native-menu:
     :path: "../node_modules/@react-native-menu/menu"
   react-native-netinfo:
@@ -2389,6 +2418,7 @@ SPEC CHECKSUMS:
   A0Auth0: 3e5033500f199020186a42c49020ecd508a72b27
   Auth0: 28cb24cb19ebd51f0b07751f16d83b59f4019532
   boost: d3f49c53809116a5d38da093a8aa78bf551aed09
+  BVLinearGradient: cb006ba232a1f3e4f341bb62c42d1098c284da70
   ComputableLayout: c50faffac4ed9f8f05b0ce5e6f3a60df1f6042c8
   ContextMenuAuxiliaryPreview: 20be0be795b783b68f8792732eed4bed9f202c1c
   DGSwiftUtilities: 567f8d5ee618f0b7afb185b17aa45ff356315a0f
@@ -2472,6 +2502,7 @@ SPEC CHECKSUMS:
   react-native-image-picker: 8e0eee3463521800cbf40016f2137c694efeaff8
   react-native-ios-context-menu: 3a4f5dc9e0bba345d87211b8c43537d0f35b076a
   react-native-ios-utilities: bce149f17675bb4473081c2e8e1f602f491f868a
+  react-native-keyboard-controller: bf82a8757d44b64912c7c9d2c92580d12e6af3ec
   react-native-menu: c394bbb3578281165d0025e500c9711f164e8fe1
   react-native-netinfo: cec9c4e86083cb5b6aba0e0711f563e2fbbff187
   react-native-pager-view: eea83249a6a479e36351281e158be0dec409550a
@@ -2511,7 +2542,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: c3bb5533f9957eddc88f3ea383583309a4ce9f89
   RNFBMessaging: 0f0498a95c605e3afcf13ac5f349d0b201ea65f6
   RNFBRemoteConfig: 4eb5fc9f21dc324153c7d3f5b48c935ab9031876
-  RNGestureHandler: 5d95b0a3cffed8325ed0c181f4f411c1dcd49317
+  RNGestureHandler: d93202b7ae5851d65b541c896a81b20d3c402e1e
   RNKeychain: bbe2f6d5cc008920324acb49ef86ccc03d3b38e4
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPermissions: 7fcfd9df7f70de24605ac7b8cc0e22852a1688ee
@@ -2524,7 +2555,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
+  SwiftProtobuf: 9e106a71456f4d3f6a3b0c8fd87ef0be085efc38
   TrustWalletCore: 23f08e2a8810b450f4a7673a3d137ebfb9243120
   VisionCamera: 0d520167daf1ccfad20b1ce6b952ddf224e8a5da
   Yoga: 33622183a85805e12703cd618b2c16bfd18bfffb

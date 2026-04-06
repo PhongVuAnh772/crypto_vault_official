@@ -79,13 +79,17 @@ export const useProtocolSelected = () => {
 
 export const useCurrentWallet = (): AddressListItemType | undefined => {
     const accountLists = useAppSelector(getAllAccount);
+    console.log('accountLists' + accountLists);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    console.log(selectedProtocolId);
     const selectAccountId = useAppSelector(getAccountId);
+    console.log(selectAccountId);
 
     if (accountLists !== undefined) {
         const accountWallet = [...accountLists].find(
             e => e?.id === selectAccountId,
         );
+        console.log(accountWallet);
         if (!accountWallet) {
             return;
         }
@@ -94,12 +98,14 @@ export const useCurrentWallet = (): AddressListItemType | undefined => {
         const currentProtocol = protocolData?.find(
             e => e?._id === selectedProtocolId,
         );
+        console.log(currentProtocol);
 
         if (!currentProtocol) {
             return;
         }
         const { addressList, selectedAddressId } = currentProtocol;
         const addRessData = addressList.find(e => e.id === selectedAddressId);
+        console.log(addRessData);
 
         if (!addRessData) {
             return;

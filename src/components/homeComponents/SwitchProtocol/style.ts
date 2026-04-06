@@ -24,7 +24,7 @@ export const containerStyles = (theme: AppThemeType, insets: EdgeInsets) => {
         cancelActionSwitching: {
             backgroundColor: appColors.neutral.white,
             borderColor: appColors.main.tokyoRed,
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 0.6,
+            borderWidth: 0.6,
         },
     });
 };

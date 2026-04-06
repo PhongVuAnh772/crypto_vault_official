@@ -1,77 +1,75 @@
+import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { ImageBackground, StyleSheet, View } from 'react-native';
-import AppText from 'src/components/common/AppText';
-import appColors from 'src/core/constants/AppColors';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import { appImages } from 'src/core/constants/AppImages';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
-import LanguageKey from 'src/core/locales/LanguageKey';
-import { useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
+import { useCurrentWallet, useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
 import appStyles from 'src/core/styles';
 import Utils from 'src/core/utils/commonUtils';
-import GlobalUtils from 'src/core/utils/globalUtils';
 
 type WalletAcBalanceRedXProps = {
     balance: number;
     withoutCurrencyRate: boolean;
+    onPressAccount?: () => void;
 };
-const BalanceRedX: React.FC<WalletAcBalanceRedXProps> = ({
+const BalanceCard: React.FC<WalletAcBalanceRedXProps> = ({
     withoutCurrencyRate,
     balance,
+    onPressAccount,
 }) => {
     const theme = useAppTheme();
     const selectedCurrencySetting = useSelectedCurrencySetting();
+    const currentWallet = useCurrentWallet();
     const balanceConverted = `${selectedCurrencySetting?.sign ?? ''} ${Utils.fiatFormat(balance * (withoutCurrencyRate ? 1 : selectedCurrencySetting?.rate))}`;
-    const ViewBalanceRedX: React.FC = () => {
-        return (
-            <>
-                <AppText
-                    titleWithI18n={LanguageKey.common_red_x_balance}
-                    variant={TextVariantKeys.bodyRTiny}
-                    textColor={theme.colors.text_on_surface_text_invert}
-                    numberOfLines={1}
-                    maxFontSizeMultiplier={1.4}
-                />
-                <View style={appStyles.mt5}>
-                    <AppText
-                        title={balanceConverted}
-                        variant={TextVariantKeys.titleMedium}
-                        textColor={theme.colors.text_on_surface_text_invert}
-                        numberOfLines={1}
-                        maxFontSizeMultiplier={1.4}
-                    />
+
+    const formattedAddress = currentWallet?.address 
+        ? `${currentWallet.address.slice(0, 8)}...${currentWallet.address.slice(-8)}`
+        : 'Accounts';
+
+    return (
+        <View style={styles.container}>
+            <Text style={styles.label}>Main - {selectedCurrencySetting.symbol || 'EUR'}</Text>
+            <Text style={styles.balance}>{balanceConverted}</Text>
+            <TouchableOpacity style={styles.accountsBtn} onPress={onPressAccount}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={styles.accountsText}>{formattedAddress}</Text>
+                    <Feather name="chevron-down" size={16} color="#fff" style={{ marginLeft: 5 }} />
                 </View>
-            </>
-        );
-    };
-    return GlobalUtils.getEnableRedXNewTheme() ? (
-        <View style={[styles.imageBackgroundRedXBalanceContainer]}>
-            <ViewBalanceRedX />
+            </TouchableOpacity>
         </View>
-    ) : (
-        <ImageBackground
-            source={appImages.RedXBalanceBackground}
-            imageStyle={styles.imageBackgroundRedXBalance}
-            style={[styles.imageBackgroundRedXBalanceContainer]}>
-            <ViewBalanceRedX />
-        </ImageBackground>
     );
 };
+
 const styles = StyleSheet.create({
-    imageBackgroundRedXBalance: {
-        flex: 61,
-        borderRadius: 4,
+    container: {
+        alignItems: 'center',
+        paddingVertical: 30,
+        width: '100%',
     },
-    imageBackgroundRedXBalanceContainer: {
-        flex: 61,
-        borderRadius: GlobalUtils.getEnableRedXNewTheme() ? 0 : 4,
-        paddingHorizontal: 12,
-        justifyContent: 'space-between',
-        paddingVertical: 16,
-        backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-            ? appColors.main.tokyoRed
-            : undefined,
+    label: {
+        color: 'rgba(255,255,255,0.7)',
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 8,
+    },
+    balance: {
+        color: '#fff',
+        fontSize: 48,
+        fontWeight: '700',
+        marginBottom: 15,
+    },
+    accountsBtn: {
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        paddingHorizontal: 25,
+        paddingVertical: 8,
+        borderRadius: 25,
+    },
+    accountsText: {
+        color: '#fff',
+        fontSize: 14,
+        fontWeight: '700',
     },
 });
 
-export default BalanceRedX;
+export default BalanceCard;

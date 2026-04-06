@@ -146,12 +146,8 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         buttonConfirm: {
             ...appStyles.pH25,
             ...appStyles.pT10,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            backgroundColor: undefined,
+            paddingBottom: 0,
         },
         container: {
             ...appStyles.pT15,

@@ -9,78 +9,93 @@ import {
   TextInput,
   View,
 } from "react-native";
+
 import { launchImageLibrary } from "react-native-image-picker";
+
+import RequirePinCodeLayout from "src/components/layout/RequirePinCode/requirePinCode.view";
+
+import { useTonAddressData } from "src/core/redux/slice/account.selector";
+
+import TonUtils from "src/core/utils/tonUtils";
 import { MintFlow } from "./mint.flow";
+import { PinataService } from "./services/pinata.service";
 
 export default function MintNftScreen() {
+  const tonAddressData = useTonAddressData();
+
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showModalConfirmTransaction, setShowModalConfirmTransaction] =
+    useState(false);
 
-  const mnemonic = [
-    "step",
-    "camp",
-    "taste",
-    "client",
-    "clutch",
-    "tiny",
-    "coast",
-    "dilemma",
-    "butter",
-    "nose",
-    "lounge",
-    "meat",
-  ];
+  /* ===============================
+     PICK IMAGE
+  =============================== */
 
   const pickImage = async () => {
-    try {
-      const res = await launchImageLibrary({
-        mediaType: "photo",
-        quality: 0.9,
-        selectionLimit: 1,
-      });
+    const res = await launchImageLibrary({
+      mediaType: "photo",
+      quality: 0.9,
+      selectionLimit: 1,
+    });
 
-      if (res.didCancel) return;
-
-      if (res.errorCode) {
-        Alert.alert("Lỗi chọn ảnh", res.errorMessage || "Unknown error");
-        return;
-      }
-
-      if (res.assets?.length) {
-        setImageUri(res.assets[0].uri || null);
-      }
-    } catch (e) {
-      console.log(e);
+    if (res.assets?.length) {
+      setImageUri(res.assets[0].uri || null);
     }
   };
 
-  const mint = async () => {
-    if (!imageUri || !name) {
+  /* ===============================
+     MINT
+  =============================== */
+
+  const mint = async (pinCode: string) => {
+    if (!imageUri || !name || !tonAddressData) {
       Alert.alert("Thiếu dữ liệu");
       return;
     }
 
     try {
+      setShowModalConfirmTransaction(false);
       setLoading(true);
 
-      const result = await MintFlow.mintNFT({
-        imageUri,
-        mnemonic,
+      /* ---------- Upload image ---------- */
+      const imageHash = await PinataService.uploadFile(imageUri);
+
+      const metadataHash = await PinataService.uploadJSON({
         name,
         description: desc,
-        collectionAddress: "",
+        image: `ipfs://${imageHash}`,
       });
 
-      Alert.alert("Mint xong 🎉", JSON.stringify(result, null, 2));
+      /* ---------- Mint ---------- */
+       const getSecretKey = TonUtils.merKeyToGetSecretKey(
+         tonAddressData.privateKey,
+         tonAddressData.publicKey,
+       );
+      const result = await MintFlow.mintNFT({
+        imageHash,
+        name,
+        description: desc,
+        metadataHash,
+        publicKey: tonAddressData.publicKey,
+        secretKey: getSecretKey,
+        ownerAddress: tonAddressData.address,
+      });
+
+      Alert.alert("Mint thành công 🎉", JSON.stringify(result, null, 2));
     } catch (e: any) {
       console.log(e);
-      Alert.alert("Mint lỗi", e.message);
+      Alert.alert("Mint lỗi", e?.message ?? "Unknown error");
     } finally {
       setLoading(false);
     }
   };
+
+  /* ===============================
+     UI
+  =============================== */
 
   return (
     <View style={styles.container}>
@@ -107,11 +122,24 @@ export default function MintNftScreen() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button title="Mint NFT" onPress={mint} />
+        <Button
+          title="Mint NFT"
+          onPress={() => setShowModalConfirmTransaction(true)}
+        />
       )}
+
+      <RequirePinCodeLayout
+        visible={showModalConfirmTransaction}
+        continueActionAfterPassPinCode={mint}
+        onClose={() => setShowModalConfirmTransaction(false)}
+      />
     </View>
   );
 }
+
+/* ===============================
+   STYLE
+================================ */
 
 const styles = StyleSheet.create({
   container: {

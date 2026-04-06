@@ -80,9 +80,7 @@ const useStyle = (insets: EdgeInsets, theme: AppThemeType) =>
         },
         container: {
             backgroundColor: theme.colors.surface_surface_default,
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
+            paddingBottom: 0,
         },
     });
 

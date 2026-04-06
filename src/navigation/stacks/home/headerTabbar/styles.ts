@@ -85,8 +85,8 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         },
         accountIcon: {
             ...appStyles.center,
-            width: 32,
-            height: 32,
+            width: 26,
+            height: 26,
             backgroundColor: theme.colors.surface_surface_high,
             borderRadius: 100,
             shadowColor: appColors.neutral.black,
@@ -107,11 +107,9 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             ...appStyles.alignItemsCenter,
             ...appStyles.pH25,
             ...appStyles.fullWidth,
-            marginTop: GlobalUtils.getEnableRedXNewTheme() ? 0 : insets.top,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? insets.top : 0,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.main.tokyoRed
-                : undefined,
+            marginTop: insets.top,
+            paddingTop: 0,
+            backgroundColor: undefined,
         },
         ml8: {
             marginLeft: 8,
@@ -125,6 +123,56 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             width: 20,
             height: 20,
             ...appStyles.center,
+        },
+        searchBar: {
+            flex: 1,
+            height: 38,
+            backgroundColor: 'rgba(255,255,255,0.15)',
+            borderRadius: 19,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 12,
+            marginHorizontal: 10,
+        },
+        searchInput: {
+            flex: 1,
+            fontSize: 14,
+            paddingLeft: 6,
+            paddingVertical: 0,
+            color: 'white',
+        },
+        iconBtn: {
+            width: 32,
+            height: 32,
+            borderRadius: 16,
+            backgroundColor: 'rgba(0,0,0,0.05)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginLeft: 6,
+        },
+        protocolScrollWrapper: {
+            maxWidth: 156, // Fixed width for the protocol area
+            marginHorizontal: 4,
+        },
+        protocolScroll: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 2,
+        },
+        protocolIconItem: {
+            width: 34,
+            height: 34,
+            borderRadius: 17,
+            backgroundColor: 'rgba(255,255,255,0.1)',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 6,
+            borderWidth: 1,
+            borderColor: 'transparent',
+        },
+        protocolIconActive: {
+            backgroundColor: 'rgba(255,100,100,0.2)', // Light red-ish tint for active
+            borderColor: 'rgba(255,255,255,0.4)',
         },
     });
 

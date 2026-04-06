@@ -46,11 +46,11 @@ const useStyles = (theme: AppThemeType) =>
       shadowColor: appColors.neutral.n300,
       shadowOffset: {
         width: 0,
-        height: GlobalUtils.getEnableRedXNewTheme() ? 0 : 4,
+        height: 4,
       },
-      shadowOpacity: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+      shadowOpacity: 1,
       shadowRadius: 4,
-      elevation: GlobalUtils.getEnableRedXNewTheme() ? 0 : 4,
+      elevation: 4,
     },
     iconArrowDown: {
       ...appStyles.center,
@@ -98,8 +98,8 @@ const useStyles = (theme: AppThemeType) =>
     },
     sectionList: {
       ...appStyles.pH15,
-      paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 30 : 15,
-      paddingBottom: GlobalUtils.getEnableRedXNewTheme() ? 40 : 0,
+      paddingTop: 15,
+      paddingBottom: 0,
     },
     listShadow: {
       borderRadius: 4,
@@ -129,9 +129,7 @@ const useStyles = (theme: AppThemeType) =>
       justifyContent: "space-evenly",
       alignItems: "center",
       marginHorizontal: 24,
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : appColors.neutral.white,
+      backgroundColor: appColors.neutral.white,
       minHeight: 80,
       borderRadius: 4,
       paddingVertical: 12,
@@ -156,9 +154,7 @@ const useStyles = (theme: AppThemeType) =>
     featureIcon: {
       width: 36,
       height: 36,
-      backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-        ? undefined
-        : appColors.neutral.n200,
+      backgroundColor: appColors.neutral.n200,
       justifyContent: "center",
       alignItems: "center",
       borderRadius: 4,
@@ -174,7 +170,7 @@ const useStyles = (theme: AppThemeType) =>
       position: "absolute",
       right: 0,
       zIndex: 99999,
-      top: GlobalUtils.getEnableRedXNewTheme() ? 6 : 10,
+      top: 10,
     },
     actionButtonHeader: {
       justifyContent: "center",
@@ -192,7 +188,7 @@ const useStyles = (theme: AppThemeType) =>
       paddingVertical: 10,
     },
     containerContentInsideHeader: {
-      marginTop: GlobalUtils.getEnableRedXNewTheme() ? 8 : 0,
+      marginTop: 0,
     },
     boxActionLoading: {
       borderRadius: 4,

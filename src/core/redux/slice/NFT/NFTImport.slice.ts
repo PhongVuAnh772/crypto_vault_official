@@ -444,6 +444,7 @@ export const getCollectionsMoralisThunk = createAsyncThunk(
                 params.address,
                 params,
             );
+            console.log(response);
             if (response.status !== 200) {
                 Utils.showToast({
                     msg: t(LanguageKey.common_server_busy),

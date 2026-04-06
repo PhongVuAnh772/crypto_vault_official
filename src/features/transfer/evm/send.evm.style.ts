@@ -100,14 +100,10 @@ const useStyles = (theme: AppThemeType, insets?: EdgeInsets) =>
             borderRadius: 4,
         },
         newButton: {
-            paddingBottom: GlobalUtils.getEnableRedXNewTheme()
-                ? insets?.bottom
-                : 0,
-            paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 15 : 0,
+            paddingBottom: 0,
+            paddingTop: 0,
             ...appStyles.pH25,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            backgroundColor: undefined,
         },
         container: {
             ...appStyles.pT10,

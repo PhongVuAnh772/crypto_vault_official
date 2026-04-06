@@ -5,15 +5,24 @@ import * as React from "react";
 import AccountListener from "src/components/layout/AccountListener";
 import HideHeaderStack from "src/components/layout/HideHeaderStack";
 import { useAppDispatch } from "src/core/redux/hooks";
+import ChatScreen from "src/features/chat";
 import BitcoinScreen from "src/features/coinDetails/bitcoin/bitcoin.coinDetails.view";
 import JettonScreen from "src/features/coinDetails/jetton/jetton.coinDetails.view";
 import TonScreen from "src/features/coinDetails/ton/ton.coinDetails.view";
 import AddCustomTokenWrapper from "src/features/home/addCustomToken/index.view";
+import AIDetailScreen from "src/features/home/AIDetail/AIDetail.view";
+import NFTCollectionContainerScreen from "src/features/home/bottomTab/NFTCollection";
+import NFTMarketplaceScreen from "src/features/home/bottomTab/NFTMarketplace/NFTMarketplace.view";
 import ConnectionScreen from "src/features/home/connected";
+import DepositOptionsScreen from "src/features/home/deposit/index.view";
+import P2PMarketScreen from "src/features/home/p2pMarket/index.view";
+import P2PBuyDetailScreen from "src/features/home/p2pMarket/buyDetail/index.view";
+import P2POrderDetailsScreen from "src/features/home/p2pMarket/orderDetails/index.view";
 import SelectTokenEVM from "src/features/home/evm/selectToken/selectToken.view";
 import TokenDetailEVM from "src/features/home/evm/tokenDetail/token.detail.view";
 import ManageCryptoScreen from "src/features/home/manageCrypto/manageCrypto.view";
 import AddProtocol from "src/features/home/manageProtocol/addProtocol/addProtocol.view";
+import MoreActionScreen from "src/features/home/moreAction/index.view";
 import NFTConfirmationSend from "src/features/home/NFTCollection/evm/NFTConfirmationSendNFT/NFTConfirmationSendNFT.view";
 import NFTDetail from "src/features/home/NFTCollection/evm/NFTDetail/NFTDetail.view";
 import NFTImport from "src/features/home/NFTCollection/evm/NFTImport/NFTImport.view";
@@ -25,6 +34,7 @@ import NFTTonList from "src/features/home/NFTCollection/ton/NFTList/NFTTonList.v
 import NFTTonSend from "src/features/home/NFTCollection/ton/NFTSend/NFTTonSend.view";
 import NFTTonSendDetail from "src/features/home/NFTCollection/ton/NFTSendDetail/NFTSendDetail.view";
 import NFTTonDetail from "src/features/home/NFTCollection/ton/NFTTonDetail/NFTTonDetail.view";
+import NFTMarketplaceCollectionDetailScreen from "src/features/home/NFTCollectionDetail";
 import ProjectDetailsWrapper from "src/features/home/projectDetails";
 import ClaimDetailList from "src/features/home/projectDetails/ClaimDetailList/ClaimDetailList.view";
 import ConfirmClaimToken from "src/features/home/projectDetails/confirm/confirmClaimToken.view";
@@ -33,12 +43,6 @@ import PriceFeedList from "src/features/home/projectDetails/PriceFeedList/PriceF
 import TransactionClaimDetail from "src/features/home/projectDetails/transactionDetails/TransactionDetails.view";
 import TransactionProjectDetails from "src/features/home/projectDetails/transactionDetails/TransactionProjectDetails.view";
 import ScanScreen from "src/features/home/scan/scan.view";
-import StakeScreen from "src/features/home/stake";
-import GuidingView from "src/features/home/stake/guiding/guiding.view";
-import LockView from "src/features/home/stake/lock/lock.view";
-import StakingDetailView from "src/features/home/stake/stakingDetail/stakingDetail.view";
-import StakingPoolDetailView from "src/features/home/stake/stakingPoolDetail/stakingPoolDetail.view";
-import StakingTransactionView from "src/features/home/stake/stakingTransaction/stakingTransaction.view";
 import Top10EVMs from "src/features/home/Top10/EVMs/evm.view";
 import Top10Tokens from "src/features/home/Top10/Tokens/tokens.view";
 import NFTCollectionStats from "src/features/home/UnAddedNFTs/NFTCollectionStats/NFTCollectionStats.view";
@@ -73,7 +77,6 @@ import {
 import TransactionDetails from "src/features/transactionDetials/transactionDetails.view";
 import TransferScreen from "src/features/transfer/transfer.view";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
-import RezPointStack from "../rezPoint";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
 import BottomTab from "./bottomTab";
@@ -123,13 +126,23 @@ const HomeStack = () => {
     <>
       <HideHeaderStack initialRouteName={HomeStackScreenKey.BottomTab}>
         <Stack.Screen
-          name={HomeStackScreenKey.MintNftScreen}
-          component={MintNftScreen}
-        />
-        <Stack.Screen
           name={HomeStackScreenKey.BottomTab}
           component={BottomTab}
         />
+        <Stack.Screen
+          name={HomeStackScreenKey.ChatScreen}
+          component={ChatScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.MintNftScreen}
+          component={MintNftScreen}
+
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.MoreActionScreen}
+          component={MoreActionScreen}
+        />
+
         <Stack.Screen
           name={HomeStackScreenKey.Transfer}
           component={TransferScreen}
@@ -260,13 +273,7 @@ const HomeStack = () => {
           name={HomeStackScreenKey.NFTUnAddedDetail}
           component={NFTUnAddedDetail}
         />
-        <Stack.Screen
-          name={HomeStackScreenKey.RezPointStack}
-          component={RezPointStack}
-          options={{
-            animation: "slide_from_right",
-          }}
-        />
+
         <Stack.Screen
           name={HomeStackScreenKey.SelectToken}
           component={SelectTokenScreen}
@@ -295,30 +302,25 @@ const HomeStack = () => {
           name={HomeStackScreenKey.NFTTonConfirmationSend}
           component={NFTTonConfirmationSend}
         />
-        <Stack.Screen name={HomeStackScreenKey.Stake} component={StakeScreen} />
-        <Stack.Screen
-          name={HomeStackScreenKey.StakingPoolDetail}
-          component={StakingPoolDetailView}
-        />
-        <Stack.Screen
-          name={HomeStackScreenKey.LockScreen}
-          component={LockView}
-        />
-        <Stack.Screen
-          name={HomeStackScreenKey.StakingTransaction}
-          component={StakingTransactionView}
-        />
-        <Stack.Screen
-          name={HomeStackScreenKey.StakingDetail}
-          component={StakingDetailView}
-        />
-        <Stack.Screen
-          name={HomeStackScreenKey.Guiding}
-          component={GuidingView}
-        />
         <Stack.Screen
           name={HomeStackScreenKey.AddCustomToken}
           component={AddCustomTokenWrapper}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.DepositOptions}
+          component={DepositOptionsScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.P2PMarket}
+          component={P2PMarketScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.P2PBuyDetail}
+          component={P2PBuyDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.P2POrderDetails}
+          component={P2POrderDetailsScreen}
         />
         <Stack.Screen
           name={HomeStackScreenKey.Top10Tokens}
@@ -357,6 +359,22 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.ScanEvm}
           component={ScanEvmScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.NFTMarketplace}
+          component={NFTMarketplaceScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.NFTCollection}
+          component={NFTCollectionContainerScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.AIDetailScreen}
+          component={AIDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.NFTMarketplaceCollectionDetail}
+          component={NFTMarketplaceCollectionDetailScreen}
         />
       </HideHeaderStack>
       <AccountListener />

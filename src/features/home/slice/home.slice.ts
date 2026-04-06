@@ -80,22 +80,29 @@ export const getPriceTokenEVM = createAsyncThunk(
 );
 
 export const getBalanceNativeEVM = createAsyncThunk(
-    'home/getBalanceTokensEVM',
-    async (
-        { walletAddress, params, contractAddress }: GetBalanceNativeParamsThunk,
-        { rejectWithValue },
-    ) => {
-        const moralis = new MoralisService();
-        const response = await moralis.getBalanceTokens(walletAddress, params);
-        if (response.status !== 200 || !response.data?.result.length) {
-            return rejectWithValue(response.data);
-        }
+  "home/getBalanceNativeEVM",
+  async (
+    { walletAddress, params }: GetBalanceNativeParamsThunk,
+    { rejectWithValue }
+  ) => {
+    try {
+      const moralis = new MoralisService();
+      const response = await moralis.getNativeBalance(walletAddress, params);
+    
+      if (response.status !== 200 || !response.data) {
 
-        return response.data?.result.find(token =>
-            compareAddressesEVM(token.token_address, contractAddress),
-        );
-    },
+        return rejectWithValue(response.data);
+      }
+      console.log(`response.data.balance ${response.data.balance}`);
+      return {
+        balance: response.data.balance, // string
+      };
+    } catch (e) {
+      return rejectWithValue(e);
+    }
+  }
 );
+
 
 export const homeSlice = createSlice({
     name: 'homeSlice',

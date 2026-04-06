@@ -14,7 +14,7 @@ import {
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 
-const useNFTCollection = ({navigation}: RootNavigationType) => {
+const useNFTCollection = ({ navigation }: RootNavigationType) => {
     const lightMode = useAppSelector(getThemeMode) !== ThemeKey.light;
     const theme = useAppTheme();
     const [isLoadings, setIsLoadings] = useState<LoadingImage>({});

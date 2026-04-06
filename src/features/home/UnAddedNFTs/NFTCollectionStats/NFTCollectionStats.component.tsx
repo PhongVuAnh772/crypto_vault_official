@@ -25,7 +25,6 @@ import useAppSafeAreaInsets from 'src/core/hooks/useAppSafeAreaInsets';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import nftUtils from 'src/core/utils/nftUtils';
 import useStyles from 'src/features/home/NFTCollection/evm/NFTDetail/NFTDetail.style';
 import { LoadingWrapper } from '../../bottomTab/NFTCollection/NFTCollectionTab/components/NFTCollection.components';
@@ -510,9 +509,7 @@ export const EmptyNFTCollectionDetail: React.FC = ({
                     titleWithI18n={LanguageKey.No_asset_found_title}
                     variant={TextVariantKeys.titleLarge}
                     textColor={
-                        GlobalUtils.getEnableRedXNewTheme()
-                            ? appColors.neutral.black
-                            : theme.colors.text_on_surface_text_medium
+                        theme.colors.text_on_surface_text_medium
                     }
                     styles={appStyles.textAlignCenter}
                 />
@@ -521,9 +518,7 @@ export const EmptyNFTCollectionDetail: React.FC = ({
                 titleWithI18n={LanguageKey.we_have_found_any_token_title}
                 variant={TextVariantKeys.bodyRMedium}
                 textColor={
-                    GlobalUtils.getEnableRedXNewTheme()
-                        ? appColors.neutral.black
-                        : theme.colors.text_on_surface_text_light
+                    theme.colors.text_on_surface_text_light
                 }
                 styles={appStyles.textAlignCenter}
             />

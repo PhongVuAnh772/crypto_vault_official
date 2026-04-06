@@ -103,6 +103,7 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     <ScreenWrapper
       mainStyle={[appStyles.flex1]}
       subStyle={[appStyles.flex1]}
+      paddingBottom={false}
       backgroundColor={
         count === 1 ? "rgb(23, 24, 29)" : theme.colors.surface_surface_brand
       }

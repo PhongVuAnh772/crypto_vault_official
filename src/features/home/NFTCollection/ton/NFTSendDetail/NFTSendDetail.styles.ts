@@ -41,9 +41,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         button: {
             ...appStyles.pH25,
             ...appStyles.pT10,
-            backgroundColor: GlobalUtils.getEnableRedXNewTheme()
-                ? appColors.neutral.white
-                : undefined,
+            backgroundColor: undefined,
             paddingBottom: insets?.bottom,
         },
         container: {

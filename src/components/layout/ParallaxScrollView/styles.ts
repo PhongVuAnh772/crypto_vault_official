@@ -24,8 +24,8 @@ const parallaxScrollViewStyle = StyleSheet.create({
     },
     contentInsideHeader: {
         position: 'absolute',
-        left: GlobalUtils.getEnableRedXNewTheme() ? 15 : 25,
-        right: GlobalUtils.getEnableRedXNewTheme() ? 15 : 25,
+        left: 25,
+        right: 25,
     },
 });
 export default parallaxScrollViewStyle;

@@ -10,7 +10,6 @@ import {
     setShowCommonErrorModal,
 } from 'src/core/redux/slice/app.slice';
 import { AppThemeType } from 'src/core/type/ThemeType';
-import GlobalUtils from 'src/core/utils/globalUtils';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import { rootNavigate } from 'src/navigation/stacks/type/RootParamListType';
 import AppModal from '../common/AppModal';
@@ -51,7 +50,7 @@ const CommonErrorModal = () => {
 const useStyles = (theme: AppThemeType) =>
     StyleSheet.create({
         buttonCancel: {
-            borderWidth: GlobalUtils.getEnableRedXNewTheme() ? 0 : 1,
+            borderWidth: 1,
             borderColor: theme.colors.text_on_surface_text_brand_2,
         },
     });
