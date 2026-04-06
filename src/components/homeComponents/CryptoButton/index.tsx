@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { TouchableOpacity, View, Text } from 'react-native';
 import AppText from 'src/components/common/AppText';
 import ProtocolImage from 'src/components/specific/ProtocolImage';
 import Slip0044 from 'src/core/enum/Slip0044';
@@ -7,6 +7,7 @@ import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import appStyles from 'src/core/styles';
 import useStyles from './styles';
+import { AppThemeType } from 'src/core/type/ThemeType';
 
 type CryptoButtonType = {
     title?: string;
@@ -37,86 +38,27 @@ const CryptoButton: React.FC<CryptoButtonType> = ({
     const styles = useStyles(theme);
 
     return (
-        <Pressable
-            onPress={() => {
-                if (onPress) {
-                    onPress();
-                }
-            }}
-            style={[
-                appStyles.flexRow,
-                appStyles.alignItemsCenter,
-                styles.container,
-            ]}>
-            <ProtocolImage
-                isDefaultData={isDefaultData}
-                slip0044={slip0044}
-                size={28}
-                logoUri={logoUri}
-            />
-            <View
-                style={[
-                    appStyles.flex1,
-                    appStyles.pL10,
-                    appStyles.justifyContentBetween,
-                ]}>
-                <View>
-                    <View
-                        style={[appStyles.flexRow, appStyles.alignItemsCenter]}>
-                        <AppText
-                            title={title}
-                            variant={TextVariantKeys.bodyMMedium}
-                            textColor={theme.colors.text_on_surface_text_high}
-                            numberOfLines={1}
-                        />
-                        <View
-                            style={[
-                                appStyles.ml10,
-                                styles.shortCurrencyContainer,
-                                appStyles.mr10,
-                            ]}>
-                            <AppText
-                                title={symbol}
-                                variant={TextVariantKeys.labelTiny}
-                                textColor={
-                                    theme.colors.text_on_surface_text_medium
-                                }
-                            />
-                        </View>
-                    </View>
-                    <View style={appStyles.mt5}>
-                        <AppText
-                            title={baseRateFiatString ?? '-'}
-                            variant={TextVariantKeys.bodyMSmall}
-                            textColor={theme.colors.text_on_surface_text_light}
-                        />
-                    </View>
-                </View>
+        <TouchableOpacity
+            onPress={onPress}
+            style={styles.itemContainer}
+        >
+            <View style={styles.iconWrapper}>
+                <ProtocolImage
+                    isDefaultData={isDefaultData}
+                    slip0044={slip0044}
+                    size={44}
+                    logoUri={logoUri}
+                />
             </View>
-            <View
-                style={[
-                    appStyles.alignItemsEnd,
-                    appStyles.justifyContentCenter,
-                ]}>
-                <View style={[appStyles.mt5, appStyles.alignItemsEnd]}>
-                    <AppText
-                        title={balanceString}
-                        variant={TextVariantKeys.titleSmall}
-                        textColor={theme.colors.text_on_surface_text_high}
-                        styles={appStyles.textAlignRight}
-                    />
-                    <View style={appStyles.mt5}>
-                        <AppText
-                            title={balanceToCurrencyString ?? '-'}
-                            variant={TextVariantKeys.bodyRSmall}
-                            textColor={
-                                theme.colors.text_on_surface_text_lightest
-                            }
-                        />
-                    </View>
-                </View>
+            <View style={styles.itemInfo}>
+                <Text style={styles.itemTitle}>{title || 'To Marvilo'}</Text>
+                <Text style={styles.itemSub}>29 Feb, 20:37 · {symbol || 'UIScreens'}</Text>
+                <Text style={styles.itemStatus}>Completed</Text>
             </View>
-        </Pressable>
+            <View style={styles.amountInfo}>
+                <Text style={styles.itemAmount}>{balanceToCurrencyString || '0,00 €'}</Text>
+            </View>
+        </TouchableOpacity>
     );
 };
 

@@ -1,6 +1,6 @@
 import { t } from 'i18next';
 import React from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Image } from 'react-native';
 import AppText from 'src/components/common/AppText';
 import appColors from 'src/core/constants/AppColors';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
@@ -12,7 +12,6 @@ import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
 import DateTimeUtils from 'src/core/utils/dateTimeUtils';
-import WalletUtils from 'src/core/utils/walletUtils';
 import TransactionHistoryTypeIcon from '../TransactionHistoryTypeIcon';
 import useStyles from './HistoryItemComponent.styles';
 import { HistoryItemComponentType } from './HistoryItemComponent.type';
@@ -33,155 +32,69 @@ export const HistoryItemComponent: React.FC<HistoryItemComponentType> = ({
     const theme = useAppTheme();
     const styles = useStyles(theme);
 
-    const getStatusStyle = () => {
-        switch (status) {
-            case TransactionStatusType.Completed:
-                return [styles.containerStatus, styles.completedColor];
-            case TransactionStatusType.Pending:
-                return [styles.containerStatus, styles.pendingColor];
-            case TransactionStatusType.Failed:
-                return [styles.containerStatus, styles.errorColor];
-            default:
-                return [styles.containerStatus, styles.pendingColor];
-        }
-    };
-
-    const getStatusText = () => {
-        switch (status) {
-            case TransactionStatusType.Completed:
-                return LanguageKey.transaction_history_completed;
-            case TransactionStatusType.Pending:
-                return LanguageKey.transaction_history_pending;
-            case TransactionStatusType.Failed:
-                return LanguageKey.common_text_fail;
-            default:
-                return LanguageKey.transaction_history_pending;
-        }
-    };
-
-    const getTextColor = () => {
-        switch (status) {
-            case TransactionStatusType.Completed:
-                return appColors.functional.green;
-            case TransactionStatusType.Pending:
-                return appColors.functional.yellow;
-            case TransactionStatusType.Failed:
-                return appColors.neutral.n600;
-            default:
-                return appColors.functional.green;
-        }
-    };
-
     const isReceive =
         transactionType === TransactionType.Receive ||
         transactionType === TransactionType.ReceiveNFT;
 
     const getTitle = () => {
-        let title;
-        if (isNFTReceiveTransfer) {
-            return LanguageKey.nft_send;
-        }
-        if (transactionType === TransactionType.SmartContractExec) {
-            return LanguageKey.transaction_smart_contract_call;
-        }
-        if (transactionType === TransactionType.SendNFT) {
-            return LanguageKey.nft_send;
-        }
-        if (transactionType === TransactionType.ReceiveNFT) {
-            return `${t(LanguageKey.common_text_receive_nft)}`;
-        }
-        title = isReceive
-            ? LanguageKey.common_text_receive
-            : LanguageKey.home_send_title;
-
-        return customTitle ?? title;
+        if (customTitle) return customTitle;
+        if (isNFTReceiveTransfer) return LanguageKey.nft_send;
+        if (transactionType === TransactionType.SmartContractExec) return LanguageKey.transaction_smart_contract_call;
+        if (transactionType === TransactionType.SendNFT) return LanguageKey.nft_send;
+        if (transactionType === TransactionType.ReceiveNFT) return `${t(LanguageKey.common_text_receive_nft)}`;
+        if (transactionType === TransactionType.Swap) return LanguageKey.home_swap_title;
+        
+        return isReceive ? LanguageKey.common_text_receive : LanguageKey.home_send_title;
     };
+
+    const isSwap = transactionType === TransactionType.Swap;
 
     return (
         <TouchableOpacity
             onPress={onPress}
             key={itemKey}
+            activeOpacity={0.8}
             style={[styles.transactionHistoryItem, containerStyle]}>
-            <TransactionHistoryTypeIcon
-                type={
-                    isNFTReceiveTransfer
-                        ? TransactionType.ReceiveNFT
-                        : transactionType
-                }
-                uri={logoUri}
-            />
-            <View
-                style={[
-                    appStyles.justifyContentBetween,
-                    appStyles.flex1,
-                    appStyles.pL10,
-                ]}>
-                <View
-                    style={[
-                        appStyles.justifyContentBetween,
-                        appStyles.flexRow,
-                    ]}>
-                    <View style={[appStyles.flexRow]}>
-                        <AppText
-                            titleWithI18n={getTitle()}
-                            variant={TextVariantKeys.bodyMMedium}
-                            textColor={appColors.neutral.black}
-                            maxFontSizeMultiplier={1.2}
-                        />
-                        <View style={[getStatusStyle()]}>
-                            <AppText
-                                titleWithI18n={getStatusText()}
-                                variant={TextVariantKeys.labelTiny}
-                                textColor={getTextColor()}
-                                maxFontSizeMultiplier={1.2}
-                            />
-                        </View>
-                    </View>
-                    <AppText
-                        title={amountTitle}
-                        variant={TextVariantKeys.titleSmall}
-                        allowFontScaling={false}
-                        textColor={
-                            isReceive || isNFTReceiveTransfer
-                                ? appColors.functional.success
-                                : appColors.main.tokyoRed
-                        }
-                        maxFontSizeMultiplier={1.2}
-                        styles={appStyles.textAlignRight}
-                    />
-                </View>
-                <View
-                    style={[
-                        appStyles.flex1,
-                        appStyles.justifyContentBetween,
-                        appStyles.alignItemsEnd,
-                        appStyles.flexRow,
-                    ]}>
-                    {address ? (
-                        <AppText
-                            title={`${t(
-                                isReceive || isNFTReceiveTransfer
-                                    ? LanguageKey.common_text_from
-                                    : LanguageKey.common_text_to,
-                            )}: ${WalletUtils.getShortAddress(address)}`}
-                            variant={TextVariantKeys.bodyMMedium}
-                            textColor={appColors.neutral.n500}
-                            maxFontSizeMultiplier={1.2}
-                        />
-                    ) : (
-                        <View />
-                    )}
-                    {createdAt ? (
-                        <AppText
-                            title={`${DateTimeUtils.formatTimeWithTimezone(
-                                createdAt,
-                            )}`}
-                            variant={TextVariantKeys.bodyRSmall}
-                            textColor={appColors.neutral.n500}
-                            maxFontSizeMultiplier={1.2}
-                        />
-                    ) : null}
-                </View>
+            
+            {/* LARGE Icon matching mockup */}
+            <View style={styles.iconWrapper}>
+              <TransactionHistoryTypeIcon
+                  type={isNFTReceiveTransfer ? TransactionType.ReceiveNFT : transactionType}
+                  uri={logoUri}
+                  size={50} // Large as in mockup
+              />
+            </View>
+
+            <View style={[appStyles.flex1, appStyles.pL15, appStyles.justifyContentCenter]}>
+              <AppText
+                  titleWithI18n={getTitle()}
+                  variant={TextVariantKeys.bodyMMedium}
+                  textColor="#111"
+                  styles={{ fontWeight: '700', fontSize: 16 }}
+              />
+              <AppText
+                  title={address ? `To ${address.substring(0,6)}...${address.substring(address.length-4)}` : "Uniswap"}
+                  variant={TextVariantKeys.bodyRSmall}
+                  textColor="#8E8E93"
+                  styles={{ marginTop: 2 }}
+              />
+            </View>
+
+            <View style={appStyles.alignItemsEnd}>
+              <AppText
+                  title={amountTitle}
+                  variant={TextVariantKeys.bodyMMedium}
+                  textColor={isReceive || isNFTReceiveTransfer ? '#4CAF50' : '#111'}
+                  styles={{ fontWeight: '700', fontSize: 16 }}
+              />
+              {isSwap && (
+                  <AppText
+                      title="-10,064.43 USDT" // Placeholder for swap secondary amount if available
+                      variant={TextVariantKeys.bodyRSmall}
+                      textColor="#8E8E93"
+                      styles={{ marginTop: 2 }}
+                  />
+              )}
             </View>
         </TouchableOpacity>
     );

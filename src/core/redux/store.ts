@@ -29,9 +29,8 @@ import accountSliceReducer from "./slice/account.slice";
 import appSliceReducer from "./slice/app.slice";
 import NFTReducer from "./slice/NFT/NFTImport.slice";
 import NFTDataReducer from "./slice/NftData.slice";
-import rezPointReducer from "./slice/rezPoint/rezPoint.slice";
-import stakingReducer from "./slice/staking/staking.slice";
 import swapReducer from "./slice/swap/swap.slice";
+import appConfigSliceReducer from "./slice/appConfig.slice";
 
 const persistConfig = {
   storage: AsyncStorage,
@@ -47,7 +46,6 @@ const persistConfig = {
     ReduxKey.faq,
     ReduxKey.bitcoin,
     ReduxKey.explore,
-    // ReduxKey.rezPoint,
     ReduxKey.transferSlice,
     ReduxKey.NFTReducer,
     ReduxKey.swap,
@@ -58,6 +56,7 @@ const persistConfig = {
 
 const rootReducer = combineReducers({
   app: appSliceReducer,
+  appConfig: appConfigSliceReducer,
   bitcoin: bitcoinSliceReducer,
   home: homeSliceReducer,
   ton: tonSliceReducer,
@@ -70,10 +69,8 @@ const rootReducer = combineReducers({
   explore: exploreReducer,
   tokenLocal: localTokenReducerExport,
   evmSend: evmSendSlice,
-  rezPoint: rezPointReducer,
   transferSlice: transferSliceReducer,
   NFTDataSlice: NFTDataReducer,
-  staking: stakingReducer,
   swap: swapReducer,
   tonConnect: tonConnectReducer,
   walletConnect: walletConnectSliceReducer,

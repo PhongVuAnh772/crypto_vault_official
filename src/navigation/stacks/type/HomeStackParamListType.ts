@@ -13,13 +13,10 @@ import {
   NFTData,
   NFTTonCollection,
 } from "src/core/redux/slice/NFT/NFTImport.type";
-import { StakingHistoryItem } from "src/core/redux/slice/staking/staking.type";
 import { ListCryptoDataType } from "src/features/home/home.type";
 import { NFTSendConfirmationRouteProp } from "src/features/home/NFTCollection/ton/NFTConfirmationSend/NFTConfirmationSend.hook";
 import { NFTTonData } from "src/features/home/NFTCollection/ton/NFTImport/NFTTonImport.type";
 import { NFTTonSendDetailType } from "src/features/home/NFTCollection/ton/NFTSendDetail/NFTSendDetail.type";
-import { StakingTransactionParams } from "src/features/home/stake/stakingTransaction/stakingTransaction.type";
-import { StakingPool } from "src/features/home/stake/types";
 import { HistoryViewDetailTransactionProps } from "src/features/swap/historyDetail/historyDetail.type";
 import { TonConnectDAppBrowserParams } from "src/features/tonConnect/dAppBrower/jsBridge/types";
 import { TransactionDetailsProps } from "./HomeParamListType";
@@ -69,7 +66,6 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.ClaimDetailList]: undefined;
   [HomeStackScreenKey.NFTCollectionStats]: undefined;
   [HomeStackScreenKey.NFTUnAddedDetail]: NFTUnAddedDetailParamListType;
-  [HomeStackScreenKey.RezPointStack]: undefined;
   [HomeStackScreenKey.SelectToken]: undefined;
   [HomeStackScreenKey.NFTTonDetail]: NFTTonData;
   [HomeStackScreenKey.NFTTonList]: NFTTonCollection;
@@ -77,12 +73,6 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.NFTTonSend]: NFTTonData;
   [HomeStackScreenKey.NFTTonSendDetail]: NFTTonSendDetailType;
   [HomeStackScreenKey.NFTTonConfirmationSend]: NFTSendConfirmationRouteProp;
-  [HomeStackScreenKey.Stake]: undefined;
-  [HomeStackScreenKey.StakingPoolDetail]: StakingPool;
-  [HomeStackScreenKey.LockScreen]: StakingPool;
-  [HomeStackScreenKey.StakingTransaction]: StakingTransactionParams;
-  [HomeStackScreenKey.StakingDetail]: StakingHistoryItem;
-  [HomeStackScreenKey.Guiding]: undefined;
   [HomeStackScreenKey.AddCustomToken]: undefined;
   [HomeStackScreenKey.Top10Tokens]: undefined;
   [HomeStackScreenKey.Top10EVMs]: undefined;
@@ -96,4 +86,40 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.Scan]: undefined;
   [HomeStackScreenKey.ScanEvm]: undefined;
   [HomeStackScreenKey.MintNftScreen]: undefined;
+  [HomeStackScreenKey.NFTMarketplace]: undefined;
+  [HomeStackScreenKey.NFTCollection]: undefined;
+  [HomeStackScreenKey.AIDetailScreen]: { imageUri?: string, title?: string };
+  [HomeStackScreenKey.NFTMarketplaceCollectionDetail]: { collection: any };
+  [HomeStackScreenKey.DepositOptions]: undefined;
+  [HomeStackScreenKey.P2PMarket]: undefined;
+  [HomeStackScreenKey.P2PBuyDetail]: { 
+    merchant: {
+      name: string;
+      avatar: string;
+      completionRate: string;
+      price: string;
+      limitMin: number;
+      limitMax: number;
+      currency: string;
+      payments: string[];
+    };
+    token: {
+      symbol: string;
+    };
+    tradeType: "BUY" | "SELL";
+  };
+  [HomeStackScreenKey.P2POrderDetails]: {
+    orderId: string;
+    amountFiat: string;
+    amountCrypto: string;
+    currency: string;
+    tokenSymbol: string;
+    merchant: {
+      name: string;
+      bankName?: string;
+      accountNumber?: string;
+      accountName?: string;
+    };
+    expiryTime: number; // timestamp
+  };
 };

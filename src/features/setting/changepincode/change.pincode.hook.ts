@@ -1,6 +1,5 @@
 import { t } from "i18next";
 import React, { useEffect, useState } from "react";
-import { TextInput } from "react-native";
 import { Feature } from "src/core/enum/ContactFailedAction";
 import { ProtocolType } from "src/core/enum/ProtocolType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
@@ -22,7 +21,6 @@ const useChangePinCode = ({ navigation }: RootNavigationType) => {
   const dispatch = useAppDispatch();
   const theme: AppThemeType = useAppTheme();
   const currentPin = useAppSelector(getPin);
-  const customRef = React.createRef<TextInput>();
   const [isNewPin, setIsNewPin] = useState(true);
   const [checkOldPinCode, setCheckOldPinCode] = useState(true);
   const [showModalChangePinCodeSuccess, setShowModalChangePinCodeSuccess] =
@@ -127,7 +125,6 @@ const useChangePinCode = ({ navigation }: RootNavigationType) => {
     code,
     onChangeCode,
     incorrectPin,
-    customRef,
     onModalChangePinCodeSuccessDismiss,
     closeModalChangePinCodeSuccess,
   };

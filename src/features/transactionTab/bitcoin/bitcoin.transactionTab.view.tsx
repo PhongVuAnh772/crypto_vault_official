@@ -8,14 +8,8 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import AppText from "src/components/common/AppText";
 import HistoryItemComponent from "src/components/specific/HistoryItemComponent/HistoryItemComponent.view";
-import { ArrowDownSvgIcon } from "src/core/constants/AppIconsSvg";
-import TextVariantKeys from "src/core/enum/TextVariantKeys";
-import {
-  TransactionStatusType,
-  TransactionType,
-} from "src/core/enum/TransactionType";
+import { TransactionStatusType, TransactionType } from "src/core/enum/TransactionType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
@@ -24,11 +18,7 @@ import { TransactionHistoryDataType } from "src/core/type/TransactionHistoryData
 import BitcoinUtils from "src/core/utils/bitcoinUtils";
 import Utils from "src/core/utils/commonUtils";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
-import {
-  LoadingTransactionView,
-  LoadingTypeTransactionView,
-  SeeMoreTransactionView,
-} from "../components";
+import { LoadingTransactionView, SeeMoreTransactionView } from "../components";
 import useBitcoinTransactionTab from "./bitcoin.transactionTab.hook";
 import { useStyles } from "./bitcoin.transactionTab.styles";
 
@@ -37,13 +27,12 @@ const BitcoinTransactionTab: React.FC<
     setShowTypeModal: (value: boolean) => void;
     typeSelect: TransactionType;
   }
-> = ({ navigation, setShowTypeModal, typeSelect }) => {
+> = ({ navigation, typeSelect }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
 
   const {
     transactionHistory,
-    typeSelectTitle,
     refreshing,
     onRefresh,
     onGoToDetails,
@@ -129,39 +118,6 @@ const BitcoinTransactionTab: React.FC<
           viewMoreHistory={viewMoreHistory}
         />
       )}
-      <View
-        style={[
-          appStyles.flexRow,
-          appStyles.justifyContentEnd,
-          StyleSheet.absoluteFill,
-          styles.h30,
-        ]}
-      >
-        {loading ? (
-          <LoadingTypeTransactionView
-            isTransactionHistoryLoading={loading}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            viewMoreHistory={viewMoreHistory}
-          />
-        ) : (
-          <TouchableOpacity
-            style={[styles.protocolContainer]}
-            onPress={() => {
-              setShowTypeModal(true);
-            }}
-          >
-            <AppText
-              titleWithI18n={typeSelectTitle}
-              textColor={theme.colors.surface_surface_high}
-              variant={TextVariantKeys.labelMedium}
-            />
-            <View style={styles.iconArrowDown}>
-              <ArrowDownSvgIcon color={theme.colors.surface_surface_high} />
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
     </>
   );
 };

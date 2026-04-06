@@ -153,7 +153,7 @@ export const localTokenReducer = createSlice({
       const data = action.payload;
       if (data) {
         const allTokens = data.flatMap((protocol) => {
-          if (!(protocol.VM === VMType.EVM || protocol.VM === VMType.Ton)) {
+          if (!(protocol.VM === VMType.EVM || protocol.VM === VMType.Ton || protocol.VM === VMType.Bitcoin)) {
             return [];
           }
           return protocol.supportedToken.map((token) => {

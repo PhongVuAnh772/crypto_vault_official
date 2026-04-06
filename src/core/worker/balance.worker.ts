@@ -58,6 +58,8 @@ export const startBalanceWorker = () => {
           rpcUrl: protocol.rpcUrl!,
           walletAddress: address,
           tokens: protocol.supportedToken,
+          chainId: protocol.chainId ?? 1,
+          chainName: protocol.name,
         });
       }
 

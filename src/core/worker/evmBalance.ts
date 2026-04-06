@@ -31,13 +31,16 @@ export const fetchEvmBalances = async ({
   console.log("Tokens:", tokens.length);
 
   const result: Record<string, any> = {};
-
   let provider: ethers.JsonRpcProvider;
 
   try {
-    provider = new ethers.JsonRpcProvider(rpcUrl, {
+    const network = ethers.Network.from({
       chainId,
       name: chainName,
+    });
+
+    provider = new ethers.JsonRpcProvider(rpcUrl, network, {
+      staticNetwork: network,
     });
 
     // 🔥 TEST RPC NGAY

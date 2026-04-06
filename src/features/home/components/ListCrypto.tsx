@@ -1,83 +1,155 @@
-import React, { useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
-import AppText from "src/components/common/AppText";
-import { ArrowForward2SvgIcon } from "src/core/constants/AppIconsSvg";
-import TextVariantKeys from "src/core/enum/TextVariantKeys";
+import React from "react";
+import { FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
-import LanguageKey from "src/core/locales/LanguageKey";
-import appStyles from "src/core/styles";
 import { AppThemeType } from "src/core/type/ThemeType";
-import Utils from "src/core/utils/commonUtils";
 import { ListCryptoDataType } from "../home.type";
+import LanguageKey from "src/core/locales/LanguageKey";
+import { t } from "i18next";
 
 type ListCryptoType = {
-  cryptoDataLists?: ListCryptoDataType[];
-  gotoManageCrypto: () => void;
-  renderItem: ({
-    item,
-    index,
-  }: {
-    item: ListCryptoDataType;
-    index: number;
-  }) => React.JSX.Element;
+  data: ListCryptoDataType[];
+  handlePressItem?: (item: ListCryptoDataType) => void;
+  handleSeeAll?: () => void;
 };
 
-const ListCrypto: React.FC<ListCryptoType> = ({
-  cryptoDataLists,
-  gotoManageCrypto,
-  renderItem,
-}) => {
-  const theme: AppThemeType = useAppTheme();
+const ListCrypto: React.FC<ListCryptoType> = ({ data, handlePressItem, handleSeeAll }) => {
+  const theme = useAppTheme();
   const styles = useStyles(theme);
-  const [widthView, setWidthView] = useState(Utils.screenWidth);
-  const [heightView, setHeightView] = useState(Utils.screenHeight);
-  const handleLayout = (event: any) => {
-    const { width, height } = event.nativeEvent.layout;
-    setWidthView(width);
-    setHeightView(height);
-  };
+
+  const renderItem = ({ item }: { item: ListCryptoDataType }) => (
+    <TouchableOpacity 
+      style={styles.itemRow} 
+      onPress={() => handlePressItem && handlePressItem(item)}
+    >
+      <View style={styles.tokenInfo}>
+        <View style={styles.tokenIcon}>
+          {item.logo ? (
+            typeof item.logo === 'string' ? (
+              <Image source={{ uri: item.logo }} style={styles.logoImage} />
+            ) : (
+              item.logo
+            )
+          ) : (
+            <Text style={styles.tokenInitial}>{item.symbol?.[0]}</Text>
+          )}
+        </View>
+        <View>
+          <Text style={styles.tokenName}>{item.name}</Text>
+          <Text style={styles.tokenSymbol}>{item.symbol}</Text>
+        </View>
+      </View>
+      <View style={styles.amountInfo}>
+        <Text style={styles.tokenAmount}>{item.balance}</Text>
+        <Text style={styles.tokenValue}>{item.balanceToCurrency}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={[styles.manageCrypto]}>
+    <View style={styles.cardContainer}>
+      <View style={styles.headerRow}>
+        <Text style={styles.headerText}>{t(LanguageKey.token_list)}</Text>
+        <Text style={styles.headerText}>{t(LanguageKey.project_detail_amount)}</Text>
+      </View>
       <FlatList
-        stickyHeaderIndices={[0]}
-        showsVerticalScrollIndicator={false}
-        data={cryptoDataLists}
+        data={data}
         renderItem={renderItem}
+        keyExtractor={(item) => item.id}
         scrollEnabled={false}
-        style={styles.bodyContainer}
-        ListFooterComponent={
-          <Pressable style={styles.button_manage} onPress={gotoManageCrypto}>
-            <View style={appStyles.mr5}>
-              <AppText
-                titleWithI18n={LanguageKey.title_manage_crypto}
-                variant={TextVariantKeys.titleSmall}
-                textColor={theme.colors.surface_surface_brand}
-              />
-            </View>
-            <ArrowForward2SvgIcon />
-          </Pressable>
-        }
       />
+      <TouchableOpacity style={styles.seeAllBtn} onPress={handleSeeAll}>
+        <Text style={styles.seeAllText}>{t(LanguageKey.common_view_all)}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const useStyles = (theme: AppThemeType) =>
   StyleSheet.create({
-    manageCrypto: {
-      borderRadius: 6,
-      flex: 1,
+    cardContainer: {
+      backgroundColor: '#fff',
+      borderRadius: 25,
+      paddingVertical: 15,
+      marginHorizontal: 20,
+      marginTop: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 10,
+      elevation: 5,
     },
-    bodyContainer: {
-      borderRadius: 4,
+    headerRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingHorizontal: 20,
+      marginBottom: 15,
     },
-    button_manage: {
-      ...appStyles.center,
-      ...appStyles.flexRow,
+    headerText: {
+      color: '#8A8A8E',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    itemRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       paddingVertical: 12,
-      backgroundColor: theme.colors.surface_surface_high,
+      paddingHorizontal: 20,
     },
-    view_content: { position: "absolute", zIndex: 222 },
+    tokenInfo: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    tokenIcon: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: '#F2F2F7',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 12,
+    },
+    logoImage: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+    },
+    tokenInitial: {
+      color: '#000',
+      fontSize: 18,
+      fontWeight: '700',
+    },
+    tokenName: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#000',
+    },
+    tokenSymbol: {
+      fontSize: 12,
+      color: '#8A8A8E',
+    },
+    amountInfo: {
+      alignItems: 'flex-end',
+    },
+    tokenAmount: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#000',
+    },
+    tokenValue: {
+      fontSize: 12,
+      color: '#8A8A8E',
+    },
+    seeAllBtn: {
+      alignItems: 'center',
+      marginTop: 15,
+      paddingVertical: 10,
+    },
+    seeAllText: {
+      color: '#007AFF',
+      fontSize: 16,
+      fontWeight: '600',
+    },
   });
 
 export default ListCrypto;

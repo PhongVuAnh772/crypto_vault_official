@@ -1,4 +1,5 @@
 import { appAnimations } from "constants/AppAnimations";
+import { Feather } from "@expo/vector-icons";
 import LottieView from "lottie-react-native";
 import React from "react";
 import { View } from "react-native";
@@ -61,7 +62,7 @@ const BottomSheetWarningWallet: React.FC<BottomSheetProps> = ({
               />
               <View style={appStyles.mv25}>
                 <AppText
-                  titleWithI18n={"Protect Your Secret Phrase"}
+                  titleWithI18n={LanguageKey.protect_secret_phrase_title}
                   variant={TextVariantKeys.titleLarge}
                   textColor={theme.colors.text_on_surface_text_high}
                 />
@@ -77,9 +78,9 @@ const BottomSheetWarningWallet: React.FC<BottomSheetProps> = ({
                   ]}
                 >
                   <View style={appStyles.mr25}>
-                    <item.icon
-                      width={32}
-                      height={32}
+                    <Feather
+                      name={item.icon as any}
+                      size={24}
                       color={theme.colors.label_surface_button_primary}
                     />
                   </View>

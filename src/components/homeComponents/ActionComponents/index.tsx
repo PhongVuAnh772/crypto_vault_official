@@ -3,7 +3,6 @@ import { StyleProp, View, ViewStyle } from 'react-native';
 import AppSkeletonLoading from 'src/components/common/AppSkeletonLoading';
 import {
     LinkSvgIcon,
-    PiggyBankSvgIcon,
     ReceiveSvgIcon,
     SendSvgIcon
 } from 'src/core/constants/AppIconsSvg';
@@ -18,7 +17,7 @@ type ActionComponentType = {
   receiveAction: () => void;
   style?: StyleProp<ViewStyle>;
   isLoading?: boolean;
-  stakeAction?: () => void;
+
   isHome?: boolean;
   moreAction?: () => void;
 };
@@ -28,7 +27,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
   receiveAction,
   style,
   isLoading,
-  stakeAction,
+
   moreAction,
   isHome = false,
 }) => {
@@ -80,17 +79,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
         />
       </View>
 
-      {isHome && (
-        <>
-          <View style={[appStyles.flex1]}>
-            <HomeButtonWithTitle
-              icon={<PiggyBankSvgIcon style={styles.colorIcon} />}
-              onPress={stakeAction}
-              titleWithI18n={LanguageKey.common_text_stake}
-            />
-          </View>
-        </>
-      )}
+
       {isHome && moreAction && (
         <View style={[appStyles.flex1]}>
           <HomeButtonWithTitle

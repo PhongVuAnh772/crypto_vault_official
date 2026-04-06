@@ -5,6 +5,7 @@ export const appImages = {
   background2: require("src/assets/images/background_coin.png"),
   logo: require("src/assets/images/logo.png"),
   newLogo: require("src/assets/images/new_logo.png"),
+  logoF: require("src/assets/images/logo_f.png"),
   homeWalletBackground: require("src/assets/images/home_wallet_bg.png"),
   coinDetailBackground: require("src/assets/images/coin_detail_background.png"),
   NFTDefault: require("src/assets/images/nft_default.png"),
@@ -23,4 +24,7 @@ export const appImages = {
   newBgDark: require("../../assets/images/bg_new.png"),
   fgCard: require("../../assets/images/fg_card.png"),
   newBackground2: require("../../assets/images/background_newest.png"),
+  nftArt1: require("src/assets/images/nft_art_1.png"),
+  nftArt2: require("src/assets/images/nft_art_2.png"),
+  nftArt3: require("src/assets/images/nft_art_3.png"),
 };

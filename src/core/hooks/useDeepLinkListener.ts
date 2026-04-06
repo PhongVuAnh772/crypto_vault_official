@@ -8,12 +8,6 @@ import {
 } from 'src/features/tonConnect/slice/tonConnect.slice';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
 import { getRequirePinCode } from '../redux/slice/app.slice';
-import {
-    setAccountDeactivate,
-    setCurrentAuthorizationAndStateCodeFromCallBack,
-} from '../redux/slice/rezPoint/rezPoint.slice';
-import { StatusAccount } from '../redux/slice/rezPoint/rezPoint.type';
-
 const useDeepLinkListener = () => {
     const dispatch = useAppDispatch();
     const requirePinCode = useAppSelector(getRequirePinCode) ?? false;
@@ -31,34 +25,6 @@ const useDeepLinkListener = () => {
                 dispatch(setType(TonConnectKey.eventConnect));
                 dispatch(setURL({ id, request, version }));
                 dispatch(setModalConnect(true));
-            } else {
-                if (
-                    parsed.queryParams?.error === StatusAccount.ACCESS_DENIED &&
-                    parsed.queryParams?.error_description
-                ) {
-                    const parsedErrorDescription = JSON.parse(
-                        parsed.queryParams?.error_description as string,
-                    );
-                    if (parsedErrorDescription?.statusCode === 400) {
-                        dispatch(setAccountDeactivate(true));
-                    }
-                    return;
-                }
-
-                const authorizationCode = parsed.queryParams?.code;
-                const stateCode = parsed.queryParams?.state;
-
-                if (
-                    typeof authorizationCode === 'string' &&
-                    typeof stateCode === 'string'
-                ) {
-                    dispatch(
-                        setCurrentAuthorizationAndStateCodeFromCallBack({
-                            authorizationCode,
-                            stateCode,
-                        }),
-                    );
-                }
             }
         } catch (error) {
             console.log('🚀 ~ handleDeepLink ~ error:', error);

@@ -1,55 +1,35 @@
-import remoteConfig from '@react-native-firebase/remote-config';
-import { useEffect } from 'react';
-import { useAppDispatch } from 'src/core/redux/hooks';
-import RemoteUtils from '../utils/remoteUtils';
+import { useEffect } from "react";
+import { useAppDispatch } from "src/core/redux/hooks";
+import { setAppConfig, setLoading, setError } from "src/core/redux/slice/appConfig.slice";
 
-const useRemoveConfig = () => {
-    const dispatch = useAppDispatch();
+// In reality, this would be your server IP or a public URL.
+const CONFIG_URL = "http://localhost:3000/api/v1/config";
 
-    const fetchConfig = async () => {
-        console.log('==============================================');
-        RemoteUtils.appVersionConfig(dispatch);
-        RemoteUtils.forceUpdateConfig(dispatch);
-        RemoteUtils.transferConfig(dispatch);
-        RemoteUtils.blockTransferConfig(dispatch);
-        RemoteUtils.themeConfig();
-        RemoteUtils.stakingConfig(dispatch);
-        console.log('==============================================');
-    };
+const useRemoteConfig = () => {
+  const dispatch = useAppDispatch();
 
-    const configSetup = async () => {
-        setTimeout(async () => {
-            try {
-                // MARK: Refresh data
-                await remoteConfig().fetchAndActivate();
+  const fetchConfig = async () => {
+    try {
+      dispatch(setLoading(true));
+      const response = await fetch(CONFIG_URL);
+      const data = await response.json();
+      
+      if (data) {
+        dispatch(setAppConfig(data));
+      }
+    } catch (err) {
+      console.log("Failed to fetch remote config:", err);
+      dispatch(setError("Network error"));
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
 
-                remoteConfig().onConfigUpdated(async update => {
-                    // MARK: Refresh data
-                    await remoteConfig().fetchAndActivate();
+  useEffect(() => {
+    fetchConfig();
+  }, []);
 
-                    const allConfig = remoteConfig().getAll();
-                    console.log(
-                        '==============================================',
-                    );
-                    console.log('Remote config update', update);
-                    console.log('All config', allConfig);
-                    console.log(
-                        '==============================================',
-                    );
-                    fetchConfig();
-                });
-
-                fetchConfig();
-            } catch (error) {
-                console.log('🚀 ~ configSetup ~ error:', error);
-            }
-        }, 3000);
-    };
-
-    useEffect(() => {
-        configSetup();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+  return { refreshConfig: fetchConfig };
 };
 
-export default useRemoveConfig;
+export default useRemoteConfig;

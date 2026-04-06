@@ -1,14 +1,16 @@
+import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
-import { View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { ScreenWrapper } from "src/components";
 import AppModal from "src/components/common/AppModal";
 import AppText from "src/components/common/AppText";
-import PinCodeInput from "src/components/common/PinCodeInput";
 import RequirePinCodeLayout from "src/components/layout/RequirePinCode/requirePinCode.view";
 import { ToastSuccessSvgIcon } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
+import PinIndicator from "src/features/auth/components/PinIndicator";
+import PinKeypad from "src/features/auth/components/PinKeypad";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import useChangePinCode from "./change.pincode.hook";
 import useStyles from "./change.pincode.style";
@@ -24,7 +26,6 @@ const ChangePincodeScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     code,
     onChangeCode,
     incorrectPin,
-    customRef,
     onModalChangePinCodeSuccessDismiss,
     closeModalChangePinCodeSuccess,
   } = useChangePinCode({
@@ -51,24 +52,59 @@ const ChangePincodeScreen: React.FC<RootNavigationType> = ({ navigation }) => {
         disableFaceId
       />
       {!checkOldPinCode && (
-        <View style={styles.boxPinCode}>
-          <View style={appStyles.mbt15}>
+        <View style={appStyles.flex1}>
+          {/* Mesh Backgrounds */}
+          <LinearGradient
+            colors={["#DCE9FF", "#FFFFFF"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <LinearGradient
+            colors={["rgba(245, 243, 255, 0.7)", "rgba(255, 255, 255, 0)"]}
+            start={{ x: 1, y: 0 }}
+            end={{ x: 0.3, y: 0.5 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <LinearGradient
+            colors={["rgba(236, 253, 245, 0.4)", "rgba(255, 255, 255, 0)"]}
+            start={{ x: 0, y: 1 }}
+            end={{ x: 0.5, y: 0.5 }}
+            style={StyleSheet.absoluteFill}
+          />
+
+          <View style={styles.content}>
             <AppText
               titleWithI18n={LanguageKey.pin_input_title}
               variant={TextVariantKeys.bodyRLarge}
-              styles={appStyles.textAlignCenter}
-              textColor={theme.colors.text_on_surface_text_medium}
+              textColor="#1F2937"
+              styles={styles.title}
+            />
+
+            <PinIndicator length={6} value={code} />
+
+            {incorrectPin && (
+              <AppText
+                titleWithI18n={isNewPin ? LanguageKey.change_pin_code_error : LanguageKey.incorrect_pin_title}
+                variant={TextVariantKeys.bodyRSmall}
+                textColor="#EF4444"
+                styles={styles.errorText}
+              />
+            )}
+          </View>
+
+          <View style={styles.keypadWrapper}>
+            <PinKeypad
+              onPressNumber={(num: string) => {
+                if (code.length < 6) {
+                  onChangeCode(code + num);
+                }
+              }}
+              onPressDelete={() => {
+                onChangeCode(code.slice(0, -1));
+              }}
             />
           </View>
-          <PinCodeInput
-            customRef={customRef}
-            value={code}
-            setValue={onChangeCode}
-            error={incorrectPin}
-            customError={
-              isNewPin ? LanguageKey.change_pin_code_error : undefined
-            }
-          />
         </View>
       )}
       <AppModal

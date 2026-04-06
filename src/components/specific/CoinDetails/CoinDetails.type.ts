@@ -11,25 +11,28 @@ export interface ChartPoint {
 }
 
 export type CoinDetailsType = {
+  coinGeckoId?: string;
+  name?: string;
+  networkName?: string;
   onBack?: () => void;
   icon: React.JSX.Element;
   isTransactionHistoryLoading: boolean;
-  isCoinDetailsLoading: boolean;
-  onCloseTypeBottomSheet: () => void;
+  isCoinDetailsLoading?: boolean;
+  onCloseTypeBottomSheet?: () => void;
   refreshing: boolean;
   onRefresh?: () => void;
   onLoadMore?: () => void;
-  onShowTypeBottomSheet: () => void;
-  typeSelect: TransactionType;
-  changeTypeSelect: (type: TransactionType) => void;
+  onShowTypeBottomSheet?: () => void;
+  typeSelect?: TransactionType;
+  changeTypeSelect?: (type: TransactionType) => void;
   balanceTitle: string;
   balanceCurrencyTitle: string;
   titleWithI18n?: string;
   titleScreen?: string;
-  sendAction: () => void;
-  receiveAction: () => void;
-  sectionData: HistorySectionDataType[];
-  renderItem: ({
+  sendAction?: () => void;
+  receiveAction?: () => void;
+  sectionData?: HistorySectionDataType[];
+  renderItem?: ({
     item,
     index,
     section,
@@ -46,7 +49,7 @@ export type CoinDetailsType = {
     | null;
   viewMoreHistory?: () => void;
   hideSendAction?: boolean;
-  refModalShowType: React.RefObject<BottomSheetModalMethods>;
+  refModalShowType?: React.RefObject<BottomSheetModalMethods>;
 };
 
 export type LoadingViewType = {

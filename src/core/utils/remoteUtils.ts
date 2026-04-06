@@ -1,5 +1,4 @@
 import remoteConfig from '@react-native-firebase/remote-config';
-import { StakingPool } from 'src/features/home/stake/types';
 import RemoteConfigKey from '../enum/RemoteConfigKey';
 import {
     setBlockBitcoinTransfer,
@@ -12,7 +11,6 @@ import {
     setRemoteConfigAppVersion,
     setTonAdminBounce,
 } from '../redux/slice/app.slice';
-import { setStakingPools } from '../redux/slice/staking/staking.slice';
 import { AppDispatch } from '../redux/store';
 import GlobalUtils from './globalUtils';
 
@@ -91,21 +89,6 @@ const themeConfig = () => {
     GlobalUtils.setUseRemoteThemeConfig(useRemoteThemeConfig);
 };
 
-const stakingConfig = (dispatch: AppDispatch) => {
-    // MARK: Staking config
-    const specialStakingPools = remoteConfig().getValue(
-        RemoteConfigKey.special_staking,
-    );
-    const parsedSpecialStakingPools = JSON.parse(
-        specialStakingPools.asString(),
-    );
-
-    if (Array.isArray(parsedSpecialStakingPools)) {
-        const parseData = parsedSpecialStakingPools as unknown as StakingPool[];
-        const filterStakingPools = parseData.filter(pool => pool.isActive);
-        dispatch(setStakingPools(filterStakingPools));
-    }
-};
 
 const jailbreakConfig = () => {
     const skipCheckJailbreakOrRoot = remoteConfig().getBoolean(
@@ -125,7 +108,6 @@ const RemoteUtils = {
     transferConfig,
     blockTransferConfig,
     themeConfig,
-    stakingConfig,
     jailbreakConfig,
 };
 

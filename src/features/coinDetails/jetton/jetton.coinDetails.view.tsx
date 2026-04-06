@@ -144,8 +144,9 @@ const JettonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
 
   return (
     <CoinDetails
+      name={headerTitle}
+      networkName="TON Network"
       refModalShowType={showTypeBottomSheetRef}
-      isCoinDetailsLoading={false}
       icon={
         <AppImage uri={logo ?? ""} styleImage={appStyles.iconCircleSize50} />
       }

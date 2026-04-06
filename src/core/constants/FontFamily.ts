@@ -4,4 +4,12 @@ const mPlus1 = {
     bold: 'MPLUS1-Bold',
     semiBold: 'MPLUS1-Black',
 };
-export {mPlus1};
+
+const Inter = {
+    regular: 'Inter-Regular',
+    medium: 'Inter-Medium',
+    semiBold: 'Inter-SemiBold',
+    bold: 'Inter-Bold',
+};
+
+export {mPlus1, Inter};

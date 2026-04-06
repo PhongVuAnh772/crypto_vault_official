@@ -143,8 +143,10 @@ const TonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
 
   return (
     <CoinDetails
+      coinGeckoId="the-open-network"
+      name="TON"
+      networkName="TON Mainnet"
       refModalShowType={showTypeBottomSheetRef}
-      isCoinDetailsLoading={false}
       icon={<TonSvgIcon width={50} height={50} />}
       isTransactionHistoryLoading={isTonGetTransactionsLoading}
       refreshing={refreshing}

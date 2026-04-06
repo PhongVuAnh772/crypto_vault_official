@@ -1,63 +1,114 @@
 import React from "react";
-import { View } from "react-native";
-import { ScreenWrapper } from "src/components";
-import AppModal from "src/components/common/AppModal";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppText from "src/components/common/AppText";
-import PinCodeInput from "src/components/common/PinCodeInput";
-import { WarnSvgIcon } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
-import LanguageKey from "src/core/locales/LanguageKey";
-import appStyles from "src/core/styles";
+import { useAppTheme } from "src/core/hooks/useAppTheme";
 import usePinCode from "src/features/auth/pinCode/pinCode.hook";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
-import useStyles from "./pincode.style";
+import LanguageKey from "src/core/locales/LanguageKey";
+import PinKeypad from "../components/PinKeypad";
+import PinIndicator from "../components/PinIndicator";
+import { Feather } from "@expo/vector-icons";
 
 const PinCode: React.FC<RootNavigationType> = ({ navigation }) => {
-  const {
-    showIncorrectPinModal,
-    setShowIncorrectPinModal,
-    pinCode,
-    setPinCode,
-    theme,
-  } = usePinCode({ navigation });
-  const style = useStyles(theme);
+  const { pinCode, setPinCode, theme } = usePinCode({ navigation });
+  const insets = useSafeAreaInsets();
+
+  const handlePressNumber = (num: string) => {
+    if (pinCode.length < 6) {
+      setPinCode(pinCode + num);
+    }
+  };
+
+  const handlePressDelete = () => {
+    setPinCode(pinCode.slice(0, -1));
+  };
+
   return (
-    <ScreenWrapper
-      enableDismissKeyboard
-      enableHeader
-      paddingTop
-      headerTitleWithI18n={LanguageKey.create_pin_title}
-      headerTextVariant={TextVariantKeys.titleLarge}
-      backgroundColor={theme.colors.surface_surface_default}
-      headerTextColor={undefined}
-      backButtonColor={undefined}
-    >
-      <AppModal
-        visible={showIncorrectPinModal}
-        onPress={() => {
-          setShowIncorrectPinModal(!showIncorrectPinModal);
-        }}
-        titleWithI18n={LanguageKey.restore_error_title}
-        subTitleWithI18n={LanguageKey.restore_error_sub_title}
-        buttonTitleWithI18n={LanguageKey.common_text_try_again}
-        icon={<WarnSvgIcon />}
+    <View style={styles.container}>
+      {/* Mesh Background Layer 1: Indigo to Soft blue */}
+      <LinearGradient
+        colors={["#DCE9FF", "#FFFFFF"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={StyleSheet.absoluteFill}
       />
-      <View style={style.container}>
-        <View style={[appStyles.alignItemsCenter]}>
-          <View style={[appStyles.mt55, appStyles.center]}>
-            <View style={appStyles.pB15}>
-              <AppText
-                titleWithI18n={LanguageKey.pin_input_title}
-                variant={TextVariantKeys.bodyRLarge}
-                textColor={theme.colors.text_on_surface_text_medium}
-              />
-            </View>
-            <PinCodeInput value={pinCode} setValue={setPinCode} />
-          </View>
-        </View>
+      {/* Mesh Background Layer 2: Subtle Pink/Lavender overlay from top-right */}
+      <LinearGradient
+        colors={["rgba(245, 243, 255, 0.7)", "rgba(255, 255, 255, 0)"]}
+        start={{ x: 1, y: 0 }}
+        end={{ x: 0.3, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+      {/* Mesh Background Layer 3: Cyan/Mint accent from bottom-left */}
+      <LinearGradient
+        colors={["rgba(236, 253, 245, 0.4)", "rgba(255, 255, 255, 0)"]}
+        start={{ x: 0, y: 1 }}
+        end={{ x: 0.5, y: 0.5 }}
+        style={StyleSheet.absoluteFill}
+      />
+      
+      <View style={[styles.header, { marginTop: insets.top + 20 }]}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
+          <Feather name="chevron-left" size={28} color="#000" />
+        </TouchableOpacity>
       </View>
-    </ScreenWrapper>
+
+      <View style={styles.content}>
+        <AppText
+          titleWithI18n={LanguageKey.pin_input_title}
+          variant={TextVariantKeys.bodyRLarge}
+          textColor="#1F2937"
+          styles={styles.title}
+        />
+        
+        <PinIndicator length={6} value={pinCode} />
+      </View>
+
+      <View style={styles.keypadWrapper}>
+        <PinKeypad 
+          onPressNumber={handlePressNumber}
+          onPressDelete={handlePressDelete}
+        />
+      </View>
+      
+      <View style={{ height: insets.bottom + 40 }} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: 20,
+    height: 44,
+    justifyContent: 'center',
+  },
+  backButton: {
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+  },
+  content: {
+    alignItems: 'center',
+    marginTop: 40,
+  },
+  title: {
+    marginBottom: 20,
+    fontWeight: '400',
+  },
+  keypadWrapper: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingBottom: 20,
+  },
+});
 
 export default PinCode;

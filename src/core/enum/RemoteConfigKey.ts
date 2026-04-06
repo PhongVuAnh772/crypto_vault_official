@@ -1,7 +1,6 @@
 enum RemoteConfigKey {
     app_version = 'app_version',
     force_update = 'force_update',
-    special_staking = 'special_staking',
     min_fee_for_jetton_transfer = 'min_fee_for_jetton_transfer',
     block_jetton_transfer = 'block_jetton_transfer',
     block_ton_nft_transfer = 'block_ton_nft_transfer',

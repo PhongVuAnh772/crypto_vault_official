@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import {
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
@@ -9,7 +10,7 @@ import {
   StackActions,
 } from "@react-navigation/native";
 import React from "react";
-import { Image, TouchableOpacity, View } from "react-native";
+import { Image, TextInput, TouchableOpacity, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
@@ -22,9 +23,8 @@ import ProtocolImage from "src/components/specific/ProtocolImage";
 import {
   AddFillSvgIcon,
   AddSvgIcon,
-  ArrowDownSvgIcon,
   ConnectSvgIcon,
-  WalletLogoSvgIcon,
+  WalletLogoSvgIcon
 } from "src/core/constants/AppIconsSvg";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
@@ -141,106 +141,106 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
     <>
       <View style={styles.container}>
         {titleI18N === LanguageKey.home_tab_crypto_title ? (
-          <View style={[appStyles.flexRow, appStyles.center]}>
+          <>
             <TouchableOpacity
               onPress={showBottomSheetModalAction}
               style={styles.accountIcon}
             >
               <WalletLogoSvgIcon color={currentWallet?.avtColor} />
             </TouchableOpacity>
-          </View>
-        ) : (
-          <AppText
-            titleWithI18n={titleI18N}
-            variant={TextVariantKeys.titleLarge}
-            textColor={theme.colors.text_on_surface_text_highest}
-          />
-        )}
 
-        {titleI18N === LanguageKey.home_tab_crypto_title ? (
-          <TouchableOpacity
-            onPress={onShowModalProtocol}
-            style={styles.account}
-          >
-            <View style={appStyles.mr5}>
+            <View style={styles.searchBar}>
+              <Feather
+                name="search"
+                size={18}
+                color={'white'}
+              />
+              <TextInput
+                placeholder="Search"
+                placeholderTextColor={theme.colors.text_on_surface_text_medium}
+                style={styles.searchInput}
+              />
+            </View>
+
+            <TouchableOpacity
+              onPress={onShowModalProtocol}
+              style={[styles.iconBtn, { backgroundColor: "transparent" }]}
+            >
               <ProtocolImage
                 slip0044={protocolSelected?.slip0044}
                 isDefaultData={protocolSelected?.isDefault}
                 logoUri={protocolSelected?.logo}
+                size={25}
               />
-            </View>
-            <AppText
-              title={protocolSelected?.name}
-              numberOfLines={1}
-              variant={TextVariantKeys.bodyMSmall}
-              textColor={theme.colors.text_on_surface_text_high}
-            />
-            <View style={appStyles.ml5}>
-              <ArrowDownSvgIcon
-                color={theme.colors.text_on_surface_text_highest}
-              />
-            </View>
-          </TouchableOpacity>
-        ) : null}
+            </TouchableOpacity>
 
-        <View style={[appStyles.flexRow, styles.iconContainer]}>
-          {titleI18N === LanguageKey.home_tab_nft_collection_title && (
-            <View style={[appStyles.flexRow]}>
-              <TouchableOpacity
-                onPress={handleOnPressImport}
-                style={styles.ml8}
-              >
-                <AddFillSvgIcon fill={"red"} width="24" height="24" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.navigate(HomeStackScreenKey.MintNftScreen);
-                }}
-                style={styles.ml8}
-              >
-                <AddFillSvgIcon fill={"red"} width="24" height="24" />
-              </TouchableOpacity>
-            </View>
-          )}
-          {titleI18N === LanguageKey.home_tab_explore_title && (
-            <View style={appStyles.flexRow}>
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate(HomeStackScreenKey.ConnectionScreen)
-                }
-              >
-                <ConnectSvgIcon
-                  width="32"
-                  height="32"
-                  color={theme.colors.surface_surface_high}
-                />
-                <View style={styles.qualityConnect}>
-                  <AppText
-                    title={quantityConnect.toString()}
-                    textColor={theme.colors.text_on_surface_text_brand_2}
-                    variant={TextVariantKeys.bodyMTiny}
-                  />
+
+
+            <TouchableOpacity
+              style={styles.iconBtn}
+              onPress={() => {
+                navigation.dispatch(
+                  StackActions.push(HomeStackScreenKey.ChatScreen)
+                );
+              }}
+            >
+              <Image
+                source={require("../../../../../assets/images/ai_icons.png")}
+                style={{ width: 25, height: 25 }}
+              />
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <AppText
+              titleWithI18n={titleI18N}
+              variant={TextVariantKeys.titleLarge}
+              textColor={theme.colors.text_on_surface_text_highest}
+            />
+            <View style={[appStyles.flexRow, styles.iconContainer]}>
+              {titleI18N === LanguageKey.home_tab_nft_collection_title && (
+                <View style={[appStyles.flexRow]}>
+                  <TouchableOpacity
+                    onPress={handleOnPressImport}
+                    style={styles.ml8}
+                  >
+                    <AddFillSvgIcon fill={"red"} width="24" height="24" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => {
+                      navigation.navigate(HomeStackScreenKey.MintNftScreen);
+                    }}
+                    style={styles.ml8}
+                  >
+                    <AddFillSvgIcon fill={"red"} width="24" height="24" />
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
+              )}
+              {titleI18N === LanguageKey.home_tab_explore_title && (
+                <View style={appStyles.flexRow}>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate(HomeStackScreenKey.ConnectionScreen)
+                    }
+                  >
+                    <ConnectSvgIcon
+                      width="32"
+                      height="32"
+                      color={theme.colors.surface_surface_high}
+                    />
+                    <View style={styles.qualityConnect}>
+                      <AppText
+                        title={quantityConnect.toString()}
+                        textColor={theme.colors.text_on_surface_text_brand_2}
+                        variant={TextVariantKeys.bodyMTiny}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-          )}
-          {titleI18N === LanguageKey.home_tab_crypto_title && (
-            <View style={[appStyles.flexRow, appStyles.center]}>
-              <TouchableOpacity
-                onPress={() => {
-                  navigation.dispatch(
-                    StackActions.push(HomeStackScreenKey.ChatScreen),
-                  );
-                }}
-              >
-                <Image
-                  source={require("../../../../../assets/images/ai_icons.png")}
-                  style={appStyles.iconCircleSize28}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+          </>
+        )}
       </View>
 
       <BottomSheetModal

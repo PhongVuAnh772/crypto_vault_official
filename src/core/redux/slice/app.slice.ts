@@ -24,7 +24,7 @@ const initialState: AppSliceType = {
     selectedCurrencySetting: undefined,
     baseCurrency: undefined,
     themeMode: ThemeKey.light,
-    languageType: LanguageType.en,
+    languageType: LanguageType.vi,
     requirePinCode: false,
     showForceUpdateModal: false,
     maxPinCodeAttempts: 5,

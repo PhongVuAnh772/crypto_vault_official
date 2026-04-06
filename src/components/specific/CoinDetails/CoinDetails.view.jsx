@@ -45,6 +45,9 @@ const filterDaysArray = [
 ];
 
 const CoinDetailedScreen = ({
+  coinGeckoId = "bitcoin", // Mặc định nếu không có
+  name: externalName,
+  networkName = "Mainnet Network",
   isTransactionHistoryLoading,
   refreshing,
   onRefresh,
@@ -93,26 +96,32 @@ const CoinDetailedScreen = ({
 
   const fetchCoinData = async () => {
     setLoading(true);
-    const fetchedCoinData = await getDetailedCoinData("bitcoin");
-    setCoin(fetchedCoinData);
-    setUsdValue(fetchedCoinData.market_data.current_price.usd.toString());
+    const fetchedCoinData = await getDetailedCoinData(coinGeckoId);
+    if (fetchedCoinData) {
+      setCoin(fetchedCoinData);
+      setUsdValue(fetchedCoinData.market_data.current_price.usd.toString());
+    }
     setLoading(false);
   };
 
   const fetchMarketCoinData = async (selectedRangeValue) => {
     const fetchedCoinMarketData = await getCoinMarketChart(
-      "bitcoin",
+      coinGeckoId,
       selectedRangeValue
     );
-    setCoinMarketData(fetchedCoinMarketData);
+    if (fetchedCoinMarketData) {
+      setCoinMarketData(fetchedCoinMarketData);
+    }
   };
 
   const fetchCandleStickChartData = async (selectedRangeValue) => {
     const fetchedSelectedCandleChartData = await getCandleChartData(
-      "bitcoin",
+      coinGeckoId,
       selectedRangeValue
     );
-    setCoinCandleChartData(fetchedSelectedCandleChartData);
+    if (fetchedSelectedCandleChartData) {
+      setCoinCandleChartData(fetchedSelectedCandleChartData);
+    }
   };
 
   useEffect(() => {
@@ -137,10 +146,9 @@ const CoinDetailedScreen = ({
       <SafeAreaView style={{ flex: 1 }}>
         <View style={{ paddingHorizontal: 10 }}>
           <CoinDetailedHeader
-            coinId={0}
-            image={small}
-            symbol={symbol}
-            marketCapRank={market_cap_rank}
+            coinId={coinGeckoId}
+            name={externalName}
+            networkName={networkName}
           />
           <View style={{ height: 15 }} />
           <Skeleton width={200} height={20} colorMode="light" />
@@ -165,12 +173,14 @@ const CoinDetailedScreen = ({
     image: { small },
     name,
     symbol,
-    market_data: {
-      market_cap_rank,
-      current_price,
-      price_change_percentage_24h,
-    },
+    market_data,
   } = coin;
+
+  const {
+    current_price,
+    price_change_percentage_24h,
+    market_cap_rank,
+  } = market_data;
 
   const { prices } = coinMarketData;
 
@@ -216,18 +226,19 @@ const CoinDetailedScreen = ({
               coinId={id}
               image={small}
               symbol={symbol}
-              marketCapRank={market_cap_rank}
+              name={externalName || name}
+              networkName={networkName}
             />
             <View style={styles.priceContainer}>
               <View>
                 <AppText
-                  title={"Etherium Mainnet Network"}
+                  title={networkName}
                   variant={TextVariantKeys.bodyRSmall}
                   textColor={"rgb(153, 157, 166)"}
                 />
                 <View style={{ height: 4 }} />
                 <AppText
-                  titleWithI18n={`$${usdValue}`}
+                  titleWithI18n={`${usdValue}`}
                   variant={TextVariantKeys.headlineSmall}
                   textColor={appColors.neutral.black}
                 />
@@ -357,13 +368,13 @@ const CoinDetailedScreen = ({
             />
 
             <TokenBalanceCard
-              logoUrl="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJDn0ojTITvcdAzMsfBMJaZC4STaDHzduleQ&s"
-              name="Tether USD"
-              change={-0.03}
-              usdValue="$0.78"
-              balance="0.77616 USDT"
+              logo={small}
+              name={name}
+              change={price_change_percentage_24h}
+              usdValue={balanceCurrencyTitle}
+              balance={balanceTitle}
             />
-            <TokenInfoTracking />
+            <TokenInfoTracking marketData={market_data} />
           </LineChart.Provider>
         </View>
       </ScrollView>

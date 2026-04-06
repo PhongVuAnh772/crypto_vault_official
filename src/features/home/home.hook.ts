@@ -6,17 +6,12 @@ import {
     getCryptosCurrency,
     getSettingCurrency,
 } from 'src/core/redux/slice/app.slice';
-import {
-    getBalanceByAccessToken,
-    getLoadingLogin,
-    getUserInfo,
-} from 'src/core/redux/slice/rezPoint/rezPoint.slice';
 import { getIsShowSwapFromBE } from 'src/core/redux/slice/swap/swap.slice';
 import { startBalanceWorker, stopBalanceWorker } from 'src/core/worker/balance.worker';
 
 const useHome = () => {
     const dispatch = useAppDispatch();
-    const isLoading = useAppSelector(getLoadingLogin);
+    const isLoading = false; // rezPoint loading removed
 
     const initialData = async () => {
         dispatch(getMobileProtocolListsWithSupportedTokens());

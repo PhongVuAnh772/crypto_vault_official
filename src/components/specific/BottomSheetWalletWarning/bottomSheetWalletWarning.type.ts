@@ -1,5 +1,4 @@
-import { SvgProps } from 'react-native-svg';
 export type bottomSheetPhraseType = {
-    icon: React.FC<SvgProps>;
+    icon: string;
     title: string;
 };

@@ -22,6 +22,7 @@ type TransactionHistoryTypeIconType = {
     type: TransactionType | null;
     coinType?: CoinType;
     uri?: string;
+    size?: number;
 };
 
 const TransactionHistoryTypeIcon: React.FC<TransactionHistoryTypeIconType> = ({
@@ -29,6 +30,7 @@ const TransactionHistoryTypeIcon: React.FC<TransactionHistoryTypeIconType> = ({
     type,
     coinType,
     uri,
+    size = 32,
 }) => {
     const theme = useAppTheme();
     const Icon = useCallback(() => {
@@ -92,7 +94,7 @@ const TransactionHistoryTypeIcon: React.FC<TransactionHistoryTypeIconType> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [coinType]);
     return (
-        <View style={[styles.icon, style]}>
+        <View style={[styles.icon, style, { width: size, height: size, borderRadius: size / 4 }]}>
             <Icon />
             {coinType || uri ? (
                 <View style={styles.coinIcon}>

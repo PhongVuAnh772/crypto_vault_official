@@ -733,5 +733,14 @@ const LanguageKey = {
   contract_address: "contract_address",
   token_decimal: "token_decimal",
   token_list: "token_list",
+  protect_secret_phrase_title: "protect_secret_phrase_title",
+  protect_secret_phrase_desc_1: "protect_secret_phrase_desc_1",
+  protect_secret_phrase_desc_2: "protect_secret_phrase_desc_2",
+  home_action_add_money: "home_action_add_money",
+  home_action_more: "home_action_more",
+  home_promo_invite_title: "home_promo_invite_title",
+  home_promo_invite_desc: "home_promo_invite_desc",
+  home_promo_learn_earn_title: "home_promo_learn_earn_title",
+  home_promo_learn_earn_desc: "home_promo_learn_earn_desc",
 };
 export default LanguageKey;

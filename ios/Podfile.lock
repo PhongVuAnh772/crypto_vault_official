@@ -2009,7 +2009,7 @@ PODS:
     - SDWebImage/Core (~> 5.10)
   - SimpleKeychain (1.1.0)
   - SocketRocket (0.7.0)
-  - SwiftProtobuf (1.31.1)
+  - SwiftProtobuf (1.36.1)
   - TrustWalletCore (4.1.5):
     - TrustWalletCore/Core (= 4.1.5)
   - TrustWalletCore/Core (4.1.5):
@@ -2542,7 +2542,7 @@ SPEC CHECKSUMS:
   RNFBCrashlytics: c3bb5533f9957eddc88f3ea383583309a4ce9f89
   RNFBMessaging: 0f0498a95c605e3afcf13ac5f349d0b201ea65f6
   RNFBRemoteConfig: 4eb5fc9f21dc324153c7d3f5b48c935ab9031876
-  RNGestureHandler: 5d95b0a3cffed8325ed0c181f4f411c1dcd49317
+  RNGestureHandler: d93202b7ae5851d65b541c896a81b20d3c402e1e
   RNKeychain: bbe2f6d5cc008920324acb49ef86ccc03d3b38e4
   RNNotifee: 5e3b271e8ea7456a36eec994085543c9adca9168
   RNPermissions: 7fcfd9df7f70de24605ac7b8cc0e22852a1688ee
@@ -2555,7 +2555,7 @@ SPEC CHECKSUMS:
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SimpleKeychain: f8707c8e97b38c6a6e687b17732afc9bcef06439
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
-  SwiftProtobuf: e02f51c8c2df5845657aee2d4de9d61bf50ef788
+  SwiftProtobuf: 9e106a71456f4d3f6a3b0c8fd87ef0be085efc38
   TrustWalletCore: 23f08e2a8810b450f4a7673a3d137ebfb9243120
   VisionCamera: 0d520167daf1ccfad20b1ce6b952ddf224e8a5da
   Yoga: 33622183a85805e12703cd618b2c16bfd18bfffb

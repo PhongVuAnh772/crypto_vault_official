@@ -1,88 +1,156 @@
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
-import { TouchableWithoutFeedback, View } from 'react-native';
-import { ScreenWrapper } from 'src/components';
-import TypeTransactionModal from 'src/components/homeComponents/TypeTransactionModal/TypeTransactionModal';
-import BottomSheetModal from 'src/components/specific/BottomSheetModal/BottomSheetModal.view';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Slip0044 from 'src/core/enum/Slip0044';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
-import LanguageKey from 'src/core/locales/LanguageKey';
-import appStyles from 'src/core/styles';
-import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import BitcoinTransactionTab from './bitcoin/bitcoin.transactionTab.view';
-import { TransactionModalHeader } from './components';
 import EvmTransactionTab from './evm/evm.transactionTab.view';
 import TonTransactionTab from './ton/ton.transactionTab.view';
 import useTransaction from './transactionTab.hook';
 
-const TransactionTab: React.FC<RootNavigationType> = ({navigation}) => {
-    const theme = useAppTheme();
-    const {
-        showTypeModal,
-        setShowTypeModal,
-        typeSelect,
-        handleClosingTypeModal,
-        changeTypeSelect,
-        slip0044,
-    } = useTransaction();
+const TransactionTab: React.FC<any> = ({ navigation }) => {
+  const theme = useAppTheme();
+  const insets = useSafeAreaInsets();
+  const {
+    typeSelect,
+    slip0044,
+  } = useTransaction();
 
-    const getHistoryView = () => {
-        switch (slip0044) {
-            case Slip0044.Ton:
-                return (
-                    <TonTransactionTab
-                        navigation={navigation}
-                        setShowTypeModal={setShowTypeModal}
-                        typeSelect={typeSelect}
-                    />
-                );
-            case Slip0044.Bitcoin:
-                return (
-                    <BitcoinTransactionTab
-                        navigation={navigation}
-                        setShowTypeModal={setShowTypeModal}
-                        typeSelect={typeSelect}
-                    />
-                );
-            default:
-                return (
-                    <EvmTransactionTab
-                        navigation={navigation}
-                        setShowTypeModal={setShowTypeModal}
-                        typeSelect={typeSelect}
-                    />
-                );
-        }
-    };
+  const getHistoryView = () => {
+    const dummySetShowTypeModal = () => { };
+    switch (slip0044) {
+      case Slip0044.Ton:
+        return (
+          <TonTransactionTab
+            navigation={navigation}
+            setShowTypeModal={dummySetShowTypeModal}
+            typeSelect={typeSelect}
+          />
+        );
+      case Slip0044.Bitcoin:
+        return (
+          <BitcoinTransactionTab
+            navigation={navigation}
+            setShowTypeModal={dummySetShowTypeModal}
+            typeSelect={typeSelect}
+          />
+        );
+      default:
+        return (
+          <EvmTransactionTab
+            navigation={navigation}
+            setShowTypeModal={dummySetShowTypeModal}
+            typeSelect={typeSelect}
+          />
+        );
+    }
+  };
 
-    return (
-        <ScreenWrapper
-            paddingTop
-            backgroundColor={theme.colors.surface_surface_default}>
-            <BottomSheetModal
-                showModal={showTypeModal}
-                closeModalAction={handleClosingTypeModal}
-                maxHeight={0.4}
-                child={
-                    <TouchableWithoutFeedback style={appStyles.flex1}>
-                        <View style={appStyles.mt5}>
-                            <TransactionModalHeader
-                                title={LanguageKey.select_type_title}
-                                closeModal={handleClosingTypeModal}
-                            />
-                            <TypeTransactionModal
-                                closeModal={() => setShowTypeModal(false)}
-                                typeSelect={typeSelect}
-                                setTyeSelect={changeTypeSelect}
-                            />
-                        </View>
-                    </TouchableWithoutFeedback>
-                }
+  return (
+    <View style={styles.mainContainer}>
+      <View style={[styles.header, { paddingTop: insets.top + 10 }]}>
+        <View style={styles.topRow}>
+          <Text style={styles.headerTitle}>Giao dịch</Text>
+
+        </View>
+        <View style={styles.searchRow}>
+          <View style={styles.searchBar}>
+            <Feather name="search" size={20} color="#8E8E93" />
+            <TextInput
+              placeholder="Tìm kiếm giao dịch"
+              placeholderTextColor="#8E8E93"
+              style={styles.searchInput}
             />
-            <View style={[appStyles.mh10, appStyles.mt55]}>
-                {getHistoryView()}
-            </View>
-        </ScreenWrapper>
-    );
+          </View>
+          <TouchableOpacity style={styles.iconBtn}>
+            <MaterialCommunityIcons name="filter-variant" size={24} color="#111" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconBtn}>
+            <Feather name="file-text" size={22} color="#111" />
+          </TouchableOpacity>
+        </View>
+      </View>
+      <View style={styles.listArea}>
+        {getHistoryView()}
+      </View>
+    </View>
+  );
 };
+
+const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: '#F8F9FA',
+  },
+  header: {
+    backgroundColor: '#fff',
+    paddingBottom: 20,
+    paddingHorizontal: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
+  },
+  topRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  backBtn: {
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+  },
+  headerTitle: {
+    color: '#111',
+    fontSize: 18,
+    fontWeight: '700',
+    flex: 1,
+    textAlign: 'center',
+  },
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingTop: 10,
+  },
+  searchBar: {
+    flex: 1,
+    height: 48,
+    backgroundColor: '#F2F2F7',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 15,
+    marginRight: 10,
+  },
+  searchInput: {
+    flex: 1,
+    marginLeft: 10,
+    fontSize: 15,
+    color: '#111',
+  },
+  iconBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#F2F2F7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 8,
+    backgroundColor: '#fff',
+  },
+  listArea: {
+    flex: 1,
+  },
+});
 
 export default TransactionTab;

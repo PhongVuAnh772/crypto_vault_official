@@ -3,7 +3,8 @@ import React from 'react';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import { NFTCollectionTonList } from './NFTTonCollection.components';
 import useNFTCollection from './NFTTonCollection.hook';
-const NFTTonCollectionScreen: React.FC<RootNavigationType> = ({navigation}) => {
+
+const NFTTonCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     const {
         handlePressViewAll,
         collection,

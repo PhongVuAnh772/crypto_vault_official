@@ -4,10 +4,12 @@ import { useTranslation } from "react-i18next";
 import AppToastType from "src/core/enum/AppToastType";
 import Slip0044 from "src/core/enum/Slip0044";
 import ThemeKey from "src/core/enum/ThemeKey";
+import { TransactionType } from "src/core/enum/TransactionType";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
 import {
   useAccountProtocolSelected,
+  useBitcoinAddressData,
   useCurrentWallet,
   useProtocolSelected,
   useSelectedCurrencySetting,
@@ -20,24 +22,27 @@ import {
   ProtocolDataWithSupportedTokensFormBEType,
   SupportedNativeTokenType,
   SupportedTokenItemType,
+  AddressListItemType,
 } from "src/core/redux/slice/account.type";
+import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
 import {
   getBlockBitcoinTransfer,
   getHeightBottomTab,
   getThemeMode,
   getUpdateBalance,
-  setShowCommonErrorModal,
   setUpdateBalance,
 } from "src/core/redux/slice/app.slice";
+import BitcoinUtils from "src/core/utils/bitcoinUtils";
 import Utils from "src/core/utils/commonUtils";
 import {
   getBitcoinData,
+  getBitcoinFullData,
   getNetworkFee,
+  selectorBitcoinFullData,
 } from "src/features/coinDetails/bitcoin/bitcoin.coinDetails.slice";
 import {
   selectorListCryptoData,
   setListCryptoDataSyn,
-  setSelectedCryptoDataId,
 } from "src/features/home/slice/home.slice";
 import { setTransferSlip0044 } from "src/features/transfer/transfer.slice";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
@@ -46,7 +51,6 @@ import { ReceiveParamListType } from "src/navigation/stacks/type/ReceiveParamLis
 
 import { appImages } from "src/core/constants/AppImages";
 import { filterTokenAvailable } from "src/core/redux/slice/customToken/addCustomToken.slice";
-import GlobalUtils from "src/core/utils/globalUtils";
 import { ListCryptoDataType } from "../home.type";
 import HomeUtils from "../home.utils";
 
@@ -55,14 +59,11 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
   const isFocused = useIsFocused();
   const wallet = useCurrentWallet();
   const dispatch = useAppDispatch();
-  const lightMode = useAppSelector(getThemeMode) !== ThemeKey.light;
   const protocolDataLists = useAppSelector(getProtocolDataLists);
   const accountProtocolSelected = useAccountProtocolSelected();
-  const updateBalanceState = useAppSelector(getUpdateBalance);
   const heightBottomTab = useAppSelector(getHeightBottomTab);
   const selectedCurrencySetting = useSelectedCurrencySetting();
   const contentOffsetToast = heightBottomTab ? heightBottomTab + 10 : undefined;
-  const blockBitcoinTransfer = useAppSelector(getBlockBitcoinTransfer);
   const protocolBaseData = useProtocolSelected();
   const addressList = accountProtocolSelected?.addressList;
   const selectedAddressId = accountProtocolSelected?.selectedAddressId;
@@ -72,14 +73,47 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
   const [refreshingHome, setRefreshingHome] = useState(false);
   const [walletBalanceCurrency, setWalletBalanceCurrency] = useState<number>(0);
   const listCryptoData = useAppSelector(selectorListCryptoData);
+
+  const [btcTransactionHistory, setBTCTransactionHistory] = useState<any[]>([]);
+  const bitcoinData = useBitcoinAddressData();
+  const btcAddress = bitcoinData?.address ?? "";
+  const bitcoinFullData = useAppSelector(selectorBitcoinFullData);
+  const bitcoinFullDataTxs = bitcoinFullData?.txs ?? [];
+
+  const transformBitcoinTransactionHistory = async ({
+    txsData,
+  }: {
+    txsData?: any[];
+  }) => {
+    const adminAddress = protocolBaseData?.beneficiary?.walletAddress;
+    const result = await BitcoinUtils.transformBitcoinTransactionHistory({
+      currentType: TransactionType.All,
+      txsData,
+      typeSelect: TransactionType.All,
+      bitcoinFullDataTxs,
+      btcAddress,
+      adminAddress: adminAddress,
+    });
+    setBTCTransactionHistory(result);
+  };
+
+  const fetchData = async () => {
+    if (btcAddress) {
+      const res = await dispatch(
+        getBitcoinFullData({ bitcoinAddress: btcAddress })
+      );
+      if (getBitcoinFullData.fulfilled.match(res)) {
+        transformBitcoinTransactionHistory({
+          txsData: res.payload?.txs,
+        });
+      }
+    }
+  };
+
   const createCryptoData = async (
     currentProtocolBaseData?: ProtocolDataWithSupportedTokensFormBEType
   ) => {
     try {
-      console.log("==============================");
-      console.log("Call createCryptoData");
-      console.log("==============================");
-
       const newListCryptoData: ListCryptoDataType[] = [];
 
       const finalProtocolBaseData = currentProtocolBaseData ?? protocolBaseData;
@@ -109,9 +143,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
 
       dispatch(setListCryptoDataSyn(newListCryptoData));
     } catch (error) {
-      console.log("==============================");
-      console.log("Call createCryptoData error", error);
-      console.log("==============================");
+      console.log("createCryptoData error", error);
     } finally {
       setIsFirstInitial(false);
     }
@@ -161,8 +193,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
           })
         );
         if (getBitcoinData.fulfilled.match(resData)) {
-          const payload = resData.payload;
-          return payload;
+          return resData.payload;
         }
       }
     } catch (error) {
@@ -174,7 +205,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     if (!refreshingHome) {
       try {
         setRefreshingHome(true);
-        await createCryptoData();
+        await Promise.all([createCryptoData(), fetchData()]);
         setRefreshingHome(false);
       } catch (error) {
         console.error("handleHomeRefresh Error:", error);
@@ -182,23 +213,15 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountProtocolSelected, listToken]);
+  }, [selectedAddress, btcAddress, dispatch, protocolBaseData]);
 
   const goToSendScreen = () => {
     dispatch(setTransferSlip0044(Slip0044.Bitcoin));
-
-    const nativeCoinCryptoData = listCryptoData?.find((e) => e.isNative);
     navigation.navigate(HomeStackScreenKey.Transfer, {
       isFromHome: true,
     });
-    // if (nativeCoinCryptoData) {
-    //   dispatch(setSelectedCryptoDataId(nativeCoinCryptoData.id));
-
-    // } else {
-    //   console.error("goToSendScreen error");
-    //   dispatch(setShowCommonErrorModal(true));
-    // }
   };
+
   const goToMangeCryptoScreen = () => {
     navigation.dispatch(StackActions.push(HomeStackScreenKey.ManageCrypto));
   };
@@ -223,64 +246,57 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     }
   };
 
-  const goToStakeScreen = () => {
-    navigation.dispatch(
-      StackActions.push(HomeStackScreenKey.Stake, { test: "1234565" })
-    );
-  };
-
-  useEffect(() => {
-    if (updateBalanceState) {
-      console.log("===================");
-      console.log("Update Balance");
-      console.log("===================");
-      updateBalance();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [updateBalanceState]);
-
   useEffect(() => {
     if (isFocused) {
       dispatch(getNetworkFee());
+      fetchData();
     }
-  }, [dispatch, isFocused]);
-
-  useEffect(() => {
-    if (!protocolBaseData && protocolDataLists) {
-      const polProtocolData = protocolDataLists.find(
-        (e) => e.slip0044 === Slip0044.Polygon
-      );
-      dispatch(
-        setSelectedProtocol(
-          polProtocolData ? polProtocolData._id : protocolDataLists[0]?._id
-        )
-      );
-    }
-  }, [protocolBaseData, protocolDataLists, dispatch]);
-
-  const handleChangeProtocol = async () => {
-    setIsFirstInitial(true);
-    await createCryptoData();
-  };
+  }, [dispatch, isFocused, btcAddress]);
 
   useEffect(() => {
     if (!isFirstInitial) {
-      handleChangeProtocol();
+      createCryptoData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    accountProtocolSelected,
-    protocolDataLists,
-    listToken.length,
-    wallet?.address,
-  ]);
+  }, [selectedAddress, protocolDataLists, listToken.length, wallet?.address]);
 
-  const updateBalance = async () => {
-    await createCryptoData();
-    dispatch(setUpdateBalance(false));
-  };
   const getBackgroundImage = () => {
     return appImages.newBgDark;
+  };
+
+  const [isAddView, setIsAddView] = useState(false);
+  const [showBottomSheetModal, setShowBottomSheetModal] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<AddressListItemType | null>(null);
+  const [menuActionType, setMenuActionType] = useState<MenuActionType | null>(null);
+  const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 });
+  const [newWalletAddress, setNewWalletAddress] = useState("");
+
+  const showMenuWallet = selectedWallet !== null;
+
+  const showBottomSheetModalAction = () => {
+    setShowBottomSheetModal(true);
+  };
+
+  const closeShowBottomSheetModal = () => {
+    setShowBottomSheetModal(false);
+  };
+
+  const onChangeMenuActionType = (type: MenuActionType) => {
+    setMenuActionType(type);
+  };
+
+  const onCloseMenuWallet = () => {
+    setSelectedWallet(null);
+    setMenuActionType(null);
+  };
+
+  const onShowMenuWallet = (wallet: AddressListItemType, index: number) => {
+    setSelectedWallet(wallet);
+    setNewWalletAddress(wallet.name);
+  };
+
+  const handlePressWallet = (data: AddressListItemType) => {
+    closeShowBottomSheetModal();
   };
 
   return {
@@ -290,13 +306,30 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     refreshingHome,
     handleHomeRefresh,
     walletBalanceCurrency,
-    listCryptoData,
+    btcTransactionHistory,
     selectedAddress,
-    isFirstInitial,
-    goToStakeScreen,
     selectedCurrencySetting,
+    listCryptoData,
+    isFirstInitial,
     dispatch,
     getBackgroundImage,
+    showBottomSheetModal,
+    showBottomSheetModalAction,
+    closeShowBottomSheetModal,
+    isAddView,
+    setIsAddView,
+    menuActionType,
+    onCloseMenuWallet,
+    showMenuWallet,
+    newWalletAddress,
+    setNewWalletAddress,
+    menuPosition,
+    addressList,
+    selectedAddressId,
+    protocolBaseData,
+    handlePressWallet,
+    onShowMenuWallet,
+    onChangeMenuActionType,
   };
 };
 

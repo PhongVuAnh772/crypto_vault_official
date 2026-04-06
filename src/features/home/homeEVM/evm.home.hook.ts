@@ -82,6 +82,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   const selectedAddressId = accountProtocolSelected?.selectedAddressId;
 
   const listToken = useAppSelector(filterTokenAvailable);
+  const appConfig = useAppSelector((state) => state.appConfig);
   const queueRef = useRef<SupportTokenDataType>([]);
 
   const isProcessingRef = useRef(false);
@@ -268,19 +269,26 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   };
 
   const fetchNativeBalanceOnce = async () => {
-    if (!wallet?.address || !protocolBaseData?.rpcUrl) return;
+    // Get RPC URL from Config or Protocol Data
+    const rpcUrlFromConfig = appConfig.rpcUrls?.[protocolBaseData?.chainId?.toString() || ""];
+    const rpcUrl = rpcUrlFromConfig || protocolBaseData?.rpcUrl;
+
+    if (!wallet?.address || !rpcUrl) return;
 
     const balances = await fetchEvmBalances({
-      rpcUrl: protocolBaseData.rpcUrl,
+      rpcUrl: rpcUrl,
       walletAddress: wallet.address,
-      tokens: [], // 👈 chỉ native
+      tokens: [], 
     });
 
-    if (balances.native) {
+    if (balances.native && protocolBaseData?._id && protocolBaseData?.slip0044 !== undefined) {
       dispatch(
         updateNativeBalance({
           walletAddress: wallet.address,
-          protocolData: protocolBaseData,
+          protocolData: {
+            _id: protocolBaseData._id,
+            slip0044: protocolBaseData.slip0044,
+          },
           balance: balances.native.balance,
           usd_price: balances.native.usd_price,
         })
@@ -290,26 +298,33 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   
   const handleGenerateListToken = useCallback(async () => {
     try {
+      // Filter out disabled tokens from remote config
+      const listCustomCryptoConverted = listToken
+        .filter((tok) => {
+          const config = appConfig.tokens.find(t => t.symbol.toLowerCase() === tok.symbol.toLowerCase());
+          return config ? config.enabled : true; // Default enable if not in config
+        })
+        .map((item) => {
+          const id = Utils.generateUniqueId();
+          const data: ListCryptoDataType = {
+          id,
+          name: item?.name,
+          symbol: item?.symbol,
+          logo: item?.logo,
+          balance: item?.balance ?? 0,
+          isNative: item.isNativeToken,
+          contractAddress: item?.contractAddress,
+          decimal: item.decimal,
+          baseData: protocolBaseData,
+          rateCurrency: item.balanceCurrency ?? 0,
+        };
+        return data;
+      });
+      setListCryptoData(listCustomCryptoConverted);
+      
       if (listToken.length === 0) {
         setIsFirstInitGenerateData(true);
       } else {
-        const listCustomCryptoConverted = listToken.map((item) => {
-          const id = Utils.generateUniqueId();
-          const data: ListCryptoDataType = {
-            id,
-            name: item?.name,
-            symbol: item?.symbol,
-            logo: item?.logo,
-            balance: item?.balance ?? 0,
-            isNative: item.isNativeToken,
-            contractAddress: item?.contractAddress,
-            decimal: item.decimal,
-            baseData: protocolBaseData,
-            rateCurrency: item.balanceCurrency ?? 0,
-          };
-          return data;
-        });
-        setListCryptoData(listCustomCryptoConverted);
         fetchNativeBalanceOnce();
         hideSkeletonLoading();
         await processUpdateToken();
@@ -522,7 +537,6 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   useEffect(() => {
     if (
       listToken.length > 0 &&
-      protocolBaseData?.rpcUrl &&
       isFirstInitGenerateData &&
       wallet?.address
     ) {
@@ -541,15 +555,14 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     wallet,
   ]);
   useEffect(() => {
-    if (!protocolBaseData && protocolDataLists) {
+    if (!protocolBaseData && protocolDataLists && protocolDataLists.length > 0) {
       const polProtocolData = protocolDataLists.find(
         (e) => e.slip0044 === Slip0044.Polygon
       );
-      dispatch(
-        setSelectedProtocol(
-          polProtocolData ? polProtocolData._id : protocolDataLists[0]?._id
-        )
-      );
+      const targetProtocol = polProtocolData || protocolDataLists[0];
+      if (targetProtocol?._id) {
+        dispatch(setSelectedProtocol(targetProtocol._id));
+      }
     }
   }, [protocolBaseData, protocolDataLists, dispatch]);
 

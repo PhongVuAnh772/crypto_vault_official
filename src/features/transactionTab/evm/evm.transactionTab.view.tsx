@@ -2,14 +2,9 @@ import React from "react";
 import {
   RefreshControl,
   SectionList,
-  StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
-import AppText from "src/components/common/AppText";
-import { ArrowDownSvgIcon } from "src/core/constants/AppIconsSvg";
-import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import { TransactionType } from "src/core/enum/TransactionType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import appStyles from "src/core/styles";
@@ -18,7 +13,6 @@ import { TransactionHistoryDataType } from "src/core/type/TransactionHistoryData
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import {
   LoadingTransactionView,
-  LoadingTypeTransactionView,
   SeeMoreTransactionView,
 } from "../components";
 import { RenderItem } from "./evm.transactionTab.component";
@@ -30,13 +24,12 @@ const EvmTransactionTab: React.FC<
     setShowTypeModal: (value: boolean) => void;
     typeSelect: TransactionType;
   }
-> = ({ navigation, setShowTypeModal, typeSelect }) => {
+> = ({ navigation, typeSelect }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
 
   const {
     transactionHistory,
-    typeSelectTitle,
     refreshing,
     onRefresh,
     onGoToDetails,
@@ -113,39 +106,6 @@ const EvmTransactionTab: React.FC<
           viewMoreHistory={viewMoreHistory}
         />
       )}
-      <View
-        style={[
-          appStyles.flexRow,
-          appStyles.justifyContentEnd,
-          StyleSheet.absoluteFill,
-          styles.h30,
-        ]}
-      >
-        {loading ? (
-          <LoadingTypeTransactionView
-            isTransactionHistoryLoading={loading}
-            onRefresh={onRefresh}
-            refreshing={refreshing}
-            viewMoreHistory={viewMoreHistory}
-          />
-        ) : (
-          <TouchableOpacity
-            style={[styles.protocolContainer]}
-            onPress={() => {
-              setShowTypeModal(true);
-            }}
-          >
-            <AppText
-              titleWithI18n={typeSelectTitle}
-              textColor={theme.colors.surface_surface_high}
-              variant={TextVariantKeys.labelMedium}
-            />
-            <View style={styles.iconArrowDown}>
-              <ArrowDownSvgIcon color={theme.colors.surface_surface_high} />
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
     </>
   );
 };
