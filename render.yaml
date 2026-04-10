@@ -1,0 +1,32 @@
+services:
+  # --- SERVICE 1: BACKEND SERVER ---
+  - type: web
+    name: cryptovault-backend
+    runtime: docker
+    region: singapore # Hoặc nơi gần bạn nhất
+    dockerContext: ./crypto-vault-server
+    dockerfilePath: ./crypto-vault-server/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      # Thêm các biến môi trường DB của bạn ở đây
+      # - key: DATABASE_URL
+      #   value: postgres://...
+
+  # --- SERVICE 2: ADMIN DASHBOARD ---
+  - type: web
+    name: cryptovault-admin
+    runtime: docker
+    region: singapore
+    dockerContext: ./admin-dashboard
+    dockerfilePath: ./admin-dashboard/Dockerfile
+    plan: free
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: cryptovault-backend
+          property: host
