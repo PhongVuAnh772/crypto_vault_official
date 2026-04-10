@@ -30,6 +30,7 @@ export type WalletBottomSheetType = {
     onRemoveAction: () => void;
     isAddView: boolean;
     setIsAddView: Dispatch<SetStateAction<boolean>>;
+    onPressAdd?: () => void;
     addressList?: AddressListItemType[];
     protocolBaseData?: ProtocolDataWithSupportedTokensFormBEType;
     selectedAddressId?: string;

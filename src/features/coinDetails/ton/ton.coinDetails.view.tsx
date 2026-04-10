@@ -1,6 +1,7 @@
 import { t } from "i18next";
 import React from "react";
-import { View } from "react-native";
+import { View, Linking } from "react-native";
+import { useSelector } from "react-redux";
 import CoinDetails from "src/components/specific/CoinDetails/CoinDetails.view";
 import HistoryItemComponent from "src/components/specific/HistoryItemComponent/HistoryItemComponent.view";
 import { TonSvgIcon } from "src/core/constants/AppIconsSvg";
@@ -9,6 +10,7 @@ import {
   TransactionType,
 } from "src/core/enum/TransactionType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
+import { getIsTestnet } from "src/core/redux/slice/app.slice";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
 import { HistorySectionDataType } from "src/core/type/HistorySectionDataType";
@@ -23,6 +25,7 @@ import { useTon } from "./ton.coinDetails.hook";
 import useStyles from "./ton.coinDetails.styles";
 
 const TonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
+  const isTestnet = useSelector(getIsTestnet);
   const {
     tonBalanceString,
     goToSendScreen,
@@ -145,7 +148,7 @@ const TonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     <CoinDetails
       coinGeckoId="the-open-network"
       name="TON"
-      networkName="TON Mainnet"
+      networkName={isTestnet ? "TON Testnet" : "TON Mainnet"}
       refModalShowType={showTypeBottomSheetRef}
       icon={<TonSvgIcon width={50} height={50} />}
       isTransactionHistoryLoading={isTonGetTransactionsLoading}
@@ -158,6 +161,7 @@ const TonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       balanceCurrencyTitle={balanceCurrencyTitle}
       sendAction={goToSendScreen}
       receiveAction={goToReceiveScreen}
+      faucetAction={isTestnet ? () => Linking.openURL("https://t.me/testgiver_ton_bot") : undefined}
       onShowTypeBottomSheet={onShowTypeBottomSheet}
       sectionData={transactionData}
       titleWithI18n={LanguageKey.ton_coin_title}

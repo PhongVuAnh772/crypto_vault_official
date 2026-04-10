@@ -71,21 +71,18 @@ const RequirePinCodeLayout: React.FC<RequirePinCodeLayoutType> = ({
   const showState = subVisible && (visible ?? requirePinCode) && !keepSplash;
   return showState ? (
     <View style={styles.container}>
-      {/* Mesh Background Layer 1: Indigo to Soft blue */}
       <LinearGradient
         colors={["#DCE9FF", "#FFFFFF"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={StyleSheet.absoluteFill}
       />
-      {/* Mesh Background Layer 2: Subtle Pink/Lavender overlay from top-right */}
       <LinearGradient
         colors={["rgba(245, 243, 255, 0.7)", "rgba(255, 255, 255, 0)"]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0.3, y: 0.5 }}
         style={StyleSheet.absoluteFill}
       />
-      {/* Mesh Background Layer 3: Cyan/Mint accent from bottom-left */}
       <LinearGradient
         colors={["rgba(236, 253, 245, 0.4)", "rgba(255, 255, 255, 0)"]}
         start={{ x: 0, y: 1 }}
@@ -113,7 +110,7 @@ const RequirePinCodeLayout: React.FC<RequirePinCodeLayoutType> = ({
           <View style={styles.content}>
             <AppText
               titleWithI18n={headerTitle ?? LanguageKey.pin_code_title}
-              variant={TextVariantKeys.bodyRLarge}
+              variant={TextVariantKeys.titleMedium}
               textColor="#374151"
               styles={styles.title}
             />

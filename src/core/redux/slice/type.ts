@@ -46,6 +46,7 @@ export type AppSliceType = {
     keyboardHeight: number;
     swapGuidingShow?: boolean;
     enablePassword: boolean;
+    isTestnet: boolean;
 };
 
 export type AccountEncryptedType = {

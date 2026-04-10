@@ -1,11 +1,8 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
-import { appImages } from 'src/core/constants/AppImages';
-import TextVariantKeys from 'src/core/enum/TextVariantKeys';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { useCurrentWallet, useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
-import appStyles from 'src/core/styles';
 import Utils from 'src/core/utils/commonUtils';
 
 type WalletAcBalanceRedXProps = {
@@ -23,7 +20,7 @@ const BalanceCard: React.FC<WalletAcBalanceRedXProps> = ({
     const currentWallet = useCurrentWallet();
     const balanceConverted = `${selectedCurrencySetting?.sign ?? ''} ${Utils.fiatFormat(balance * (withoutCurrencyRate ? 1 : selectedCurrencySetting?.rate))}`;
 
-    const formattedAddress = currentWallet?.address 
+    const formattedAddress = currentWallet?.address
         ? `${currentWallet.address.slice(0, 8)}...${currentWallet.address.slice(-8)}`
         : 'Accounts';
 
@@ -44,20 +41,20 @@ const BalanceCard: React.FC<WalletAcBalanceRedXProps> = ({
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
-        paddingVertical: 30,
+        paddingVertical: 15,
         width: '100%',
     },
     label: {
         color: 'rgba(255,255,255,0.7)',
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 4,
     },
     balance: {
         color: '#fff',
         fontSize: 48,
         fontWeight: '700',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     accountsBtn: {
         backgroundColor: 'rgba(255,255,255,0.2)',

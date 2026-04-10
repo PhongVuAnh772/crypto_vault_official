@@ -103,7 +103,7 @@ const useSessionProposal = () => {
                 onReject(true);
                 Utils.showToast({
                     type: AppToastType.error,
-                    msg: 'REDX does not support required dApp protocol',
+                    msg: 'TrustVault does not support required dApp protocol',
                 });
             }
         }

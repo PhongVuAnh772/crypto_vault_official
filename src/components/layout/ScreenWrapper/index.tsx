@@ -91,7 +91,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = (props) => {
         icon={
           <Close2SvgIcon
             style={stylesWithTheme.mlMinus20}
-            color={theme.colors.text_on_surface_text_high}
+            color={backButtonColor ?? theme.colors.text_on_surface_text_high}
           />
         }
         styles={stylesWithTheme.button}
@@ -139,16 +139,14 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = (props) => {
           style={[
             appStyles.fullWidth,
             {
-              backgroundColor: backgroundColor ?? theme.colors.background,
+              backgroundColor: backgroundImage ? 'transparent' : (backgroundColor ?? theme.colors.background),
             },
           ]}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={appStyles.flexGrow1}
           showsVerticalScrollIndicator={false}
         >
-          <ImageBackground source={backgroundImage} style={appStyles.flex1}>
-            <>{children}</>
-          </ImageBackground>
+          <>{children}</>
         </ScrollView>
       ) : (
         <>{children}</>
@@ -173,7 +171,7 @@ const ScreenWrapper: React.FC<ScreenWrapperProps> = (props) => {
       style={[
         mainStyle ?? stylesWithTheme.container,
         {
-          backgroundColor: backgroundColor,
+          backgroundColor: backgroundColor ?? (backgroundImage ? '#000000' : theme.colors.background),
         },
       ]}
     >

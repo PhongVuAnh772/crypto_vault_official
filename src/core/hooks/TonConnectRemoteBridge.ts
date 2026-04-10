@@ -193,6 +193,9 @@ export const useTonConnectRemoteBridge = () => {
     useEffect(() => {
         open(initialConnections);
 
+        return () => {
+            close();
+        };
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [getAllConnect.connectedApps,allAccount]);
+    }, [getAllConnect.connectedApps, allAccount]);
 };

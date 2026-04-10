@@ -122,4 +122,6 @@ export type HomeStackParamListType = {
     };
     expiryTime: number; // timestamp
   };
+  [HomeStackScreenKey.Trading]: undefined;
+  [HomeStackScreenKey.TradingDetail]: { symbol: string };
 };

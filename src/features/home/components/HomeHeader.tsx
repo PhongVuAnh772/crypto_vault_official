@@ -44,7 +44,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       </View>
 
       <View style={styles.contentContainer}>
-
+        <View style={styles.topRow}>
+        </View>
 
         <BalanceCard
           balance={balance}
@@ -109,7 +110,6 @@ const useStyles = (theme: AppThemeType) =>
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: 25,
-      marginTop: 20
     },
     logoBtn: {
       width: 40,

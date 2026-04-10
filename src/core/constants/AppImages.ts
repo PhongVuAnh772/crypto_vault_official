@@ -6,6 +6,7 @@ export const appImages = {
   logo: require("src/assets/images/logo.png"),
   newLogo: require("src/assets/images/new_logo.png"),
   logoF: require("src/assets/images/logo_f.png"),
+  aiLogo: require("src/assets/images/ai_logo.png"),
   homeWalletBackground: require("src/assets/images/home_wallet_bg.png"),
   coinDetailBackground: require("src/assets/images/coin_detail_background.png"),
   NFTDefault: require("src/assets/images/nft_default.png"),

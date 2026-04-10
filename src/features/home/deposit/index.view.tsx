@@ -1,6 +1,7 @@
 import { Feather } from "@expo/vector-icons";
 import React from "react";
 import {
+  Linking,
   Image,
   SafeAreaView,
   ScrollView,
@@ -9,25 +10,36 @@ import {
   TouchableOpacity,
   View
 } from "react-native";
+import { useSelector } from "react-redux";
 import { ScreenWrapper } from "src/components";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
+import { getIsTestnet } from "src/core/redux/slice/app.slice";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 
 const DepositOptionsScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
-
+  const isTestnet = useSelector(getIsTestnet);
   const options = [
     {
-      id: "receive",
-      title: "Receive Crypto",
-      desc: "Send from another wallet or exchange (BTC, ETH, TON, etc.)",
-      icon: "download",
-      color: "#5856D6",
-      onPress: () => navigation.navigate(HomeStackScreenKey.Receive),
-      badges: ["BTC", "ETH", "TON"]
+      id: "wallet-connect",
+      title: "Wallet Connect",
+      desc: "Connect to decentralized applications (dApps) securely",
+      icon: "link",
+      color: "#007AFF",
+      onPress: () => navigation.navigate(HomeStackScreenKey.ScanScreen),
+      badges: ["WEB3", "DAPPS"]
     },
+    ...(isTestnet ? [{
+      id: "ton-faucet",
+      title: "Get Testnet TON",
+      desc: "Get free TON Testnet tokens from the official Telegram bot faucet",
+      icon: "send",
+      color: "#0088CC",
+      onPress: () => Linking.openURL("https://t.me/testgiver_ton_bot"),
+      badges: ["FAUCET", "FREE"]
+    }] : []),
     {
       id: "buy",
       title: "Buy Crypto",

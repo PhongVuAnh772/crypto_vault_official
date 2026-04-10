@@ -11,14 +11,14 @@ import useSessionTonConnect from './useSessionTonConnect';
 
 
 export default function SessionTonConnect() {
-    const { infoDapp, closeModal, confirm, tonAddressData, visibleLoading,showBottomSheetConnect } =
+    const { infoDapp, closeModal, confirm, tonAddressData, visibleLoading, showBottomSheetConnect, reject } =
         useSessionTonConnect();
     const insets = useAppSafeAreaInsets();
     const style = useStyles(insets);
     return (
         <View style={[appStyles.flex1]}>
              <BottomSheetModalGorhom
-             onDismiss={closeModal}
+             onDismiss={reject}
                 refModal={showBottomSheetConnect}
               >
                <View style={style.box}>

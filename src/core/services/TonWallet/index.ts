@@ -18,9 +18,13 @@ class TonWallet {
     createWallet = async (
         version: TonWalletVersion,
         publicKey: string,
+        isTestNetParam?: boolean,
     ): Promise<WalletContractV5R1 | WalletContractV4> => {
+        if (!publicKey) {
+            throw new Error('Public key is required');
+        }
         const publicKeyBuffer = Buffer.from(publicKey, 'base64');
-        const isTestNet = EnvConfig.ENV === 'development';
+        const isTestNet = isTestNetParam ?? (EnvConfig.ENV === 'development');
         const isV5 = version === TonWalletVersion.V5;
 
         const walletConfig = {

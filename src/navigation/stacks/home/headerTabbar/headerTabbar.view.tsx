@@ -21,11 +21,10 @@ import BottomSheetModalGorhom from "src/components/specific/BottomSheetModalGorh
 import BottomSheetWarningWallet from "src/components/specific/BottomSheetWalletWarning/bottomSheetWalletWarning.view";
 import ProtocolImage from "src/components/specific/ProtocolImage";
 import {
-  AddFillSvgIcon,
   AddSvgIcon,
   ConnectSvgIcon,
-  WalletLogoSvgIcon
 } from "src/core/constants/AppIconsSvg";
+import { appImages } from "src/core/constants/AppImages";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
@@ -146,7 +145,10 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
               onPress={showBottomSheetModalAction}
               style={styles.accountIcon}
             >
-              <WalletLogoSvgIcon color={currentWallet?.avtColor} />
+              <Image
+                source={appImages.aiLogo}
+                style={{ width: 32, height: 32, borderRadius: 16 }}
+              />
             </TouchableOpacity>
 
             <View style={styles.searchBar}>
@@ -185,7 +187,7 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
               }}
             >
               <Image
-                source={require("../../../../../assets/images/ai_icons.png")}
+                source={appImages.aiLogo}
                 style={{ width: 25, height: 25 }}
               />
             </TouchableOpacity>

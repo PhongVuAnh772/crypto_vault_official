@@ -1,16 +1,15 @@
-import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import AppText from "src/components/common/AppText";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
-import { useAppTheme } from "src/core/hooks/useAppTheme";
+import LanguageKey from "src/core/locales/LanguageKey";
 import usePinCode from "src/features/auth/pinCode/pinCode.hook";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
-import LanguageKey from "src/core/locales/LanguageKey";
-import PinKeypad from "../components/PinKeypad";
 import PinIndicator from "../components/PinIndicator";
-import { Feather } from "@expo/vector-icons";
+import PinKeypad from "../components/PinKeypad";
 
 const PinCode: React.FC<RootNavigationType> = ({ navigation }) => {
   const { pinCode, setPinCode, theme } = usePinCode({ navigation });
@@ -49,9 +48,9 @@ const PinCode: React.FC<RootNavigationType> = ({ navigation }) => {
         end={{ x: 0.5, y: 0.5 }}
         style={StyleSheet.absoluteFill}
       />
-      
+
       <View style={[styles.header, { marginTop: insets.top + 20 }]}>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
@@ -66,17 +65,17 @@ const PinCode: React.FC<RootNavigationType> = ({ navigation }) => {
           textColor="#1F2937"
           styles={styles.title}
         />
-        
+
         <PinIndicator length={6} value={pinCode} />
       </View>
 
       <View style={styles.keypadWrapper}>
-        <PinKeypad 
+        <PinKeypad
           onPressNumber={handlePressNumber}
           onPressDelete={handlePressDelete}
         />
       </View>
-      
+
       <View style={{ height: insets.bottom + 40 }} />
     </View>
   );
@@ -102,7 +101,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 20,
-    fontWeight: '400',
+    fontWeight: 'bold',
+
   },
   keypadWrapper: {
     flex: 1,

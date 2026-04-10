@@ -41,32 +41,14 @@ const BottomTab = () => {
   return (
     <Tab.Navigator
       initialRouteName={BottomTabScreenKey.Crypto}
-      tabBar={({
-        state,
-        descriptors,
-        navigation,
-        insets,
-      }: {
-        state: TabNavigationState<ParamListBase>;
-        descriptors: BottomTabDescriptorMap;
-        navigation: NavigationHelpers<
-          ParamListBase,
-          BottomTabNavigationEventMap
-        >;
-        insets: EdgeInsets;
-      }) =>
-        AppTabBar({
-          state,
-          descriptors,
-          navigation,
-          insets,
-          theme,
-          enableBadge,
-          setHeightBottomTab(value) {
-            handleSetHeightBottomTab(value);
-          },
-        })
-      }
+      tabBar={(props) => (
+        <AppTabBar
+          {...props}
+          theme={theme}
+          enableBadge={enableBadge}
+          setHeightBottomTab={handleSetHeightBottomTab}
+        />
+      )}
       screenOptions={() => ({
         tabBarShowLabel: false,
         tabBarActiveTintColor: appColors.main.tokyoRed,

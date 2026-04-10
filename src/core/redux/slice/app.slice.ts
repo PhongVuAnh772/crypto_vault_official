@@ -14,6 +14,7 @@ import { resetHomeSlice } from 'src/features/home/slice/home.slice';
 import { RootState } from '../store';
 import { resetWalletSlice } from './account.slice';
 import { AppSliceType, CryptosCurrencyType, SettingCurrencyType } from './type';
+import EnvConfig from 'src/core/constants/EnvConfig';
 
 const initialState: AppSliceType = {
     timeLock: undefined,
@@ -52,6 +53,7 @@ const initialState: AppSliceType = {
     keyboardHeight: 0,
     swapGuidingShow: true,
     enablePassword: true,
+    isTestnet: EnvConfig.ENV === 'development',
 };
 
 export const defaultSettingCurrency = {
@@ -395,6 +397,9 @@ export const appSlice = createSlice({
         setEnablePassword: (state, action: PayloadAction<boolean>) => {
             state.enablePassword = action.payload;
         },
+        setIsTestnet: (state, action: PayloadAction<boolean>) => {
+            state.isTestnet = action.payload;
+        },
     },
 });
 
@@ -436,6 +441,7 @@ export const {
     setKeyboardHeight,
     setSwapGuidingShow,
     setEnablePassword,
+    setIsTestnet,
 } = appSlice.actions;
 
 export const getKeyboardHeight = (state: RootState) =>
@@ -501,6 +507,7 @@ export const getSwapGuidingShow = (state: RootState) =>
     state.app.swapGuidingShow;
 export const getEnablePassword = (state: RootState) =>
     state.app.enablePassword;
+export const getIsTestnet = (state: RootState) => state.app.isTestnet;
 const appPersistConfig = {
     key: ReduxKey.app,
     storage: AsyncStorage,

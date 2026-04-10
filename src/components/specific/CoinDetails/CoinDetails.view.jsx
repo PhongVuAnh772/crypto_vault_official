@@ -71,6 +71,7 @@ const CoinDetailedScreen = ({
   onBack,
   refModalShowType,
   hideSendAction,
+  faucetAction,
 }) => {
   const { theme, backAction, typeSelectTitle, handleScroll, data } =
     useCoinDetails({
@@ -357,6 +358,7 @@ const CoinDetailedScreen = ({
                   });
                 }
               }}
+              onFaucetPress={faucetAction}
               onSwapPress={() => {
                 navigation.dispatch(StackActions.push(HomeStackScreenKey.Swap));
               }}

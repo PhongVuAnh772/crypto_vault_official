@@ -15,7 +15,7 @@ const useStyles = (theme: AppThemeType) =>
         },
         title: {
             marginBottom: 20,
-            fontWeight: '400',
+            fontWeight: 'bold',
         },
         errorText: {
             marginTop: 10,

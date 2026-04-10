@@ -1,10 +1,10 @@
 import { t } from "i18next";
 import React from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { TextInput } from "react-native-paper";
 import AppButton from "src/components/common/AppButton";
 import appColors from "src/core/constants/AppColors";
-import { WalletLogoSvgIcon } from "src/core/constants/AppIconsSvg";
+import { appImages } from "src/core/constants/AppImages";
 import InputMode from "src/core/enum/InputMode";
 import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
@@ -37,7 +37,10 @@ const EditModalView: React.FC<EditModalType> = ({
     <TouchableOpacity activeOpacity={1} style={styles.editContainer}>
       <View style={styles.removeSubContainer}>
         <View style={[styles.walletIcon2, appStyles.mbt10]}>
-          <WalletLogoSvgIcon width={25} height={20} color={avtColor} />
+          <Image
+            source={appImages.aiLogo}
+            style={{ width: 44, height: 44, borderRadius: 22 }}
+          />
         </View>
         <TextInput
           autoFocus={true}

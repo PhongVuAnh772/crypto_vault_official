@@ -4,7 +4,7 @@ export const ENV = 'development';
 export const API_KEY = 'KGL9WtIo9pbhEIsjZCR1LgOn4armuPINQBs5MSGZAhc6lj';
 
 // MARK: Base url
-export const BASE_URL = 'https://redx-api.nws-dev.com';
+export const BASE_URL = 'http://127.0.0.1:3000/api/v1/public';
 
 // MARK: Block Cypher API
 export const BLOCK_CYPHER_TOKEN = 'c21de897e93d4cc6a4fe623811c21952';

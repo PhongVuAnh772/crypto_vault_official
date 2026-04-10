@@ -1,6 +1,7 @@
-import React from "react";
-import { View, StyleSheet, TouchableOpacity } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import React from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
 import LoadingScreen from "src/components/common/LoadingScreen";
@@ -15,9 +16,8 @@ import appStyles from "src/core/styles";
 import RiskTextWithIcon from "src/features/auth/components/RiskTextWithIcon";
 import useRePinCode from "src/features/auth/reEnterPin/rePinCode.hook";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
-import PinKeypad from "../components/PinKeypad";
 import PinIndicator from "../components/PinIndicator";
-import { Feather } from "@expo/vector-icons";
+import PinKeypad from "../components/PinKeypad";
 
 const ReEnterPin: React.FC<RootNavigationType> = ({ navigation }) => {
   const {
@@ -123,7 +123,7 @@ const ReEnterPin: React.FC<RootNavigationType> = ({ navigation }) => {
       ) : (
         <View style={appStyles.flex1}>
           <View style={[styles.header, { marginTop: insets.top + 20 }]}>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
             >
@@ -138,12 +138,12 @@ const ReEnterPin: React.FC<RootNavigationType> = ({ navigation }) => {
               textColor="#1F2937"
               styles={styles.title}
             />
-            
+
             <PinIndicator length={6} value={value} />
           </View>
 
           <View style={styles.keypadWrapper}>
-            <PinKeypad 
+            <PinKeypad
               onPressNumber={(num: string) => {
                 if (value.length < 6) {
                   onChangeValue(value + num);
@@ -154,7 +154,7 @@ const ReEnterPin: React.FC<RootNavigationType> = ({ navigation }) => {
               }}
             />
           </View>
-          
+
           <View style={{ height: insets.bottom + 40 }} />
         </View>
       )}
@@ -189,7 +189,8 @@ const styles = StyleSheet.create({
   },
   title: {
     marginBottom: 20,
-    fontWeight: '400',
+    fontWeight: 'bold',
+
   },
   keypadWrapper: {
     flex: 1,
