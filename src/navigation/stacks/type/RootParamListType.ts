@@ -12,7 +12,7 @@ export type RootParamListType = {
 
 export const navigationRef = createNavigationContainerRef();
 
-export function rootNavigate(name: string, props: object) {
+export function rootNavigate(name: string, props?: object) {
     if (navigationRef.isReady()) {
         if (props) {
             navigationRef.dispatch(StackActions.push(name, props));

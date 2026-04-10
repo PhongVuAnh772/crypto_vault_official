@@ -368,7 +368,7 @@ export const ContentInsideHeaderLoading: React.FC<
 
 export const ListButtonTokenTracking: React.FC<
   ListButtonTokenTrackingProps
-> = ({ onSendPress, onReceivePress, onSwapPress, onBuyPress }) => {
+> = ({ onSendPress, onReceivePress, onSwapPress, onBuyPress, onFaucetPress }) => {
   return (
     <View style={styles.btnTrackingContainer}>
       {/* Send */}
@@ -392,6 +392,19 @@ export const ListButtonTokenTracking: React.FC<
           styles={styles.text}
         />
       </TouchableOpacity>
+
+      {/* Faucet */}
+      {onFaucetPress && (
+        <TouchableOpacity style={styles.button} onPress={onFaucetPress}>
+          <AntDesign name="gift" size={14} color={appColors.neutral.n700} />
+          <AppText
+            title={"Faucet"}
+            variant={TextVariantKeys.labelTiny}
+            textColor={appColors.neutral.black}
+            styles={styles.text}
+          />
+        </TouchableOpacity>
+      )}
 
       {/* Swap */}
       <TouchableOpacity style={styles.button} onPress={onSwapPress}>

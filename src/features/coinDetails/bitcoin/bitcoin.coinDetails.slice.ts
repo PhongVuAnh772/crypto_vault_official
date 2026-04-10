@@ -10,6 +10,7 @@ import AppI18Next from 'src/core/locales';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import NativeBitcoinModules from 'src/core/modules/BitcoinModules/NativeBitcoinModules';
 import { sendGet } from 'src/core/network/requests';
+import { getIsTestnet } from 'src/core/redux/slice/app.slice';
 import { RootState } from 'src/core/redux/store';
 import BitcoinServices from 'src/core/services/BitcoinServices';
 import {
@@ -57,10 +58,12 @@ const initialState: BitcoinSliceType = {
 
 export const getNetworkFee = createAsyncThunk(
   "/home/getNetworkFee",
-  async (_, { rejectWithValue }) => {
-    try {
-      const res = await fetch("https://api.blockcypher.com/v1/btc/main");
-      const data = await res.json();
+    async (_, { getState, rejectWithValue }) => {
+      try {
+        const state = getState() as RootState;
+        const isTestnet = getIsTestnet(state);
+        const res = await fetch(`https://api.blockcypher.com/v1/btc/${isTestnet ? 'test3' : 'main'}`);
+        const data = await res.json();
 
       return {
         high_fee_per_kb: data.high_fee_per_kb,
@@ -83,12 +86,14 @@ export const getBitcoinData = createAsyncThunk(
             bitcoinAddress,
             includeGetMaxAmount = true,
         }: { bitcoinAddress: string; includeGetMaxAmount?: boolean },
-        { rejectWithValue, dispatch },
+        { rejectWithValue, dispatch, getState },
     ) => {
         try {
+            const state = getState() as RootState;
+            const isTestnet = getIsTestnet(state);
             const bitcoinServices = new BitcoinServices();
             const getBitcoinDataRes =
-                await bitcoinServices.getBitcoinData(bitcoinAddress);
+                await bitcoinServices.getBitcoinData(bitcoinAddress, isTestnet);
             if (getBitcoinDataRes.isSuccess) {
                 const data = getBitcoinDataRes.data as IBitcoinDataRes;
                 if (includeGetMaxAmount) {
@@ -135,14 +140,16 @@ export const getBitcoinFullData = createAsyncThunk(
     '/bitcoin/getBitcoinFullData',
     async (
         { bitcoinAddress }: { bitcoinAddress: string },
-        { rejectWithValue, dispatch },
+        { rejectWithValue, dispatch, getState },
     ) => {
         try {
+            const state = getState() as RootState;
+            const isTestnet = getIsTestnet(state);
             const bitcoinServices = new BitcoinServices();
 
             if (bitcoinAddress) {
                 const getBitcoinDataRes =
-                    await bitcoinServices.getBitcoinFullData(bitcoinAddress);
+                    await bitcoinServices.getBitcoinFullData(bitcoinAddress, isTestnet);
 
                 if (getBitcoinDataRes.isSuccess) {
                     const data = getBitcoinDataRes.data as IBitcoinFullDataRes;
@@ -318,9 +325,11 @@ export const createBitcoinTransaction = createAsyncThunk(
             console.log('=============================================');
 
             try {
+                const state = getState() as RootState;
+                const isTestnet = getIsTestnet(state);
                 const successCreateTransaction =
                     await bitcoinModule.bitcoinTransaction({
-                        env: EnvConfig.ENV,
+                        env: isTestnet ? 'development' : 'production',
                         mnemonic,
                         toAddress,
                         amountSend,
@@ -391,9 +400,12 @@ export const pushBitcoinTransactionAction = createAsyncThunk(
             const tx = bitcoinTransactionData?.base64EncodedTransaction;
 
             if (tx) {
+                const state = getState() as RootState;
+                const isTestnet = getIsTestnet(state);
                 const pushBitcoinTransactionActionRes =
                     await bitcoinServices.pushBitcoinTransactionAction(
                         bitcoinTransactionData?.base64EncodedTransaction,
+                        isTestnet
                     );
                 if (pushBitcoinTransactionActionRes.isSuccess) {
                     const data =

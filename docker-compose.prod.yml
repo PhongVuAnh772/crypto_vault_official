@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  backend:
+    image: ${DOCKER_USERNAME:-phongvu}/cryptovault-backend:latest
+    container_name: cryptovault-backend-prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.prod
+    restart: always
+
+  admin-dashboard:
+    image: ${DOCKER_USERNAME:-phongvu}/cryptovault-admin:latest
+    container_name: cryptovault-admin-prod
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=https://api.yourdomain.com # Thay đổi theo domain của bạn
+    depends_on:
+      - backend
+    restart: always

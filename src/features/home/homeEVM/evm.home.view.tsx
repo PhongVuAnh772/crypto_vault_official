@@ -8,8 +8,8 @@ import CryptoButton from 'src/components/homeComponents/CryptoButton';
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from 'src/core/styles';
-import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import Utils from 'src/core/utils/commonUtils';
+import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import DraggableWidgets from '../components/DraggableWidgets';
 import HomeHeader from '../components/HomeHeader';
@@ -121,7 +121,7 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
 
     return (
         <ScreenWrapper
-            subStyle={[appStyles.flex1, { backgroundColor: '#F2F2F7' }]}>
+            subStyle={appStyles.flex1}>
             <WalletBottomSheet
                 menuActionType={menuActionType}
                 showBottomSheetModal={showBottomSheetModal}

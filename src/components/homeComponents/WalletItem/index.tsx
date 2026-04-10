@@ -1,12 +1,18 @@
 import React from 'react';
 import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import AppText from 'src/components/common/AppText';
-import { MoreSvgIcon, WalletLogoSvgIcon } from 'src/core/constants/AppIconsSvg';
+import { MoreSvgIcon, Copy2SvgIcon } from 'src/core/constants/AppIconsSvg';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { AddressListItemType } from 'src/core/redux/slice/account.type';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
 import WalletUtils from 'src/core/utils/walletUtils';
+import * as Clipboard from 'expo-clipboard';
+import Utils from 'src/core/utils/commonUtils';
+import LanguageKey from 'src/core/locales/LanguageKey';
+import AppI18Next from 'src/core/locales';
+import { Image } from 'react-native';
+import { appImages } from 'src/core/constants/AppImages';
 import useStyles from './style';
 
 type WalletItemType = {
@@ -33,6 +39,14 @@ const WalletItem = ({
 }: WalletItemType) => {
     const style = useStyles(theme);
 
+    const handleCopy = async () => {
+        await Clipboard.setStringAsync(item.address);
+        Utils.showToast({
+            msg: AppI18Next.t(LanguageKey.common_copy_success),
+            type: 'success',
+        });
+    };
+
     return (
         <TouchableOpacity
             activeOpacity={0.9}
@@ -50,10 +64,9 @@ const WalletItem = ({
                 isSelected ? style.walletSelected : null,
             ]}>
             <View style={[style.walletIcon3]}>
-                <WalletLogoSvgIcon
-                    width={20}
-                    height={15}
-                    color={item.avtColor}
+                <Image
+                    source={appImages.aiLogo}
+                    style={{ width: 32, height: 32, borderRadius: 16 }}
                 />
             </View>
             <View style={appStyles.flex1}>
@@ -64,12 +77,19 @@ const WalletItem = ({
                     styles={style.nameProtocol}
                     textColor={theme.colors.text_on_surface_text_high}
                 />
-                <AppText
-                    title={WalletUtils.getShortAddress(item.address)}
-                    variant={TextVariantKeys.bodyMSmall}
-                    styles={style.nameProtocol}
-                    textColor={theme.colors.text_on_surface_text_light}
-                />
+                <View style={[style.addressRow, style.nameProtocol]}>
+                    <AppText
+                        title={WalletUtils.getShortAddress(item.address)}
+                        variant={TextVariantKeys.bodyMSmall}
+                        textColor={theme.colors.text_on_surface_text_light}
+                    />
+                    <TouchableOpacity 
+                        style={[style.copyButton, {marginLeft: 8}]} 
+                        onPress={handleCopy}
+                    >
+                        <Copy2SvgIcon width={14} height={14} color={theme.colors.text_on_surface_text_light} />
+                    </TouchableOpacity>
+                </View>
             </View>
             {onShowMenuWallet && (
                 <TouchableOpacity

@@ -58,6 +58,7 @@ const WalletBottomSheet: React.FC<WalletBottomSheetType> = props => {
                     closeParentBottomSheetModal={props.closeModalAction}
                     isAddView={props.isAddView}
                     setIsAddView={props.setIsAddView}
+                    onPressAdd={props.onPressAdd}
                     addressList={props.addressList}
                     protocolBaseData={props.protocolBaseData}
                     selectedAddressId={props.selectedAddressId}

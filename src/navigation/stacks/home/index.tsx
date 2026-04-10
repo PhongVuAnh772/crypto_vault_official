@@ -76,6 +76,8 @@ import {
 } from "src/features/tonConnect/slice/tonConnect.slice";
 import TransactionDetails from "src/features/transactionDetials/transactionDetails.view";
 import TransferScreen from "src/features/transfer/transfer.view";
+import TradingScreen from "src/features/trading/TradingScreen";
+import TradingDetailScreen from "src/features/trading/TradingDetailScreen";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
@@ -375,6 +377,14 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.NFTMarketplaceCollectionDetail}
           component={NFTMarketplaceCollectionDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.Trading}
+          component={TradingScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.TradingDetail}
+          component={TradingDetailScreen}
         />
       </HideHeaderStack>
       <AccountListener />

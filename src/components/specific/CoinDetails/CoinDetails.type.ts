@@ -49,6 +49,7 @@ export type CoinDetailsType = {
     | null;
   viewMoreHistory?: () => void;
   hideSendAction?: boolean;
+  faucetAction?: () => void;
   refModalShowType?: React.RefObject<BottomSheetModalMethods>;
 };
 
@@ -101,4 +102,5 @@ export type ListButtonTokenTrackingProps = {
   onReceivePress?: () => void;
   onSwapPress?: () => void;
   onBuyPress?: () => void;
+  onFaucetPress?: () => void;
 };

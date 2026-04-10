@@ -1,6 +1,7 @@
 import { StackActions, StackActionType } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Linking } from "react-native";
 import { openSettings } from "react-native-permissions";
 import {
   AttachMoneySvgIcon,
@@ -20,10 +21,12 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
 import { getPin } from "src/core/redux/slice/account.slice";
 import {
+  getIsTestnet,
   getLockoutLocalAuthentication,
   getSwapGuidingShow,
   selectorEnableFaceIdOrTouch,
   setEnableFaceIdOrTouch,
+  setIsTestnet,
 } from "src/core/redux/slice/app.slice";
 import { getIsShowSwap } from "src/core/redux/slice/swap/swap.slice";
 import FaceIdOrTouch from "src/core/services/FaceIdOrTouch";
@@ -45,6 +48,7 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
   );
   const guidingSwap = useAppSelector(getSwapGuidingShow);
   const isShowSwap = useAppSelector(getIsShowSwap);
+  const isTestnet = useAppSelector(getIsTestnet);
 
   // const dispatch = useAppDispatch();
 
@@ -202,6 +206,18 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
       />
     ),
   };
+  const featureTestnet = {
+    icon: Shield02SvgIcon,
+    title: "Testnet Mode",
+    onPress: () => {},
+    rightView: (
+      <SwitchView
+        value={isTestnet}
+        onValueChange={(val) => dispatch(setIsTestnet(val))}
+        theme={theme}
+      />
+    ),
+  };
   const featureSwap = {
     icon: SwapSvgIcon,
     title: LanguageKey.home_swap_title,
@@ -213,20 +229,28 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
       }
     },
   };
-  // const featureChangeTheme = {
-  //     icon: SunSvgIcon,
-  //     title: LanguageKey.theme_title,
-  //     onPress: changeTheme,
-  //     rightView: (
-  //         <SwitchView
-  //             value={lightMode}
-  //             onValueChange={changeTheme}
   //             theme={theme}
   //         />
   //     ),
   // };
 
+  const featureAdminPortal = {
+    icon: Shield02SvgIcon,
+    title: "Admin Portal",
+    onPress: () => {
+      Linking.openURL("http://localhost:5173"); // Opening Web Admin Dashboard
+    },
+  };
+
   const listScreen: SettingListType[] = [
+    {
+      title: "Network Environment",
+      data: [featureTestnet],
+    },
+    {
+      title: "Administration",
+      data: [featureAdminPortal],
+    },
     ...(isShowSwap
       ? [
           {

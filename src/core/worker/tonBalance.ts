@@ -15,7 +15,7 @@ export const fetchTonBalances = async ({ walletAddress, tokens }: Params) => {
   for (const token of tokens) {
     // Native TON
     if (token.isNativeToken) {
-      const balance = await client.getBalance(Address.parseRaw(walletAddress));
+      const balance = await client.getBalance(Address.parse(walletAddress));
       result["native"] = {
         balance: balance.toString(),
         usd_price: token.price || 0,

@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 12,
   },
   dotFilled: {
-    backgroundColor: '#3B82F6', // Vibrant blue as seen in the image
+    backgroundColor: 'black', // Vibrant blue as seen in the image
   },
   dotEmpty: {
     backgroundColor: '#D1D5DB', // Light grey for empty state

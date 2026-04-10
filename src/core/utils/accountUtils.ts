@@ -25,11 +25,12 @@ import BitcoinUtils from './bitcoinUtils';
 import Utils from './commonUtils';
 import TonUtils from './tonUtils';
 
-const getTonAddress = async (version: TonWalletVersion, publicKey: string) => {
+const getTonAddress = async (version: TonWalletVersion, publicKey: string, isTestNet?: boolean) => {
     const tonWallet = new TonWallet();
     const tonWalletData = await tonWallet.createWallet(
         version ?? TonWalletVersion.V5,
         publicKey,
+        isTestNet,
     );
     return tonWalletData.address.toString({
         bounceable: false,
@@ -49,14 +50,15 @@ const generateProtocolData = async ({
     generateDataProtocolListsFromBE,
     mnemonic,
     dispatch,
+    isTestNet,
 }: {
     generateDataProtocolListsFromBE: ProtocolDataWithSupportedTokensFormBEType[];
     mnemonic: string;
     dispatch: ThunkDispatch<unknown, unknown, UnknownAction>;
+    isTestNet?: boolean;
 }): Promise<ProtocolDataType[] | undefined> => {
     const protocolDataLists: ProtocolDataType[] = [];
     const nativeWalletCoreModule = new NativeWalletCoreModule();
-    const isTestNet = EnvConfig.ENV === 'development';
 
     for (const protocol of generateDataProtocolListsFromBE) {
         const { slip0044, VM, _id } = protocol;
@@ -90,6 +92,7 @@ const generateProtocolData = async ({
                 finalAddress = await getTonAddress(
                     version ?? TonWalletVersion.V5,
                     walletCoreCoinData?.publicKey,
+                    isTestNet,
                 );
             }
 
@@ -125,16 +128,17 @@ const changeDerivationPath = (derivationPath: string, index: number) => {
 const checkProtocolData = async ({
     protocolListsFromBE,
     mnemonic,
+    isTestNet,
 }: {
     protocolListsFromBE?: ProtocolDataWithSupportedTokensFormBEType[];
     mnemonic: string;
+    isTestNet?: boolean;
 }) => {
     const listData: ProtocolDataWithSupportedTokensFormBEType[] = [];
     const nativeWalletCoreModule = new NativeWalletCoreModule();
     if (!protocolListsFromBE) return undefined;
     for (const protocol of protocolListsFromBE) {
         const slip0044 = protocol?.slip0044;
-        const isTestNet = EnvConfig.ENV === 'development';
         const isTon = slip0044 === Slip0044.Ton;
         let walletCoreCoinData: WalletCoreCoinDataType | undefined;
         let isCheckBeneficiaryWalletAddress: boolean | undefined;
@@ -205,6 +209,7 @@ const checkAccountProtocolDataAndGenerateAccountData = async (
     accountState: AccountSliceType,
     dispatch: ThunkDispatch<unknown, unknown, UnknownAction>,
     protocolDataFromBe: ProtocolDataWithSupportedTokensFormBEType[] | undefined,
+    isTestNet?: boolean,
 ): Promise<AccountType[] | undefined> => {
     const accountList = accountState?.accountLists;
 
@@ -228,6 +233,7 @@ const checkAccountProtocolDataAndGenerateAccountData = async (
                 mnemonic,
                 generateDataProtocolListsFromBE: findResult,
                 dispatch,
+                isTestNet,
             });
             if (!protocolData) {
                 return undefined;
@@ -245,22 +251,12 @@ const checkAccountProtocolDataAndGenerateAccountData = async (
 const checkProtocolDataWithDefaultData = (
     protocolDataFromBe?: ProtocolDataWithSupportedTokensFormBEType[],
 ): ProtocolDataWithSupportedTokensFormBEType[] => {
-    const defaultData = DefaultProtocolDataList;
-    let finalDataList: ProtocolDataWithSupportedTokensFormBEType[] = [];
-    if (!protocolDataFromBe) return defaultData;
-    finalDataList = [...protocolDataFromBe];
-
-    defaultData.forEach(e => {
-        const currentSlip0044 = e.slip0044;
-        const dataDefaultExistInBeData = protocolDataFromBe?.find(
-            e => e.slip0044 === currentSlip0044,
-        );
-        if (!dataDefaultExistInBeData) {
-            finalDataList.push({ ...e, isDefault: !e.beneficiary });
-        }
-    });
-
-    return finalDataList;
+    // If backend returns data, we use it as the source of truth.
+    // We no longer merge with hardcoded defaults to allow deactivation via Admin.
+    if (protocolDataFromBe && protocolDataFromBe.length > 0) {
+        return protocolDataFromBe;
+    }
+    return DefaultProtocolDataList;
 };
 
 const checkAccountType = (value: any): value is AccountType[] => {

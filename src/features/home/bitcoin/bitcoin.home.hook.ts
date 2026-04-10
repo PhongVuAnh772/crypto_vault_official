@@ -318,6 +318,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     closeShowBottomSheetModal,
     isAddView,
     setIsAddView,
+    accountProtocolSelected,
     menuActionType,
     onCloseMenuWallet,
     showMenuWallet,
@@ -330,6 +331,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     handlePressWallet,
     onShowMenuWallet,
     onChangeMenuActionType,
+    t,
   };
 };
 

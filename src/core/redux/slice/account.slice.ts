@@ -17,6 +17,7 @@ import {
   deleteTonCollectionByAccount,
 } from "src/core/redux/slice/NFT/NFTImport.slice";
 import { RootState } from "src/core/redux/store";
+import { getIsTestnet } from "./app.slice";
 import AccountServices from "src/core/services/AccountServices";
 import AccountUtils from "src/core/utils/accountUtils";
 import Utils from "src/core/utils/commonUtils";
@@ -46,350 +47,9 @@ const initialState: AccountSliceType = {
 import VMType from "src/core/enum/VMType";
 import TonWalletVersion from "src/core/enum/TonWalletVersion";
 
-export const MOCK_PROTOCOLS_WITH_SUPPORTED_TOKENS: ProtocolDataWithSupportedTokensFormBEType[] =
-  [
-    // =========================
-    // ETHEREUM
-    // =========================
-    {
-      _id: "evm_eth",
-      name: "Ethereum",
-      symbol: "ETH",
-      VM: VMType.EVM,
-      slip0044: 60,
-      chainId: 1,
-      status: "active",
-      blockExplorerUrl: "https://etherscan.io",
-      transactionScanURL: "https://etherscan.io/tx/",
-      rpcUrl: "https://ethereum-rpc.publicnode.com",
-      protocolType: "EVM",
-      coinTransferFee: 0.001,
-      tokenTransferFee: 5,
-      nftTransferFee: 10,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      nativeToken: {
-        name: "Ethereum",
-        symbol: "ETH",
-        decimal: 18,
-        address: "",
-      },
-      supportedToken: [
-        {
-          decimal: 18,
-          isNativeToken: true,
-          logo: null,
-          name: "Ethereum",
-          symbol: "ETH",
-          contractAddress: "",
-        },
-        {
-          _id: "eth-usdt",
-          name: "Tether USD",
-          symbol: "USDT",
-          contractAddress: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-          decimal: 6,
-          logo: "",
-          isNativeToken: false,
-          protocol: {} as any, // BE trả về, FE thường không dùng trực tiếp
-        },
-      ],
-    },
+export const MOCK_PROTOCOLS_WITH_SUPPORTED_TOKENS: ProtocolDataWithSupportedTokensFormBEType[] = [];
 
-    // =========================
-    // BNB SMART CHAIN
-    // =========================
-    {
-      _id: "evm_bnb",
-      name: "BNB Smart Chain",
-      symbol: "BNB",
-      VM: VMType.EVM,
-      slip0044: 714,
-      chainId: 56,
-      status: "active",
-      blockExplorerUrl: "https://bscscan.com",
-      transactionScanURL: "https://bscscan.com/tx/",
-      rpcUrl: "https://bsc-dataseed.binance.org",
-      protocolType: "EVM",
-      coinTransferFee: 0.0005,
-      tokenTransferFee: 3,
-      nftTransferFee: 6,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      nativeToken: {
-        name: "BNB",
-        symbol: "BNB",
-        decimal: 18,
-        address: "",
-      },
-      supportedToken: [
-        {
-          decimal: 18,
-          isNativeToken: true,
-          logo: null,
-          name: "BNB",
-          symbol: "BNB",
-          contractAddress: "",
-        },
-      ],
-    },
-
-    // =========================
-    // POLYGON
-    // =========================
-    {
-      _id: "evm_polygon",
-      name: "Polygon",
-      symbol: "POL",
-      VM: VMType.EVM,
-      slip0044: 966,
-      chainId: 137,
-      status: "active",
-      blockExplorerUrl: "https://polygonscan.com",
-      transactionScanURL: "https://polygonscan.com/tx/",
-      rpcUrl: "https://polygon-rpc.com",
-      protocolType: "EVM",
-      coinTransferFee: 0.0005,
-      tokenTransferFee: 2,
-      nftTransferFee: 4,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      nativeToken: {
-        name: "Polygon",
-        symbol: "POL",
-        decimal: 18,
-        address: "",
-      },
-      supportedToken: [
-        {
-          decimal: 18,
-          isNativeToken: true,
-          logo: null,
-          name: "Polygon",
-          symbol: "POL",
-          contractAddress: "",
-        },
-      ],
-    },
-
-    // =========================
-    // TON
-    // =========================
-    {
-      _id: "ton_mainnet",
-      name: "TON",
-      symbol: "TON",
-      VM: VMType.Ton,
-      slip0044: 607,
-      status: "active",
-      blockExplorerUrl: "https://tonscan.org",
-      transactionScanURL: "https://tonscan.org/tx/",
-      protocolType: "TON",
-      coinTransferFee: 0.01,
-      tokenTransferFee: 1,
-      nftTransferFee: 1,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      nativeToken: {
-        name: "Toncoin",
-        symbol: "TON",
-        decimal: 9,
-        address: "",
-      },
-      supportedToken: [
-        {
-          decimal: 9,
-          isNativeToken: true,
-          logo: null,
-          name: "Toncoin",
-          symbol: "TON",
-          contractAddress: "",
-        },
-      ],
-    },
-
-    // =========================
-    // BITCOIN
-    // =========================
-    {
-      _id: "btc_mainnet",
-      name: "Bitcoin",
-      symbol: "BTC",
-      VM: VMType.Bitcoin,
-      slip0044: 0,
-      status: "active",
-      blockExplorerUrl: "https://blockstream.info",
-      transactionScanURL: "https://blockstream.info/tx/",
-      protocolType: "BTC",
-      coinTransferFee: 0.0001,
-      tokenTransferFee: 0,
-      nftTransferFee: 0,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      nativeToken: {
-        name: "Bitcoin",
-        symbol: "BTC",
-        decimal: 8,
-        address: "",
-      },
-      supportedToken: [
-        {
-          decimal: 8,
-          isNativeToken: true,
-          logo: null,
-          name: "Bitcoin",
-          symbol: "BTC",
-          contractAddress: "",
-        },
-      ],
-    },
-  ];
-
-  export const MOCK_PROTOCOL_LIST_RESPONSE: ProtocolListDataAPI = {
-    items: [
-      // ======================
-      // ETHEREUM
-      // ======================
-      {
-        _id: "evm_eth",
-        name: "Ethereum",
-        symbol: "ETH",
-        VM: VMType.EVM,
-        slip0044: 60,
-        chainId: 1,
-        status: "active",
-        protocolType: "EVM",
-        blockExplorerUrl: "https://etherscan.io",
-        transactionScanURL: "https://etherscan.io/tx/",
-        rpcUrl: "https://ethereum-rpc.publicnode.com",
-        coinTransferFee: 0.001,
-        tokenTransferFee: 5,
-        nftTransferFee: 10,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nativeToken: {
-          name: "Ethereum",
-          symbol: "ETH",
-          decimal: 18,
-          address: "",
-        },
-        price: 2400,
-        isDefault: true,
-      },
-
-      // ======================
-      // BNB SMART CHAIN
-      // ======================
-      {
-        _id: "evm_bnb",
-        name: "BNB Smart Chain",
-        symbol: "BNB",
-        VM: VMType.EVM,
-        slip0044: 714,
-        chainId: 56,
-        status: "active",
-        protocolType: "EVM",
-        blockExplorerUrl: "https://bscscan.com",
-        transactionScanURL: "https://bscscan.com/tx/",
-        rpcUrl: "https://bsc-dataseed.binance.org",
-        coinTransferFee: 0.0005,
-        tokenTransferFee: 3,
-        nftTransferFee: 6,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nativeToken: {
-          name: "BNB",
-          symbol: "BNB",
-          decimal: 18,
-          address: "",
-        },
-        price: 300,
-      },
-
-      // ======================
-      // POLYGON
-      // ======================
-      {
-        _id: "evm_polygon",
-        name: "Polygon",
-        symbol: "POL",
-        VM: VMType.EVM,
-        slip0044: 966,
-        chainId: 137,
-        status: "active",
-        protocolType: "EVM",
-        blockExplorerUrl: "https://polygonscan.com",
-        transactionScanURL: "https://polygonscan.com/tx/",
-        rpcUrl: "https://polygon-rpc.com",
-        coinTransferFee: 0.0005,
-        tokenTransferFee: 2,
-        nftTransferFee: 4,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nativeToken: {
-          name: "Polygon",
-          symbol: "POL",
-          decimal: 18,
-          address: "",
-        },
-        price: 0.9,
-      },
-
-      // ======================
-      // TON
-      // ======================
-      {
-        _id: "ton_mainnet",
-        name: "TON",
-        symbol: "TON",
-        VM: VMType.Ton,
-        slip0044: 607,
-        status: "active",
-        protocolType: "TON",
-        blockExplorerUrl: "https://tonscan.org",
-        transactionScanURL: "https://tonscan.org/tx/",
-        coinTransferFee: 0.01,
-        tokenTransferFee: 1,
-        nftTransferFee: 1,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nativeToken: {
-          name: "Toncoin",
-          symbol: "TON",
-          decimal: 9,
-          address: "",
-        },
-        price: 2.3,
-      },
-
-      // ======================
-      // BITCOIN
-      // ======================
-      {
-        _id: "btc_mainnet",
-        name: "Bitcoin",
-        symbol: "BTC",
-        VM: VMType.Bitcoin,
-        slip0044: 0,
-        status: "active",
-        protocolType: "BTC",
-        blockExplorerUrl: "https://blockstream.info",
-        transactionScanURL: "https://blockstream.info/tx/",
-        coinTransferFee: 0.0001,
-        tokenTransferFee: 0,
-        nftTransferFee: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        nativeToken: {
-          name: "Bitcoin",
-          symbol: "BTC",
-          decimal: 8,
-          address: "",
-        },
-        price: 42000,
-      },
-    ],
-  };
+export const MOCK_PROTOCOL_LIST_RESPONSE: ProtocolListDataAPI = { items: [] };
 
 export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
   "account/getMobileProtocolListsWithSupportedTokens",
@@ -400,6 +60,7 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
     try {
       console.log("run getMobileProtocolListsWithSupportedTokens");
       const state = getState() as RootState;
+      const isTestNet = getIsTestnet(state);
       const accountState = state?.account;
       const pinCode = accountState?.pin;
       const accountLists = accountState?.accountLists;
@@ -413,22 +74,26 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
       if (res.isSuccess) {
         protocolDataFromBe = res?.data;
       } else {
-        protocolDataFromBe = MOCK_PROTOCOLS_WITH_SUPPORTED_TOKENS;
+        protocolDataFromBe = [];
       }
+
+      // Luôn cập nhật danh sách rỗng nếu không có dữ liệu để UI Reset
+      dispatch(setProtocolListsWithSupportedTokensFromBE(protocolDataFromBe || []));
+      dispatch(convertTokenFromBE(protocolDataFromBe || []));
 
       const mnemonic = accountLists?.[0]?.mnemonic ?? initMnemonic;
 
-      console.log(`mnemonicOk ${mnemonic}`);
-
       if (!mnemonic) {
-        console.log('lost mnemonic')
-        return rejectWithValue(undefined);
+        console.log('Mnemonic missing, protocol list updated.');
+        return protocolDataFromBe || [];
       }
-      console.log("continue mnemonic");
+
+      console.log("continue mnemonic for wallet generation");
 
       const checkSlip0044Data = await AccountUtils.checkProtocolData({
         protocolListsFromBE: protocolDataFromBe,
         mnemonic: mnemonic,
+        isTestNet,
       });
 
       console.log(`checkSlip0044Data ${checkSlip0044Data}`);
@@ -440,7 +105,8 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
         await AccountUtils.checkAccountProtocolDataAndGenerateAccountData(
           accountState,
           dispatch,
-          finalProtocolData
+          finalProtocolData,
+          isTestNet
         );
 
       if (accountData && pinCode) {
@@ -574,10 +240,12 @@ export const addAccount = createAsyncThunk(
       const protocolListsFromBE =
         protocolListsWithSupportedTokensFromBE ?? DefaultProtocolDataList;
 
+      const isTestNet = getIsTestnet(rootState);
       const protocolData = await AccountUtils.generateProtocolData({
         mnemonic,
         generateDataProtocolListsFromBE: protocolListsFromBE,
         dispatch,
+        isTestNet,
       });
 
       if (!protocolData) {
@@ -794,7 +462,7 @@ export const addWallet = createAsyncThunk(
 
       const nativeWalletCoreModule = new NativeWalletCoreModule();
 
-      const isTestNet = EnvConfig.ENV === "development";
+      const isTestNet = getIsTestnet(state);
 
       const walletCoreCoinData =
         await nativeWalletCoreModule.getDataFromSlip0044({

@@ -1,17 +1,17 @@
 import React, { useRef } from 'react';
-import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
-import appColors from 'src/core/constants/AppColors';
 import {
     Edit2SvgIcon,
     MoreSvgIcon,
-    WalletLogoSvgIcon,
 } from 'src/core/constants/AppIconsSvg';
+import { Image, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { appImages } from 'src/core/constants/AppImages';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import { AccountType } from 'src/core/redux/slice/account.type';
 import appStyles from 'src/core/styles';
 import { AppThemeType } from 'src/core/type/ThemeType';
+import appColors from 'src/core/constants/AppColors';
 import AppText from './AppText';
 
 type WalletBottomSheetType = {
@@ -63,10 +63,9 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
                     isLastItem && styles.walletLastFirstItem,
                 ]}>
                 <View style={[styles.walletIcon3, appStyles.ml15]}>
-                    <WalletLogoSvgIcon
-                        width={20}
-                        height={15}
-                        color={item?.avtColor}
+                    <Image
+                        source={appImages.aiLogo}
+                        style={{ width: 28, height: 28, borderRadius: 14 }}
                     />
                 </View>
                 <View style={[appStyles.flex1, appStyles.pL15]}>
@@ -97,10 +96,9 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
                             ? editMainWallet(mainWalletButtonRef)
                             : null
                     }>
-                    <WalletLogoSvgIcon
-                        width={25}
-                        height={20}
-                        color={currentWallet?.avtColor}
+                    <Image
+                        source={appImages.aiLogo}
+                        style={{ width: 44, height: 44, borderRadius: 22 }}
                     />
                     <View style={styles.mainWalletEdit}>
                         <Edit2SvgIcon />

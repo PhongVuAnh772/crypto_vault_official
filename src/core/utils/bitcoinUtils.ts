@@ -274,8 +274,9 @@ const transformBitcoinTransactionHistory = async ({
     return result;
 };
 
-const isValidAddress = async (address: string) => {
+const isValidAddress = async (address: string, isTestNetParam?: boolean) => {
     const bitcoinModule = new NativeBitcoinModules();
+    const isTestNet = isTestNetParam ?? (EnvConfig.ENV === 'development');
 
     console.log('=============================================');
     console.log('CheckBitcoinAddress');
@@ -284,7 +285,7 @@ const isValidAddress = async (address: string) => {
 
     try {
         const resCheck = await bitcoinModule.isValidBitcoinAddress({
-            isTestNet: EnvConfig.ENV === 'development',
+            isTestNet: isTestNet,
             address: address,
         });
         if (resCheck) {
@@ -338,12 +339,14 @@ const createBitcoinTransactionNoAdmin = async ({
     bitcoinUTXO,
     feePerKb,
     mnemonic,
+    envParam,
 }: {
     toAddress: string;
     amountSend: number;
     bitcoinUTXO: Itxrefs[];
     feePerKb?: number;
     mnemonic: string;
+    envParam?: string;
 }): Promise<BitcoinTransactionType | undefined> => {
     try {
         const bitcoinModule = new NativeBitcoinModules();
@@ -351,10 +354,11 @@ const createBitcoinTransactionNoAdmin = async ({
         const utxoDataFormRN = BitcoinUtils.convertUtxoData(bitcoinUTXO);
 
         const byteFee = WalletUtils.getByteFeeFromFeePerKb(feePerKb);
+        const env = envParam ?? EnvConfig.ENV;
 
         const successCreateTransaction = await bitcoinModule.bitcoinTransaction(
             {
-                env: EnvConfig.ENV,
+                env: env,
                 mnemonic,
                 toAddress,
                 amountSend,

@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # --- BACKEND SERVER ---
+  backend:
+    build:
+      context: ./crypto-vault-server
+      dockerfile: Dockerfile
+    container_name: cryptovault-backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./crypto-vault-server/.env
+    restart: always
+
+  # --- ADMIN DASHBOARD ---
+  admin-dashboard:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile
+    container_name: cryptovault-admin
+    ports:
+      - "8080:80" # Truy cập dashboard tại http://localhost:8080 trên trình duyệt
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    restart: always
