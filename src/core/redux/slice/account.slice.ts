@@ -68,7 +68,7 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
         | ProtocolDataWithSupportedTokensFormBEType[]
         | undefined;
       const res = await sendGet<ProtocolDataWithSupportedTokensFormBEType[]>({
-        endPoint: "mobile/protocols/get-supported-tokens",
+        endPoint: "public/mobile/protocols/get-supported-tokens",
       });
 
       if (res.isSuccess) {
@@ -146,7 +146,7 @@ export const getMobileProtocolLists = createAsyncThunk(
   ) => {
     try {
       const response = await sendGet<ProtocolListDataAPI>({
-        endPoint: "/mobile/protocols",
+        endPoint: "public/mobile/protocols",
         params: {
           page: page,
           perPage: perPage,

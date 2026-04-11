@@ -13,7 +13,7 @@ class EncryptAES {
         );
     };
     generateKey = (password: string) =>
-        Aes.pbkdf2(password, 'redx', 5000, 256, 'sha256');
+        Aes.pbkdf2(password, 'ledgerify', 5000, 256, 'sha256');
 
     encryptText = async (text: string, key: string) => {
         const keyAes = await this.generateKey(key);

@@ -1,14 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { IWalletKit, WalletKit } from '@reown/walletkit';
 import { Core } from '@walletconnect/core';
-import walletConnectConstants from '../constants/WalletConnectConstants';
+import { WALLET_CONNECT_PROJECT_ID } from 'env.config';
 import { getMetadata } from './misc';
 
 export let walletKit: IWalletKit;
 
 export async function createWalletKit() {
     const core = new Core({
-        projectId: walletConnectConstants.projectId,
+        projectId: WALLET_CONNECT_PROJECT_ID,
         // relayUrl: relayerRegionURL,
     });
     walletKit = await WalletKit.init({

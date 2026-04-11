@@ -74,7 +74,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
   const tokenRateCurrency = selectedCryptoData?.tokenRateCurrency;
   const tokenSymbol = selectedCryptoData?.symbol;
   const jettonData = selectedCryptoData?.navigationParams?.jettonData;
-  const isRedXToken = selectedCryptoData?.isRedXToken;
+  const isledgerifyToken = selectedCryptoData?.isledgerifyToken;
   const protocolBaseData = useProtocolSelected();
   const selectedCurrencySetting = useSelectedCurrencySetting();
   const tonAddressData = useTonAddressData();
@@ -128,12 +128,12 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
 
   const disableContinue = inputRecipientAddress
     ? !toAddress ||
-      disableWithRequireMemo ||
-      !amountSend ||
-      inputAmountError ||
-      toAddressError ||
-      Utils.isInputAmountZero(amountSend) ||
-      disableWithRequireMemo
+    disableWithRequireMemo ||
+    !amountSend ||
+    inputAmountError ||
+    toAddressError ||
+    Utils.isInputAmountZero(amountSend) ||
+    disableWithRequireMemo
     : !toAddress;
 
   const continueActionAfterPassPinCode = async () => {
@@ -225,7 +225,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
     tokenRate: tokenRateCurrency,
     protocolRate: protocolBaseData?.price ?? 1,
     settingCurrencyRate: selectedCurrencySetting.rate,
-    isRedXToken: isRedXToken,
+    isledgerifyToken: isledgerifyToken,
   });
 
   const balanceCurrencyString =
@@ -256,7 +256,7 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
     adminFeeValue ?? 0,
     selectedCurrencySetting,
     (tokenRateCurrency ?? 0) * (protocolBaseData?.price ?? 1),
-    isRedXToken
+    isledgerifyToken
   );
 
   const subAdminFee = tokenRateCurrency
@@ -487,8 +487,8 @@ const useJettonTransfer = ({ navigation }: RootNavigationType) => {
       const adminValueNano = isSendMaxAmount
         ? maxAdminFee
         : BigInt(
-            Math.ceil(parseFloat(convertAmountWithDecimal) * adminPercent)
-          );
+          Math.ceil(parseFloat(convertAmountWithDecimal) * adminPercent)
+        );
 
       const tonServices = new TonServices();
       const getAccountRes = await tonServices.getAccounts({

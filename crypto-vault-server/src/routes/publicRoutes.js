@@ -57,13 +57,13 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
     // 3. Map to mobile format
     const protocols = chains.map(chain => {
       const chainTokens = allTokens.filter(t => t.chain_id === chain.id);
-      
+
       // Filter native token for this chain
       const native = chainTokens.find(t => t.is_native) || {
-        name: chain.name, 
-        symbol: chain.chain_key.toUpperCase(), 
-        decimals: 18, 
-        contract_address: '' 
+        name: chain.name,
+        symbol: chain.chain_key.toUpperCase(),
+        decimals: 18,
+        contract_address: ''
       };
 
       return {
@@ -71,9 +71,9 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         name: chain.name,
         symbol: chain.chain_key.toUpperCase(),
         VM: chain.vm === 'TVM' ? 'Ton' : (chain.vm === 'NONE' ? 'Bitcoin' : chain.vm),
-        slip0044: chain.metadata?.slip0044 || 60,
+        slip0044: chain.metadata?.slip0044 !== undefined ? parseInt(chain.metadata.slip0044) : 60,
         chainId: chain.metadata?.chainId || (chain.architecture === 'EVM' ? 1 : null),
-        status: chain.is_active ? 'active' : 'inactive',
+        status: 'active',
         blockExplorerUrl: chain.metadata?.explorer_url || '',
         rpcUrl: chain.metadata?.rpc_url || '',
         coinTransferFee: 0.001,
@@ -81,7 +81,12 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         nftTransferFee: 0.001,
         createdAt: chain.created_at,
         updatedAt: chain.updated_at,
-        logo: chain.metadata?.icon_url || '',
+        logo: chain.metadata?.icon_url || 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
+        isDefault: true,
+        beneficiary: {
+          status: 'approved',
+          walletAddress: '0x0000000000000000000000000000000000000000' // Default placeholder for mobile security check
+        },
         nativeToken: {
           name: native.name,
           symbol: native.symbol,
@@ -99,6 +104,7 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         }))
       };
     });
+
 
     console.log(`Sending ${protocols.length} active protocols to mobile.`);
     res.json(protocols);
@@ -126,6 +132,28 @@ router.get('/mobile/protocols', async (req, res) => {
     res.json({ items });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Register wallet address from mobile app
+router.post('/wallets', async (req, res) => {
+  try {
+    const { userId, chainId, address, metadata } = req.body;
+    if (!userId || !chainId || !address) {
+      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    }
+
+    const result = await db.query(
+      `INSERT INTO wallets (user_id, chain_id, address, metadata) 
+       VALUES ($1, $2, $3, $4) 
+       ON CONFLICT (chain_id, address) DO UPDATE SET metadata = $4, updated_at = NOW()
+       RETURNING *`,
+      [userId, chainId, address, metadata || {}]
+    );
+
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
   }
 });
 

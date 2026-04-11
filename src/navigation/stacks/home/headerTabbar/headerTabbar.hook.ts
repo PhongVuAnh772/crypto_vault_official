@@ -167,6 +167,10 @@ const useHeaderTabBar = (
     }
   };
 
+  const onScanPress = () => {
+    navigation.dispatch(StackActions.push(HomeStackScreenKey.ScanEvm));
+  };
+
   const gotoNotificationListScreen = () => {
     navigation.dispatch(StackActions.push(HomeStackScreenKey.NotificationList));
   };
@@ -434,6 +438,12 @@ const useHeaderTabBar = (
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getAllConnect, tonAddressData]);
   useEffect(() => {
+    if (protocolDataLists.length === 0) {
+      dispatch(getMobileProtocolListsWithSupportedTokens());
+    }
+  }, [dispatch, protocolDataLists.length]);
+
+  useEffect(() => {
     setQuantityBrowse(listDAppBrowse.length);
   }, [listDAppBrowse]);
 
@@ -481,6 +491,7 @@ const useHeaderTabBar = (
     setLoadingImages,
     selectedWallet,
     refreshProtocolList,
+    onScanPress,
     onProtocolListRefresh,
     onDismissModalProtocol,
   };

@@ -331,6 +331,8 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     handlePressWallet,
     onShowMenuWallet,
     onChangeMenuActionType,
+    goToScan: () => navigation.navigate(HomeStackScreenKey.ScanEvm),
+    goToAIDetail: () => navigation.navigate(HomeStackScreenKey.AIDetailScreen),
     t,
   };
 };

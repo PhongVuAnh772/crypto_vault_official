@@ -21,6 +21,7 @@ import {
 import { TransactionHistoryDataType } from '../type/TransactionHistoryDataType';
 import Utils from './commonUtils';
 import WalletUtils from './walletUtils';
+import ErrorLogger from '../services/ErrorLogger';
 
 const getAdminFee = ({
     amountSend,
@@ -293,7 +294,7 @@ const isValidAddress = async (address: string, isTestNetParam?: boolean) => {
         }
         return false;
     } catch (error) {
-        console.log('checkBitcoinAddress error', error);
+        ErrorLogger.log(error, 'bitcoinUtils/isValidAddress');
         return false;
     }
 };
@@ -328,7 +329,7 @@ const getMaxBalanceCompareWithUTXOandNetworkFee = async (
 
         return maxAmount;
     } catch (error) {
-        console.log('🚀 ~ error:', error);
+        ErrorLogger.log(error, 'bitcoinUtils/getMaxBalanceCompareWithUTXOandNetworkFee');
         return 0;
     }
 };
@@ -375,7 +376,7 @@ const createBitcoinTransactionNoAdmin = async ({
 
         return successCreateTransaction;
     } catch (error) {
-        console.log('Bitcoin Transaction catch error', error);
+        ErrorLogger.log(error, 'bitcoinUtils/createBitcoinTransactionNoAdmin');
         return;
     }
 };

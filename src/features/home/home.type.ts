@@ -28,7 +28,7 @@ export type ListCryptoDataType = {
     };
     slip0044?: Slip0044;
     tokenAddress?: string;
-    isRedXToken?: boolean;
+    isledgerifyToken?: boolean;
 };
 export type TokensObject = {
     [key: string]: TokenBalance;

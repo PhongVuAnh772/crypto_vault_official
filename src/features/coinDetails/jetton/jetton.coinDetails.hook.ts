@@ -82,7 +82,7 @@ export const useJetton = ({ navigation }: RootNavigationType) => {
         tokenRate: cryptoData?.tokenRateCurrency,
         protocolRate: cryptoData?.rateCurrency,
         settingCurrencyRate: currencySetting.rate,
-        isRedXToken: cryptoData?.isRedXToken,
+        isledgerifyToken: cryptoData?.isledgerifyToken,
     });
 
     const jettonBalanceString = `${Utils.formattedBalanceCurrency(balanceToken ?? 0)} ${cryptoData?.symbol ?? ''}`;

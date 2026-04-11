@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import { Alert } from 'react-native';
 import {
     Code,
     useCameraDevice,
@@ -50,12 +51,40 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         }
     };
 
+    const onPasteURI = () => {
+        Alert.prompt(
+            'Paste WalletConnect URI',
+            'Paste the wc: URL here to connect',
+            [
+                {
+                    text: 'Cancel',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Connect',
+                    onPress: async (uri) => {
+                        if (uri) {
+                            try {
+                                await walletKit.pair({ uri });
+                                navigation.goBack();
+                            } catch (error) {
+                                Alert.alert('Error', 'Invalid WalletConnect URI');
+                            }
+                        }
+                    },
+                },
+            ],
+            'plain-text'
+        );
+    };
+
     return {
         theme,
         device,
         showCamera,
         isActive,
         codeScanner,
+        onPasteURI,
         insets,
     };
 };

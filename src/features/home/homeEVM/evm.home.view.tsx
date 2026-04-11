@@ -56,6 +56,8 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
         selectedCurrencySetting,
         menuActionType,
         currencyRateConversion,
+        goToScan,
+        goToAIDetail,
     } = useEVMHome({
         navigation,
     });
@@ -170,8 +172,10 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                         goToSendScreen={goToSendScreen}
                         goToReceive={goToReceive}
                         goToDepositOptions={() => navigation.navigate(HomeStackScreenKey.DepositOptions)}
-                        goToMoreActionScreen={() => { }}
+                        goToMoreActionScreen={() => navigation.navigate(HomeStackScreenKey.MoreActionScreen)}
                         onPressAccount={showBottomSheetModalAction}
+                        onPressScan={goToScan}
+                        onPressAI={goToAIDetail}
                     />
 
                     {/* Promo Swiper Section */}

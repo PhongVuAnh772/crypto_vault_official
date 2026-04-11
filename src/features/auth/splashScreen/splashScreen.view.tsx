@@ -140,8 +140,8 @@ const SplashScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                         </Animated.View>
 
                         <Animated.View style={[localStyles.textWrapper, animatedTextStyle]}>
-                            <Animated.Text style={localStyles.geodeText}>GEODE</Animated.Text>
-                            <Animated.Text style={localStyles.tagline}>CRYPTO VAULT</Animated.Text>
+                            <Animated.Text style={localStyles.ledgerifyText}>Ledgerify</Animated.Text>
+                            <Animated.Text style={localStyles.tagline}>Crypto Ledger</Animated.Text>
                         </Animated.View>
                     </View>
                 </View>
@@ -166,8 +166,8 @@ const localStyles = StyleSheet.create({
         position: 'absolute',
         alignItems: 'flex-start',
     },
-    geodeText: {
-        fontSize: 64,
+    ledgerifyText: {
+        fontSize: 54,
         fontWeight: '900',
         color: '#FFFFFF',
         letterSpacing: 6,

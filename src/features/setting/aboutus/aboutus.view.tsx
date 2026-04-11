@@ -67,7 +67,7 @@ const AboutUs: React.FC<RootNavigationType> = ({ navigation }) => {
           </TouchableWithoutFeedback>
           <View style={[aboutUsStyles.mt15, aboutUsStyles.flexRow]}>
             <AppText
-              titleWithI18n={LanguageKey.setting_red_x_ver}
+              titleWithI18n={LanguageKey.setting_ledgerify_ver}
               variant={TextVariantKeys.bodyMMedium}
               textColor={theme.colors.text_on_surface_text_high}
             />
@@ -79,7 +79,7 @@ const AboutUs: React.FC<RootNavigationType> = ({ navigation }) => {
           </View>
           <View style={aboutUsStyles.mt15}>
             <AppText
-              titleWithI18n={LanguageKey.setting_copyright_red_x}
+              titleWithI18n={LanguageKey.setting_copyright_ledgerify}
               variant={TextVariantKeys.bodyMMedium}
               textColor={theme.colors.text_on_surface_text_high}
             />
@@ -102,7 +102,7 @@ const AboutUs: React.FC<RootNavigationType> = ({ navigation }) => {
             onPress={onPressTerms}
           >
             <AppText
-              titleWithI18n={LanguageKey.setting_red_x_term}
+              titleWithI18n={LanguageKey.setting_ledgerify_term}
               variant={TextVariantKeys.labelLink}
               textColor={appColors.main.tokyoRed}
             />

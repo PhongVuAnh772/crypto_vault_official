@@ -9,7 +9,7 @@ COPY package*.json ./
 COPY yarn.lock* ./
 
 # Cài đặt dependencies
-RUN yarn install --production --frozen-lockfile
+RUN npm install --production
 
 # Copy toàn bộ mã nguồn vào container
 COPY . .
@@ -18,4 +18,4 @@ COPY . .
 EXPOSE 3000
 
 # Lệnh chạy server
-CMD ["node", "index.js"]
+CMD ["node", "src/server.js"]

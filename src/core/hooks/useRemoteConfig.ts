@@ -55,8 +55,16 @@ const useRemoteConfig = () => {
       const ws = new WebSocket(wsUrl);
       wsRef.current = ws;
 
+      let pingInterval: NodeJS.Timeout;
+
       ws.onopen = () => {
-        console.log("🔌 Connected to Real-time Config Sync");
+        console.log("🔌 Connected to Real-time Config & Ledger Sync");
+        // Giữ mạng vĩnh viễn với WebSocket Heartbeat Backend yêu cầu
+        pingInterval = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(JSON.stringify({ type: 'ping' }));
+          }
+        }, 15000); // 15 giây gửi 1 lần để bypass 60s timeout của Render Proxy
       };
 
       ws.onmessage = (e) => {
@@ -64,11 +72,20 @@ const useRemoteConfig = () => {
         if (message.event === 'config_update') {
           console.log("🔔 Config update received via WS! Resyncing...");
           syncData();
+        } else if (message.event === 'BALANCE_UPDATE') {
+          // Bắt sự kiện Realtime cập nhật số dư Ledger ngay lập tức khi Admin Approve lệnh Withdraw
+          // dispatch(updateBalanceRealtime(message.data)); 
+          // Cần import useAppDispatch và updateBalanceRealtime để gọi ở đây
+          console.log("💰 Real-time balance update:", message.data);
+        } else if (message.event === 'TX_UPDATE') {
+          console.log("⚡️ Transaction status changed:", message.data);
+          // dispatch(updateTransactionStatus(message.data));
         }
       };
 
       ws.onclose = () => {
         console.log("🔌 WS Disconnected. Retrying in 5s...");
+        if (pingInterval) clearInterval(pingInterval);
         setTimeout(setupWebSocket, 5000);
       };
     } catch (err) {

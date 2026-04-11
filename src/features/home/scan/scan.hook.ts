@@ -44,7 +44,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         request(permission).then(result => {
             if (result === RESULTS.GRANTED) {
                 setShowCamera(true);
-            } else  {
+            } else {
                 setIsShowModalRequestCameraPermission(true);
             }
         });
@@ -130,7 +130,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
     };
     const checkUrl = (url: string) => {
         const protocol = url.split('?')[0];
-        if (protocol === 'tc://' || protocol === 'io.redx.wallet://') {
+        if (protocol === 'tc://' || protocol === 'io.ledgerify.wallet://') {
             dispatch(setModalConnect(true));
             dispatch(setType(TonConnectKey.eventConnect));
             dispatch(setURL(decode(url)));

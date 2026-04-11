@@ -1,5 +1,5 @@
-import {AppThemeType} from 'src/core/type/ThemeType';
-import {StyleSheet} from 'react-native';
+import { AppThemeType } from 'src/core/type/ThemeType';
+import { StyleSheet } from 'react-native';
 import appStyles from 'src/core/styles';
 import appColors from 'src/core/constants/AppColors';
 import Utils from 'src/core/utils/commonUtils';
@@ -31,7 +31,7 @@ const useStyles = (theme: AppThemeType) =>
             backgroundColor: appColors.neutral.white,
             borderRadius: 100,
             shadowColor: appColors.neutral.n300,
-            shadowOffset: {width: 0, height: 4},
+            shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 1,
             shadowRadius: 4,
             elevation: 4,
@@ -74,6 +74,30 @@ const useStyles = (theme: AppThemeType) =>
             backgroundColor: theme.colors.surface_surface_default,
             ...appStyles.flex1,
             ...appStyles.pH15,
+        },
+        overlay: {
+            position: 'absolute',
+            bottom: 150,
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+            zIndex: 10,
+        },
+        pasteButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            backgroundColor: 'rgba(255,255,255,0.15)',
+            paddingVertical: 10,
+            paddingHorizontal: 16,
+            borderRadius: 20,
+            borderWidth: 1,
+            borderColor: 'rgba(255,255,255,0.3)',
+        },
+        pasteText: {
+            color: '#fff',
+            marginLeft: 8,
+            fontWeight: '600',
+            fontSize: 14,
         },
     });
 export default useStyles;

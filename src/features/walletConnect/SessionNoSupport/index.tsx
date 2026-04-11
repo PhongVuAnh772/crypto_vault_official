@@ -33,7 +33,7 @@ const SessionNoSupport = () => {
             closeModalConnect();
             Utils.showToast({
                 type: AppToastType.error,
-                msg: 'REDX does not support session ',
+                msg: 'ledgerify does not support session ',
             });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

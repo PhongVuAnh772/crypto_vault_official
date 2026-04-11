@@ -25,7 +25,7 @@ const appConstants = {
     app_store_url:
         'https://apps.apple.com/app/red-x-wallet/id6711332949',
     google_play_store_url:
-        'https://play.google.com/store/apps/details?id=io.redx.wallet&hl=en',
+        'https://play.google.com/store/apps/details?id=io.ledgerify.wallet&hl=en',
     HEADER_HEIGHT: 40,
     defaultDerivationPath: "m/44'/60'/0'/0/0",
     defaultTonDerivationPath: "m/44'/607'/0'",

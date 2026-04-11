@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AxiosInstance from 'src/core/network/config/AxiosInstance';
 import transform from 'src/core/network/transform';
+import ErrorLogger from 'src/core/services/ErrorLogger';
 
 async function sendPut<T>({
     endPoint,
@@ -30,6 +31,7 @@ async function sendPut<T>({
         const apiResponse = await axiosInstance.put(endPoint ?? '', params);
         return transform.Response<T>(apiResponse);
     } catch (err: any) {
+        ErrorLogger.log(err, 'network');
         if (axios.isAxiosError(err) && err.response) {
             return transform.Error<T>(err.response);
         } else {

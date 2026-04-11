@@ -197,7 +197,7 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
         ? t(LanguageKey.common_text_touch_id)
         : t(LanguageKey.common_text_face_id_and_touch),
     }),
-    onPress: () => {},
+    onPress: () => { },
     rightView: (
       <SwitchView
         value={enableFaceIdOrTouch}
@@ -209,7 +209,7 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
   const featureTestnet = {
     icon: Shield02SvgIcon,
     title: "Testnet Mode",
-    onPress: () => {},
+    onPress: () => { },
     rightView: (
       <SwitchView
         value={isTestnet}
@@ -253,11 +253,11 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
     },
     ...(isShowSwap
       ? [
-          {
-            title: LanguageKey.home_swap_title,
-            data: [featureSwap],
-          },
-        ]
+        {
+          title: LanguageKey.home_swap_title,
+          data: [featureSwap],
+        },
+      ]
       : []),
     {
       title: LanguageKey.security_title,
@@ -273,7 +273,7 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
       title: LanguageKey.setting_general,
       data: [
         {
-          title: LanguageKey.setting_about_red_x,
+          title: LanguageKey.setting_about_ledgerify,
           icon: DocumentSvgIcon,
           onPress: () =>
             navigation.dispatch(StackActions.push(HomeStackScreenKey.AboutUs)),

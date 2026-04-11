@@ -1,5 +1,4 @@
 import "@walletconnect/react-native-compat";
-import "global.js";
 import React from "react";
 import { I18nextProvider } from "react-i18next";
 import { LogBox } from "react-native";
@@ -17,9 +16,23 @@ import Utils from "src/core/utils/commonUtils";
 import Main from "src/main";
 import "./reanimatedConfig";
 import AppI18Next from "./src/core/locales";
+import * as Sentry from "@sentry/react-native";
+import { SENTRY_DSN } from "./env.config";
+
 require("buffer"); // for TON SDK
 
-export default function App() {
+// Sentry.init({
+//   dsn: SENTRY_DSN,
+//   debug: __DEV__,
+//   integrations: [
+//     new Sentry.ReactNativeTracing({
+//       // Pass tracing options here
+//     }),
+//   ],
+//   // integrations: (integrations) => integrations.filter((i) => i.name !== 'ExpoUpdates'),
+// });
+
+function App() {
   LogBox.ignoreAllLogs();
   Utils.logConfig();
 
@@ -40,3 +53,5 @@ export default function App() {
     </GestureHandlerRootView>
   );
 }
+
+export default App; // Sentry.wrap(App);

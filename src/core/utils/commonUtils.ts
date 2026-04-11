@@ -171,7 +171,7 @@ const formattedCurrency = (amount: number) => {
         maximumFractionDigits: 2,
     }).format(truncated);
 };
-const formattedRedXCurrency = (amount: number) => {
+const formattedledgerifyCurrency = (amount: number) => {
     const factor = 10 ** 4;
     const truncated = Math.floor(amount * factor) / factor;
     return new Intl.NumberFormat('en-US', {
@@ -453,9 +453,9 @@ const logConfig = () => {
         console.log('App starting in development mode');
         console.log('====================================');
     } else {
-        console.log = () => {};
-        console.warn = () => {};
-        console.error = () => {};
+        console.log = () => { };
+        console.warn = () => { };
+        console.error = () => { };
     }
 };
 
@@ -514,7 +514,7 @@ const Utils = {
     truncateToTwoDecimalsWithoutChecking,
     removeQRPrefix,
     formattedAmountClaimTotal,
-    formattedRedXCurrency,
+    formattedledgerifyCurrency,
     checkImageUrlImage,
 };
 

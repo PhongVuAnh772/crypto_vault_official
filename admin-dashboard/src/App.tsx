@@ -1,15 +1,54 @@
-import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { 
-  TrendingUp, Wallet, Activity, RefreshCcw, Zap, LayoutDashboard, Settings, Layers, Users, 
-  Shield, ArrowRightLeft, Bell, Search, AlertCircle, Trash2, Edit2, Check, X, Plus, 
-  Globe, ShoppingCart, Cpu, Link as LinkIcon, Database, Eye, EyeOff
+import { AnimatePresence, motion } from 'framer-motion';
+import {
+  Activity,
+  ArrowRightLeft,
+  Cpu,
+  Eye, EyeOff,
+  Gavel,
+  Globe,
+  Layers,
+  LayoutDashboard,
+  RefreshCcw,
+  Settings,
+  Shield,
+  ShoppingCart,
+  Users,
+  Wallet,
+  Zap
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useEffect, useRef, useState } from 'react';
+import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis } from 'recharts';
 
-const API_BASE = 'http://localhost:3000';
-const WS_BASE = 'ws://localhost:3000';
+// Interceptor cho Axios
+axios.interceptors.request.use(config => {
+  const token = localStorage.getItem('admin_token');
+  if (token && token !== 'undefined') {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+axios.interceptors.response.use(res => res, err => {
+  const isLoginRequest = err.config?.url?.includes('/admin/login');
+  
+  // Chỉ reload nếu KHÔNG PHẢI là request login và gặp lỗi 401
+  if (err.response?.status === 401 && !isLoginRequest) {
+    localStorage.removeItem('admin_token');
+    // Thay vì reload liên tục, chúng ta có thể điều hướng hoặc báo lỗi nhẹ nhàng
+    if (window.location.pathname !== '/') {
+        window.location.href = '/'; 
+    }
+  }
+  return Promise.reject(err);
+});
+
+// Nhúng URL Backend (Mặc định local nếu đang dev)
+const API_BASE = window.location.hostname === 'localhost' 
+  ? 'http://localhost:3000' 
+  : (import.meta.env.VITE_API_URL ? `https://${import.meta.env.VITE_API_URL}` : 'https://cryptovault-backend-latest.onrender.com');
+
+const WS_BASE = API_BASE.replace('http', 'ws');
 
 // --- Types ---
 interface Token { id: string; chain_id: string; chain_name?: string; symbol: string; name: string; decimals: number; contract_address: string; is_native: boolean; is_active: boolean; }
@@ -20,13 +59,20 @@ interface P2PAd { id: string; type: 'BUY' | 'SELL'; symbol: string; price: strin
 interface UserWallet { id: string; address: string; chain_name: string; wallet_type: string; user_id: string; }
 interface TransJob { id: string; type: string; status: string; chain_name: string; tx_hash: string; created_at: string; }
 interface AppConfig { features: { p2pEnabled: boolean; swapEnabled: boolean; bridgeEnabled: boolean; maintenanceMode: boolean; }; }
+interface Withdrawal { id: string; user_id: string; token_id: string; amount: string; status: string; created_at: string; }
 
-type Tab = 'overview' | 'tokens' | 'chains' | 'p2p' | 'wallets' | 'users' | 'jobs' | 'config';
+type Tab = 'overview' | 'tokens' | 'chains' | 'p2p' | 'withdrawals' | 'wallets' | 'users' | 'jobs' | 'config';
 
 function App() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    const token = localStorage.getItem('admin_token');
+    return !!(token && token !== 'undefined');
+  });
+  const [authEmail, setAuthEmail] = useState('');
+  const [authPassword, setAuthPassword] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [loading, setLoading] = useState(true);
-  
+
   // Data State
   const [tokens, setTokens] = useState<Token[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -35,21 +81,25 @@ function App() {
   const [p2pAds, setP2pAds] = useState<P2PAd[]>([]);
   const [wallets, setWallets] = useState<UserWallet[]>([]);
   const [jobs, setJobs] = useState<TransJob[]>([]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [config, setConfig] = useState<AppConfig | null>(null);
-  const [prices, setPrices] = useState<Record<string, number>>({});
-  
+  // Không lưu State Price ở Root App để tránh Re-render hàng loạt mỗi Mili-giây khiến Web bị treo
+  // const [prices, setPrices] = useState<Record<string, number>>({});
+
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    fetchAllData();
-    setupWebSocket();
+    if (isAuthenticated) {
+      fetchAllData();
+      setupWebSocket();
+    }
     return () => wsRef.current?.close();
-  }, []);
+  }, [isAuthenticated]);
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, configRes] = await Promise.all([
+      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, wdRes, configRes] = await Promise.all([
         axios.get(`${API_BASE}/api/v1/admin/tokens`),
         axios.get(`${API_BASE}/api/v1/admin/profiles`),
         axios.get(`${API_BASE}/api/v1/admin/chains`),
@@ -57,6 +107,7 @@ function App() {
         axios.get(`${API_BASE}/api/v1/admin/p2p/ads`),
         axios.get(`${API_BASE}/api/v1/admin/wallets`),
         axios.get(`${API_BASE}/api/v1/admin/jobs`),
+        axios.get(`${API_BASE}/api/v1/admin/withdrawals`),
         axios.get(`${API_BASE}/api/v1/config`)
       ]);
       setTokens(tokenRes.data.data || []);
@@ -66,6 +117,7 @@ function App() {
       setP2pAds(adRes.data.data || []);
       setWallets(walletRes.data.data || []);
       setJobs(jobRes.data.data || []);
+      setWithdrawals(wdRes.data.data || []);
       setConfig({ features: configRes.data.features });
     } catch (err) {
       console.error('Fetch failed', err);
@@ -80,10 +132,11 @@ function App() {
       wsRef.current = ws;
       ws.onmessage = (e) => {
         const data = JSON.parse(e.data);
-        if (data.event === 'priceChange') setPrices(p => ({ ...p, [data.symbol]: data.price }));
+        // Bỏ logic setPrices trực tiếp vào Root Component để tránh Web bị Rerender
+        // if (data.event === 'priceChange') setPrices(p => ({ ...p, [data.symbol]: data.price }));
       };
       ws.onclose = () => setTimeout(setupWebSocket, 3000);
-    } catch {}
+    } catch { }
   };
 
   // --- Handlers ---
@@ -108,6 +161,54 @@ function App() {
     } catch (err) { alert('Profile update failed'); }
   };
 
+  const handleApproveWithdrawal = async (id: string) => {
+    try {
+      await axios.post(`${API_BASE}/api/v1/admin/withdrawals/${id}/approve`);
+      setWithdrawals(prev => prev.filter(w => w.id !== id));
+      alert('Withdrawal Approved! Lệnh đã được đưa vào Worker Queue.');
+    } catch (err) { alert('Approval failed'); }
+  };
+
+  const handleRejectWithdrawal = async (id: string) => {
+    try {
+      await axios.post(`${API_BASE}/api/v1/admin/withdrawals/${id}/reject`, { reason: 'Admin manual rejection' });
+      setWithdrawals(prev => prev.filter(w => w.id !== id));
+      alert('Withdrawal Rejected. Tiền đã được trả lại Available Balance.');
+    } catch (err) { alert('Rejection failed'); }
+  };
+
+  const handleResolveDispute = async (id: string, resolution: 'FAVOR_BUYER' | 'FAVOR_SELLER') => {
+    try {
+      await axios.post(`${API_BASE}/api/v1/admin/p2p/disputes/${id}/resolve`, { resolution, reason: 'Admin Enforcement' });
+      alert(`Đã giải quyết tranh chấp: ${resolution}`);
+      fetchAllData();
+    } catch (err) { alert('Dispute resolution failed'); }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(`${API_BASE}/api/v1/admin/login`, { email: authEmail, password: authPassword });
+      if (res.data.success) {
+        localStorage.setItem('admin_token', res.data.token);
+        setIsAuthenticated(true);
+      }
+    } catch (err) {
+      alert('Đăng nhập thất bại: Sai email hoặc mật khẩu');
+    }
+  };
+
+  if (!isAuthenticated) return (
+    <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#0f172a' }}>
+      <form style={{ padding: '2rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '350px', background: 'rgba(255,255,255,0.05)', backdropFilter: 'blur(10px)', borderRadius: 16 }} onSubmit={handleLogin}>
+        <h3 style={{ textAlign: 'center', color: '#fff', fontSize: '1.5rem', marginBottom: '1rem' }}>CryptoVault Admin</h3>
+        <input type="email" placeholder="Admin Email" style={{ padding: '0.8rem', borderRadius: 8, background: '#1e293b', border: '1px solid #334155', color: '#fff' }} value={authEmail} onChange={e => setAuthEmail(e.target.value)} required />
+        <input type="password" placeholder="Mật khẩu" style={{ padding: '0.8rem', borderRadius: 8, background: '#1e293b', border: '1px solid #334155', color: '#fff' }} value={authPassword} onChange={e => setAuthPassword(e.target.value)} required />
+        <button type="submit" className="btn btn-primary" style={{ padding: '1rem' }}>Đăng Nhập Quản Trị</button>
+      </form>
+    </div>
+  );
+
   return (
     <div className="dashboard-layout">
       <aside className="sidebar">
@@ -121,12 +222,13 @@ function App() {
           <NavItem icon={<Layers size={18} />} label="Asset Tokens" active={activeTab === 'tokens'} onClick={() => setActiveTab('tokens')} />
           <NavItem icon={<Globe size={18} />} label="Network Chains" active={activeTab === 'chains'} onClick={() => setActiveTab('chains')} />
           <NavItem icon={<ShoppingCart size={18} />} label="P2P Marketplace" active={activeTab === 'p2p'} onClick={() => setActiveTab('p2p')} />
+          <NavItem icon={<ArrowRightLeft size={18} />} label="Withdrawals" active={activeTab === 'withdrawals'} onClick={() => setActiveTab('withdrawals')} />
           <NavItem icon={<Wallet size={18} />} label="User Wallets" active={activeTab === 'wallets'} onClick={() => setActiveTab('wallets')} />
           <NavItem icon={<Users size={18} />} label="Profiles" active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
           <NavItem icon={<Cpu size={18} />} label="System Jobs" active={activeTab === 'jobs'} onClick={() => setActiveTab('jobs')} />
           <NavItem icon={<Settings size={18} />} label="App Config" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
         </nav>
-        
+
         <div className="sidebar-footer">
           <div className="status-dot"></div>
           <span>Security Level: High (No Mnemonics Stored)</span>
@@ -140,8 +242,8 @@ function App() {
             <p>Non-custodial Protocol Management (Database: Supabase Cluster)</p>
           </div>
           <div style={{ display: 'flex', gap: '1rem' }}>
-             <div className="security-badge"><Shield size={14} /> Encrypted DB</div>
-             <button onClick={fetchAllData} className="btn btn-ghost"><RefreshCcw size={18} /> Sync</button>
+            <div className="security-badge"><Shield size={14} /> Encrypted DB</div>
+            <button onClick={fetchAllData} className="btn btn-ghost"><RefreshCcw size={18} /> Sync</button>
           </div>
         </header>
 
@@ -156,20 +258,20 @@ function App() {
               {activeTab === 'overview' && (
                 <>
                   <div className="grid grid-cols-4">
-                    <StatCard icon={<Layers color="var(--accent-blue)" />} label="Active Tokens" value={tokens.filter(t=>t.is_active).length.toString()} subValue={`Total tracked: ${tokens.length}`} />
-                    <StatCard icon={<Globe color="var(--accent-purple)" />} label="Active Protocols" value={chains.filter(c=>c.is_active).length.toString()} subValue="Multi-architecture" />
-                    <StatCard icon={<Users color="var(--accent-green)" />} label="Verified Users" value={profiles.filter(p=>p.is_verified).length.toString()} subValue="Non-custodial" />
+                    <StatCard icon={<Layers color="var(--accent-blue)" />} label="Active Tokens" value={tokens.filter(t => t.is_active).length.toString()} subValue={`Total tracked: ${tokens.length}`} />
+                    <StatCard icon={<Globe color="var(--accent-purple)" />} label="Active Protocols" value={chains.filter(c => c.is_active).length.toString()} subValue="Multi-architecture" />
+                    <StatCard icon={<Users color="var(--accent-green)" />} label="Verified Users" value={profiles.filter(p => p.is_verified).length.toString()} subValue="Non-custodial" />
                     <StatCard icon={<Activity color="var(--accent-blue)" />} label="Server Status" value="Optimized" subValue="LATENCY: 12ms" />
                   </div>
                   <div className="glass-card chart-container">
                     <h3 style={{ marginBottom: '1rem' }}>System Engagement (Simulated)</h3>
                     <ResponsiveContainer width="100%" height={250}>
-                       <AreaChart data={[{t:'00',v:10}, {t:'04',v:30}, {t:'08',v:25}, {t:'12',v:60}, {t:'16',v:45}, {t:'20',v:80}]}>
-                        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--accent-blue)" stopOpacity={0.2}/><stop offset="100%" stopColor="transparent"/></linearGradient></defs>
+                      <AreaChart data={[{ t: '00', v: 10 }, { t: '04', v: 30 }, { t: '08', v: 25 }, { t: '12', v: 60 }, { t: '16', v: 45 }, { t: '20', v: 80 }]}>
+                        <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="var(--accent-blue)" stopOpacity={0.2} /><stop offset="100%" stopColor="transparent" /></linearGradient></defs>
                         <XAxis dataKey="t" stroke="#475569" axisLine={false} tickLine={false} />
                         <YAxis hide />
                         <Area type="monotone" dataKey="v" stroke="var(--accent-blue)" fill="url(#g)" strokeWidth={3} />
-                       </AreaChart>
+                      </AreaChart>
                     </ResponsiveContainer>
                   </div>
                 </>
@@ -191,7 +293,7 @@ function App() {
                   <td><Badge active={t.is_active} /></td>
                   <td>
                     <button className="btn btn-ghost" onClick={() => toggleToken(t.id, t.is_active)}>
-                      {t.is_active ? <EyeOff size={16} /> : <Eye size={16} />} 
+                      {t.is_active ? <EyeOff size={16} /> : <Eye size={16} />}
                     </button>
                   </td>
                 </tr>
@@ -216,6 +318,23 @@ function App() {
               {activeTab === 'p2p' && (
                 <div className="grid grid-cols-1" style={{ gap: '2rem' }}>
                   <div className="glass-card">
+                    <h3>P2P Dispute Resolution (Active Escrows)</h3>
+                    <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Sử dụng quyền Admin gỡ rối kẹt tiền (Giải phóng tới Buyer hoặc Hoàn tiền cho Seller)</p>
+                    <TableLayout items={p2pOrders.filter(o => o.status === 'DISPUTED')} headers={['Order Code', 'Amount', 'Price', 'Status', 'Resolve P2P']} renderRow={(o: P2POrder) => (
+                      <tr key={o.id}>
+                        <td className="mono">{o.order_code}</td>
+                        <td style={{ fontWeight: 800 }}>{o.amount} {o.symbol}</td>
+                        <td>{o.price}</td>
+                        <td><Badge active={false} danger label={o.status} /></td>
+                        <td>
+                          <button className="btn btn-primary" style={{ marginRight: 8, padding: '0.4rem 0.8rem', background: 'var(--accent-green)', borderColor: 'var(--accent-green)' }} onClick={() => handleResolveDispute(o.id, 'FAVOR_BUYER')}>Release to BUYER</button>
+                          <button className="btn" style={{ padding: '0.4rem 0.8rem', background: '#334155', border: '1px solid #475569' }} onClick={() => handleResolveDispute(o.id, 'FAVOR_SELLER')}>Refund SELLER</button>
+                        </td>
+                      </tr>
+                    )} />
+                  </div>
+
+                  <div className="glass-card">
                     <h3>Marketplace Ads List</h3>
                     <TableLayout items={p2pAds} headers={['Type', 'Asset', 'Price', 'Status']} renderRow={(a: P2PAd) => (
                       <tr key={a.id}>
@@ -229,6 +348,26 @@ function App() {
                 </div>
               )}
 
+              {activeTab === 'withdrawals' && (
+                <div className="glass-card">
+                  <h3>Urgent Withdrawals Approval Queue</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Duyệt On-chain TX dành cho các khoản <Badge active label="PENDING" danger /> (Admin Workflow Orchestration)</p>
+                  <TableLayout items={withdrawals} headers={['Tx ID', 'User UUID', 'Amount', 'Status', 'Date', 'Actions']} renderRow={(w: Withdrawal) => (
+                    <tr key={w.id}>
+                      <td className="mono">{w.id.substring(0, 8)}...</td>
+                      <td className="mono" style={{ color: 'var(--accent-purple)' }}>{w.user_id.substring(0, 8)}...</td>
+                      <td style={{ fontWeight: 800, fontSize: '1.2rem' }}>{w.amount}</td>
+                      <td><Badge active={false} danger label={w.status} /></td>
+                      <td>{new Date(w.created_at).toLocaleString()}</td>
+                      <td>
+                        <button className="btn btn-primary" style={{ marginRight: 8, padding: '0.5rem 1rem' }} onClick={() => handleApproveWithdrawal(w.id)}><Gavel size={14} style={{ display: 'inline', marginRight: 4 }} /> Approve</button>
+                        <button className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--accent-red)', borderColor: 'var(--accent-red)' }} onClick={() => handleRejectWithdrawal(w.id)}>Reject</button>
+                      </td>
+                    </tr>
+                  )} />
+                </div>
+              )}
+
               {activeTab === 'users' && <TableLayout items={profiles} headers={['Identity', 'Auth ID', 'Seed Phrase Status', 'Created', 'KYC Status']} renderRow={(p: Profile) => (
                 <tr key={p.id}>
                   <td>
@@ -239,9 +378,9 @@ function App() {
                   </td>
                   <td className="mono">{p.user_id.slice(0, 12)}...</td>
                   <td>
-                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-green)', fontSize: '0.8rem' }}>
-                        <Shield size={12} /> Local Storage Only
-                     </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--accent-green)', fontSize: '0.8rem' }}>
+                      <Shield size={12} /> Local Storage Only
+                    </div>
                   </td>
                   <td>{new Date(p.created_at).toLocaleDateString()}</td>
                   <td>
@@ -257,15 +396,15 @@ function App() {
                   <div className="glass-card">
                     <h3>Gateway Management</h3>
                     <div className="switch-list">
-                       {Object.entries(config.features).map(([key, val]) => (
-                         <div className="switch-row" key={key}>
-                            <span>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
-                            <label className="switch">
-                               <input type="checkbox" checked={val} onChange={() => {}} />
-                               <span className="slider"></span>
-                            </label>
-                         </div>
-                       ))}
+                      {Object.entries(config.features).map(([key, val]) => (
+                        <div className="switch-row" key={key}>
+                          <span>{key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}</span>
+                          <label className="switch">
+                            <input type="checkbox" checked={val} onChange={() => { }} />
+                            <span className="slider"></span>
+                          </label>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>

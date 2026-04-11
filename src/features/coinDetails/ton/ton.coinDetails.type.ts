@@ -26,6 +26,6 @@ export type GetTonEventsParams = {
     isAllEvents?: boolean;
 };
 
-export type PriceRedXResponse = {
+export type PriceledgerifyResponse = {
     price: number;
 };

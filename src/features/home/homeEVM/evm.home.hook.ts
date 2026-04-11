@@ -160,7 +160,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   const handleInitData = async () => {
     handleMigrateNFT();
     await createCryptoData();
-    
+
   };
 
   const handleHomeRefresh = useCallback(async () => {
@@ -278,7 +278,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     const balances = await fetchEvmBalances({
       rpcUrl: rpcUrl,
       walletAddress: wallet.address,
-      tokens: [], 
+      tokens: [],
     });
 
     if (balances.native && protocolBaseData?._id && protocolBaseData?.slip0044 !== undefined) {
@@ -295,7 +295,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       );
     }
   };
-  
+
   const handleGenerateListToken = useCallback(async () => {
     try {
       // Filter out disabled tokens from remote config
@@ -307,21 +307,21 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
         .map((item) => {
           const id = Utils.generateUniqueId();
           const data: ListCryptoDataType = {
-          id,
-          name: item?.name,
-          symbol: item?.symbol,
-          logo: item?.logo,
-          balance: item?.balance ?? 0,
-          isNative: item.isNativeToken,
-          contractAddress: item?.contractAddress,
-          decimal: item.decimal,
-          baseData: protocolBaseData,
-          rateCurrency: item.balanceCurrency ?? 0,
-        };
-        return data;
-      });
+            id,
+            name: item?.name,
+            symbol: item?.symbol,
+            logo: item?.logo,
+            balance: item?.balance ?? 0,
+            isNative: item.isNativeToken,
+            contractAddress: item?.contractAddress,
+            decimal: item.decimal,
+            baseData: protocolBaseData,
+            rateCurrency: item.balanceCurrency ?? 0,
+          };
+          return data;
+        });
       setListCryptoData(listCustomCryptoConverted);
-      
+
       if (listToken.length === 0) {
         setIsFirstInitGenerateData(true);
       } else {
@@ -378,16 +378,16 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
         ).unwrap(),
         hasNative
           ? dispatch(
-              getBalanceNativeEVM({
-                walletAddress: walletAddress,
-                params: {
-                  chain: getChain,
-                  cursor: null,
-                  limit: 2,
-                },
-                contractAddress: protocolBaseData.nativeToken.address,
-              })
-            ).unwrap()
+            getBalanceNativeEVM({
+              walletAddress: walletAddress,
+              params: {
+                chain: getChain,
+                cursor: null,
+                limit: 2,
+              },
+              contractAddress: protocolBaseData.nativeToken.address,
+            })
+          ).unwrap()
           : Promise.resolve(null),
       ]);
 
@@ -405,7 +405,19 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       );
 
       if (nativeBalance && hasNative) {
-        result[protocolBaseData.nativeToken.address] = nativeBalance;
+        result[protocolBaseData.nativeToken.address] = {
+          ...nativeBalance,
+          token_address: protocolBaseData.nativeToken.address,
+          symbol: protocolBaseData.nativeToken.symbol,
+          name: protocolBaseData.nativeToken.name,
+          decimals: protocolBaseData.nativeToken.decimal.toString(),
+          logo: "",
+          thumbnail: "",
+          possible_spam: "false",
+          verified_contract: true,
+          native_token: true,
+          usd_price: protocolBaseData?.price || 0,
+        } as TokenBalance;
       }
 
       dispatch(
@@ -497,9 +509,6 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       return total + cutCurrency;
     }, 0);
   };
-  const goToStakeScreen = () => {
-    navigation.dispatch(StackActions.push(HomeStackScreenKey.Stake));
-  };
 
   const handleChangeProtocol = async () => {
     showSkeletonLoading();
@@ -516,9 +525,9 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   }, []);
 
   useEffect(() => {
-      const balance = getTotalBalanceToCurrency(listCryptoData);
-      setWalletBalanceCurrency(balance);
-    
+    const balance = getTotalBalanceToCurrency(listCryptoData);
+    setWalletBalanceCurrency(balance);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listCryptoData, selectedCurrencySetting.rate]);
 
@@ -572,56 +581,63 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [wallet?.address]);
-  
-useEffect(() => {
-  
-  if (!listCryptoData.length || !listToken.length) return;
 
-  const nativeBalance = listToken.find((item) => item.isNativeToken === true);
+  useEffect(() => {
 
-  console.log(`nativeBalance ${nativeBalance?.isNativeToken}`);
+    if (!listCryptoData.length || !listToken.length) return;
 
-  if (!nativeBalance) return;
+    const nativeBalance = listToken.find((item) => item.isNativeToken === true);
 
-  setListCryptoData((prev) =>
-    prev.map((token) => {
-      if (!token.isNative) return token;
+    console.log(`nativeBalance ${nativeBalance?.isNativeToken}`);
 
-      return {
-        ...token,
-        balance: nativeBalance.balance ?? token.balance,
-        rateCurrency: nativeBalance.balanceCurrency ?? token.rateCurrency,
-      };
-    })
-  );
-}, [listToken]);
+    if (!nativeBalance) return;
+
+    setListCryptoData((prev) =>
+      prev.map((token) => {
+        if (!token.isNative) return token;
+
+        return {
+          ...token,
+          balance: nativeBalance.balance ?? token.balance,
+          rateCurrency: nativeBalance.balanceCurrency ?? token.rateCurrency,
+        };
+      })
+    );
+  }, [listToken]);
 
 
 
   useEffect(() => {
     try {
       if (updateBalanceState) {
-      console.log("===================");
-      console.log("Update Balance");
-      console.log("===================");
-      updateBalance();
-      fetchNativeBalanceOnce();
-    }
+        console.log("===================");
+        console.log("Update Balance");
+        console.log("===================");
+        updateBalance();
+        fetchNativeBalanceOnce();
+      }
     }
     catch (e) {
       console.log(e);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateBalanceState]);
- 
-  
-  const getBackgroundImage = () => {
-    return lightMode ? appImages.background1Dark : appImages.background1;
+
+
+  const goToScan = () => {
+    navigation.navigate(HomeStackScreenKey.ScanEvm);
   };
+
+  const goToAIDetail = () => {
+    navigation.navigate(HomeStackScreenKey.AIDetailScreen);
+  };
+
   return {
     goToSendScreen,
     goToReceive,
     goToMangeCryptoScreen,
+    goToScan,
+    goToAIDetail,
     refreshingHome,
     handleHomeRefresh,
     walletBalanceCurrency,
@@ -647,9 +663,7 @@ useEffect(() => {
     editWalletAction,
     isFirstInitial,
     onPressTokenDetailEVM,
-    goToStakeScreen,
     showBottomSheetModalAction,
-    getBackgroundImage,
     selectedCurrencySetting,
     menuActionType,
     currencyRateConversion,

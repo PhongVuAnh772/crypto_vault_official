@@ -17,6 +17,8 @@ export type HomeHeaderProps = {
   goToDepositOptions: () => void;
   goToMoreActionScreen: () => void;
   onPressAccount?: () => void;
+  onPressScan?: () => void;
+  onPressAI?: () => void;
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -28,6 +30,8 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   goToDepositOptions,
   goToMoreActionScreen,
   onPressAccount,
+  onPressScan,
+  onPressAI,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
@@ -44,8 +48,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
       </View>
 
       <View style={styles.contentContainer}>
-        <View style={styles.topRow}>
-        </View>
+        <View style={styles.topRow} />
 
         <BalanceCard
           balance={balance}
@@ -91,8 +94,8 @@ const useStyles = (theme: AppThemeType) =>
   StyleSheet.create({
     headerContainer: {
       width: '100%',
-      paddingTop: 100,
-      paddingBottom: 40,
+      paddingTop: 60,
+      paddingBottom: 30,
       borderBottomLeftRadius: 4,
       borderBottomRightRadius: 4,
       overflow: 'hidden',
@@ -103,42 +106,31 @@ const useStyles = (theme: AppThemeType) =>
     },
     contentContainer: {
       paddingHorizontal: 24,
-      paddingTop: 20
+      paddingTop: 0
     },
     topRow: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: 25,
+      marginBottom: 20,
     },
     logoBtn: {
       width: 40,
       height: 40,
-      borderRadius: 20,
+      borderRadius: 12,
       backgroundColor: '#fff',
       justifyContent: 'center',
       alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
     },
     logoImage: {
       width: 24,
       height: 24,
       resizeMode: 'contain'
-    },
-    searchBar: {
-      flex: 1,
-      height: 40,
-      backgroundColor: 'rgba(255,255,255,0.15)',
-      borderRadius: 20,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: 12,
-      marginHorizontal: 10,
-    },
-    searchInput: {
-      flex: 1,
-      color: 'rgba(255,255,255,0.8)',
-      fontSize: 14,
-      paddingLeft: 8,
     },
     iconBtn: {
       width: 40,
@@ -149,23 +141,15 @@ const useStyles = (theme: AppThemeType) =>
       alignItems: 'center',
       marginLeft: 10,
     },
-    aiIcon: {
-      backgroundColor: '#4CC9F0',
+    aiIconImage: {
       width: 24,
       height: 24,
-      borderRadius: 12,
-      justifyContent: 'center',
-      alignItems: 'center',
-    },
-    aiText: {
-      color: '#fff',
-      fontSize: 10,
-      fontWeight: 'bold',
+      resizeMode: 'contain',
     },
     actionRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginTop: 30,
+      marginTop: 25,
     },
     actionItem: {
       alignItems: 'center',

@@ -33,6 +33,7 @@
     "@reown/walletkit": "^1.2.1",
     "@rneui/base": "^4.0.0-rc.8",
     "@rneui/themed": "^4.0.0-rc.8",
+    "@sentry/react-native": "^8.7.0",
     "@supabase/supabase-js": "^2.101.1",
     "@ton-api/client": "^0.2.0",
     "@ton-api/ton-adapter": "^0.2.0",

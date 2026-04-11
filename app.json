@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CryptoVault",
+    "name": "Ledgerify",
     "slug": "CryptoVault",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -37,7 +37,9 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": ["Camera"]
+          "iosPermissions": [
+            "Camera"
+          ]
         }
       ],
       [
@@ -47,14 +49,14 @@
         }
       ],
       "expo-router",
-
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
       [
         "expo-build-properties",
         {
           "ios": {
-            "useFrameworks": "static"
+            "useFrameworks": "static",
+            "deploymentTarget": "15.1"
           }
         }
       ]

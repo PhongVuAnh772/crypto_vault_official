@@ -1,5 +1,6 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { Camera } from 'react-native-vision-camera';
 import { ScreenWrapper } from 'src/components';
 import AppButton from 'src/components/common/AppButton';
@@ -14,7 +15,7 @@ import { useScan } from './scan.hook';
 import useStyles from './scan.stye';
 
 const ScanEvmScreen: React.FC<RootNavigationType> = ({ navigation }) => {
-    const { theme, device, showCamera, isActive, codeScanner } = useScan({
+    const { theme, device, showCamera, isActive, codeScanner, onPasteURI } = useScan({
         navigation,
     });
 
@@ -31,6 +32,13 @@ const ScanEvmScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                         isActive={isActive}
                         codeScanner={codeScanner}
                     />
+
+                    <View style={style.overlay}>
+                        <TouchableOpacity style={style.pasteButton} onPress={onPasteURI}>
+                            <Feather name="clipboard" size={20} color="#fff" />
+                            <Text style={style.pasteText}>Paste WalletConnect URI</Text>
+                        </TouchableOpacity>
+                    </View>
 
                     <ScanArena />
                     <View style={[appStyles.flex1, appStyles.center]}>

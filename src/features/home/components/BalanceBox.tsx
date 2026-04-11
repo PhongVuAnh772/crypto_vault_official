@@ -5,12 +5,12 @@ import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { useCurrentWallet, useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
 import Utils from 'src/core/utils/commonUtils';
 
-type WalletAcBalanceRedXProps = {
+type WalletAcBalanceledgerifyProps = {
     balance: number;
     withoutCurrencyRate: boolean;
     onPressAccount?: () => void;
 };
-const BalanceCard: React.FC<WalletAcBalanceRedXProps> = ({
+const BalanceCard: React.FC<WalletAcBalanceledgerifyProps> = ({
     withoutCurrencyRate,
     balance,
     onPressAccount,

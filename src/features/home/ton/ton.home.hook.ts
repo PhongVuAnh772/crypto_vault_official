@@ -43,7 +43,7 @@ import TonUtils from "src/core/utils/tonUtils";
 import { getNetworkFee } from "src/features/coinDetails/bitcoin/bitcoin.coinDetails.slice";
 import {
   getJettons,
-  getRedXPrice,
+  getledgerifyPrice,
 } from "src/features/coinDetails/ton/ton.coinDetails.slice";
 import {
   selectorListCryptoData,
@@ -178,10 +178,10 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     setIsFirstInitial(false);
   };
 
-  const handleGetRedXPrice = async () => {
+  const handleGetledgerifyPrice = async () => {
     try {
-      const redXPrice = await dispatch(getRedXPrice()).unwrap();
-      return redXPrice.price;
+      const ledgerifyPrice = await dispatch(getledgerifyPrice()).unwrap();
+      return ledgerifyPrice.price;
     } catch {
       return;
     }
@@ -259,13 +259,13 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
         cryptoData: cryptoData,
       };
 
-      // Get replace redX price
-      const redxTokenParsed = TonUtils.getRawAddress(appTokens.REDX_TOKEN);
-      if (redxTokenParsed === address1) {
-        cryptoData.isRedXToken = true;
-        const redXPrice = await handleGetRedXPrice();
-        if (redXPrice) {
-          cryptoData.tokenRateCurrency = redXPrice;
+      // Get replace ledgerify price
+      const ledgerifyTokenParsed = TonUtils.getRawAddress(appTokens.ledgerify_TOKEN);
+      if (ledgerifyTokenParsed === address1) {
+        cryptoData.isledgerifyToken = true;
+        const ledgerifyPrice = await handleGetledgerifyPrice();
+        if (ledgerifyPrice) {
+          cryptoData.tokenRateCurrency = ledgerifyPrice;
         }
       }
 
@@ -368,7 +368,7 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
           tokenRate: e.tokenRateCurrency,
           protocolRate: e.rateCurrency,
           settingCurrencyRate: selectedCurrencySetting.rate,
-          isRedXToken: e.isRedXToken,
+          isledgerifyToken: e.isledgerifyToken,
         });
         return acc + balanceFiat;
       },
@@ -519,6 +519,8 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     handlePressWallet,
     onShowMenuWallet,
     onChangeMenuActionType,
+    goToScan: () => navigation.navigate(HomeStackScreenKey.ScanEvm),
+    goToAIDetail: () => navigation.navigate(HomeStackScreenKey.AIDetailScreen),
   };
 };
 

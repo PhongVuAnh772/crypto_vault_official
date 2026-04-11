@@ -126,13 +126,13 @@ const getJettonBalanceToCurrency = (
     jettonBalance: number,
     selectedCurrencySetting: SettingCurrencyType,
     price?: number | null,
-    isRedXToken?: boolean,
+    isledgerifyToken?: boolean,
 ) => {
     const jettonBalanceConvert = Utils.truncateToThreeDecimals(jettonBalance);
     const baseRate = Utils.fiatFormat(
         (price ?? 1) * (selectedCurrencySetting?.rate ?? 0),
-        isRedXToken ? 4 : undefined,
-        isRedXToken,
+        isledgerifyToken ? 4 : undefined,
+        isledgerifyToken,
     );
 
     const balanceToCurrencySetting =
@@ -140,8 +140,8 @@ const getJettonBalanceToCurrency = (
 
     const balance = Utils.fiatFormat(
         balanceToCurrencySetting,
-        isRedXToken ? 4 : undefined,
-        isRedXToken,
+        isledgerifyToken ? 4 : undefined,
+        isledgerifyToken,
     );
 
     const data = {
@@ -197,14 +197,14 @@ const _handleMultipleActions = async ({
                 const isAdminAction =
                     dataTransfer.recipient && beneficiary?.walletAddress
                         ? action.status === 'ok' &&
-                          (dataTransfer?.comment?.toLocaleLowerCase() ===
-                              'admin fee' ||
-                              Address.parse(
-                                  dataTransfer.recipient.address,
-                              ).toString() ===
-                                  Address.parse(
-                                      beneficiary?.walletAddress ?? '',
-                                  ).toString())
+                        (dataTransfer?.comment?.toLocaleLowerCase() ===
+                            'admin fee' ||
+                            Address.parse(
+                                dataTransfer.recipient.address,
+                            ).toString() ===
+                            Address.parse(
+                                beneficiary?.walletAddress ?? '',
+                            ).toString())
                         : false;
 
                 let amount = dataTransfer?.amount;
@@ -261,43 +261,43 @@ const _handleMultipleActions = async ({
                             : TransactionStatusType.Failed;
                 }
                 const multipleTransactionDataItem: TransactionHistoryDataType =
-                    {
-                        id: id,
-                        isAdminFee: isAdminAction,
-                        toAddress: isSentAction
-                            ? recipientAddress
-                            : senderAddress,
-                        txHash: tonEvent.event_id,
-                        coinType: CoinType.Ton,
-                        createdAt: DateTimeUtils.convertTimestampToISO(
-                            parseInt(
-                                tonEvent?.timestamp?.toString() ?? '0',
-                                10,
-                            ),
+                {
+                    id: id,
+                    isAdminFee: isAdminAction,
+                    toAddress: isSentAction
+                        ? recipientAddress
+                        : senderAddress,
+                    txHash: tonEvent.event_id,
+                    coinType: CoinType.Ton,
+                    createdAt: DateTimeUtils.convertTimestampToISO(
+                        parseInt(
+                            tonEvent?.timestamp?.toString() ?? '0',
+                            10,
                         ),
+                    ),
 
-                        isNative: !isJettonAction,
-                        memo: dataTransfer?.comment,
-                        amountSend: amount,
-                        status: statusType,
-                        type: transactionType,
-                        tokenTransferType: isJettonAction
-                            ? action.type
-                            : undefined,
-                        decimal: isJettonAction
-                            ? dataTransfer?.jetton?.decimals
-                            : decimal,
-                        nativeDecimal: nativeDecimal,
-                        amountNFT: action?.simple_preview.value,
-                        nftAddress: dataTransfer?.nft,
-                        logoUri: isJettonAction
-                            ? dataTransfer?.jetton?.image
-                            : undefined,
-                        tokenSymbol: isJettonAction
-                            ? dataTransfer?.jetton?.symbol
-                            : customSymbol,
-                        amountTonAttachedSmartExc: dataTransfer?.ton_attached,
-                    };
+                    isNative: !isJettonAction,
+                    memo: dataTransfer?.comment,
+                    amountSend: amount,
+                    status: statusType,
+                    type: transactionType,
+                    tokenTransferType: isJettonAction
+                        ? action.type
+                        : undefined,
+                    decimal: isJettonAction
+                        ? dataTransfer?.jetton?.decimals
+                        : decimal,
+                    nativeDecimal: nativeDecimal,
+                    amountNFT: action?.simple_preview.value,
+                    nftAddress: dataTransfer?.nft,
+                    logoUri: isJettonAction
+                        ? dataTransfer?.jetton?.image
+                        : undefined,
+                    tokenSymbol: isJettonAction
+                        ? dataTransfer?.jetton?.symbol
+                        : customSymbol,
+                    amountTonAttachedSmartExc: dataTransfer?.ton_attached,
+                };
 
                 multipleTransactionData?.push(multipleTransactionDataItem);
             }
@@ -686,7 +686,7 @@ const convertBalanceWithFiat = ({
     tokenRate,
     settingCurrencyRate,
     isNative,
-    isRedXToken = false,
+    isledgerifyToken = false,
 }: {
     balance?: number;
     balanceToken?: number;
@@ -694,7 +694,7 @@ const convertBalanceWithFiat = ({
     tokenRate?: number | null;
     settingCurrencyRate: number;
     isNative: boolean;
-    isRedXToken?: boolean;
+    isledgerifyToken?: boolean;
 }) => {
     // TON:
     // Base rate = Protocol rate * setting currency rate.
@@ -726,18 +726,18 @@ const convertBalanceWithFiat = ({
 
     const baseRateFiatString = Utils.fiatFormat(
         baseRate,
-        isRedXToken ? 4 : undefined,
-        isRedXToken,
+        isledgerifyToken ? 4 : undefined,
+        isledgerifyToken,
     );
     const baseRateFiat = Number(baseRateFiatString.replace(/,/g, ''));
 
     let balanceFiatString;
 
-    if (isRedXToken) {
+    if (isledgerifyToken) {
         balanceFiatString = Utils.fiatFormat(
             balanceConverted * baseRateFiat,
-            isRedXToken ? 4 : undefined,
-            isRedXToken,
+            isledgerifyToken ? 4 : undefined,
+            isledgerifyToken,
         );
     } else {
         balanceFiatString = Utils.formattedCurrency(
@@ -756,10 +756,10 @@ const convertBalanceWithFiat = ({
     };
 };
 
-const checkRedXToken: (address: string) => boolean = (address: string) => {
+const checkledgerifyToken: (address: string) => boolean = (address: string) => {
     const compareAddress = getRawAddress(address);
-    const redxTokenParsed = getRawAddress(appTokens.REDX_TOKEN);
-    return compareAddress === redxTokenParsed;
+    const ledgerifyTokenParsed = getRawAddress(appTokens.ledgerify_TOKEN);
+    return compareAddress === ledgerifyTokenParsed;
 };
 
 const TonUtils = {
@@ -781,7 +781,7 @@ const TonUtils = {
     convertBalanceWithFiat,
     formatTonBalance,
     getJettonBalanceToCurrency,
-    checkRedXToken,
+    checkledgerifyToken,
     getFeeStatus,
 };
 

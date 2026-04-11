@@ -21,6 +21,7 @@ import BottomSheetModalGorhom from "src/components/specific/BottomSheetModalGorh
 import BottomSheetWarningWallet from "src/components/specific/BottomSheetWalletWarning/bottomSheetWalletWarning.view";
 import ProtocolImage from "src/components/specific/ProtocolImage";
 import {
+  AddFillSvgIcon,
   AddSvgIcon,
   ConnectSvgIcon,
 } from "src/core/constants/AppIconsSvg";
@@ -87,6 +88,7 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
     onCloseModalProtocol,
     onShowModalProtocol,
     handlePressProtocol,
+    onScanPress,
     selectedProtocolId,
     protocolSelected,
     isLoadingImages,
@@ -180,6 +182,13 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
 
             <TouchableOpacity
               style={styles.iconBtn}
+              onPress={onScanPress}
+            >
+              <Feather name="maximize" size={20} color="#fff" />
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.iconBtn}
               onPress={() => {
                 navigation.dispatch(
                   StackActions.push(HomeStackScreenKey.ChatScreen)
@@ -187,7 +196,7 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
               }}
             >
               <Image
-                source={appImages.aiLogo}
+                source={appImages.ai_icon}
                 style={{ width: 25, height: 25 }}
               />
             </TouchableOpacity>

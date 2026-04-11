@@ -28,7 +28,21 @@ const pool = new Pool({
 app.use(cors());
 app.use(express.json());
 
-// --- PUBLIC API ---
+// --- ROUTES MOUNTING ---
+const publicRoutes = require('./src/routes/publicRoutes');
+const transactionRoutes = require('./src/routes/transactionRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
+const bitcoinRoutes = require('./src/routes/bitcoinRoutes');
+const dexRoutes = require('./src/routes/dexRoutes');
+
+// Mount under /api/v1/public to match mobile app expectations
+app.use('/api/v1/public', publicRoutes);
+app.use('/api/v1', transactionRoutes);
+app.use('/api/v1', adminRoutes);
+app.use('/api/v1', bitcoinRoutes);
+app.use('/api/v1', dexRoutes);
+
+// --- INLINE PUBLIC API (LEGACY) ---
 
 // 1. Get configuration for APP
 app.get('/api/v1/config', async (req, res) => {
@@ -198,6 +212,6 @@ app.get('/api/v1/admin/p2p/ads', async (req, res) => {
 
 app.listen(PORT, () => {
   console.log('====================================');
-  console.log(`🚀 CryptoVault Server running at http://localhost:${PORT}`);
+  console.log(`🚀 Ledgerify Server running at http://localhost:${PORT}`);
   console.log('====================================');
 });

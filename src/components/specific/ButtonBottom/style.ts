@@ -13,10 +13,10 @@ const style = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: GlobalUtils.getEnableRedXNewTheme()
+        backgroundColor: GlobalUtils.getEnableledgerifyNewTheme()
             ? appColors.neutral.white
             : appColors.neutral.n100,
-        paddingTop: GlobalUtils.getEnableRedXNewTheme() ? 15 : 0,
+        paddingTop: GlobalUtils.getEnableledgerifyNewTheme() ? 15 : 0,
     },
 });
 

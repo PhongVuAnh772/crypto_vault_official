@@ -1,8 +1,53 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
 const db = require('../utils/db');
 const logger = require('../utils/logger');
+const adminWorkflowService = require('../services/adminService'); // File Service xử lý Workflow
 const globalEvents = require('../utils/events');
+const { requireAuth, requireRole, hashPassword, JWT_SECRET } = require('../middlewares/authMiddleware');
+
+// --- AUTHENTICATION & INITIALIZE ---
+router.post('/admin/setup', async (req, res) => {
+  try {
+    const check = await db.query('SELECT COUNT(*) FROM admins');
+    if (parseInt(check.rows[0].count) > 0) return res.status(403).json({ success: false, error: 'Hệ thống đã có admin' });
+
+    const { email, password } = req.body;
+    const pwdHash = hashPassword(password);
+    const result = await db.query(
+      "INSERT INTO admins (email, password_hash, role) VALUES ($1, $2, 'super_admin') RETURNING id, email, role",
+      [email, pwdHash]
+    );
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/admin/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const pwdHash = hashPassword(password);
+    const result = await db.query(
+      'SELECT id, email, role, is_active FROM admins WHERE email = $1 AND password_hash = $2 AND is_active = true', 
+      [email, pwdHash]
+    );
+
+    if (result.rows.length === 0) return res.status(401).json({ success: false, error: 'Sai email hoặc mật khẩu' });
+
+    const user = result.rows[0];
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '12h' });
+
+    await db.query('UPDATE admins SET last_login = NOW() WHERE id = $1', [user.id]);
+    res.json({ success: true, token, user });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Khoá bảo mật áp dụng cho toàn bộ thao tác admin (chỉ yêu cầu Token cơ bản)
+router.use('/admin', requireAuth);
 
 // --- TOKENS ---
 router.get('/admin/tokens', async (req, res) => {
@@ -59,7 +104,7 @@ router.put('/admin/tokens/:id', async (req, res) => {
   }
 });
 
-router.delete('/admin/tokens/:id', async (req, res) => {
+router.delete('/admin/tokens/:id', requireRole(['super_admin', 'manager']), async (req, res) => {
   try {
     const { id } = req.params;
     await db.query('DELETE FROM tokens WHERE id = $1', [id]);
@@ -143,7 +188,7 @@ router.put('/admin/chains/:id', async (req, res) => {
   }
 });
 
-router.delete('/admin/chains/:id', async (req, res) => {
+router.delete('/admin/chains/:id', requireRole(['super_admin']), async (req, res) => {
   try {
     const { id } = req.params;
     await db.query('DELETE FROM chains WHERE id = $1', [id]);
@@ -190,7 +235,7 @@ router.get('/admin/wallets', async (req, res) => {
     const result = await db.query(`
       SELECT w.*, c.name as chain_name 
       FROM wallets w
-      JOIN chains c ON w.chain_id = c.id
+      JOIN chains c ON w.chain_id::text = c.id::text
       ORDER BY w.created_at DESC
     `);
     res.json({ success: true, data: result.rows });
@@ -199,18 +244,71 @@ router.get('/admin/wallets', async (req, res) => {
   }
 });
 
-// --- TRANSACTION JOBS ---
+// --- SYSTEM JOBS ---
 router.get('/admin/jobs', async (req, res) => {
   try {
     const result = await db.query(`
       SELECT j.*, c.name as chain_name 
       FROM transaction_jobs j
-      JOIN chains c ON j.chain_id = c.id
+      LEFT JOIN chains c ON j.reference_id = c.id
       ORDER BY j.created_at DESC
       LIMIT 100
     `);
     res.json({ success: true, data: result.rows });
   } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// ==========================================
+// THÊM: CÁC ROUTE PHỤC VỤ DASHBOARD WORKFLOW
+// ==========================================
+
+// 1. Quản lý Lệnh Rút Tiền (Withdrawals Queue)
+router.get('/admin/withdrawals', async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT t.id, t.user_id, t.token_id, t.amount, t.status, t.created_at
+      FROM transactions t
+      WHERE t.type = 'WITHDRAWAL' AND t.status = 'PENDING'
+      ORDER BY t.created_at DESC
+    `);
+    res.json({ success: true, data: result.rows });
+  } catch(err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Approve Rút tiền
+router.post('/admin/withdrawals/:id/approve', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const result = await adminWorkflowService.approveWithdrawal(req.params.id, req.user.id);
+    res.json(result);
+  } catch(err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Reject Rút Tiền
+router.post('/admin/withdrawals/:id/reject', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const result = await adminWorkflowService.rejectWithdrawal(req.params.id, req.user.id, req.body.reason || 'Admin Rejected');
+    res.json(result);
+  } catch(err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// 2. Gỡ Tranh Chấp P2P
+router.post('/admin/p2p/disputes/:escrowId/resolve', requireRole(['super_admin']), async (req, res) => {
+  try {
+    const { escrowId } = req.params;
+    const { resolution, reason } = req.body;
+    if (!['FAVOR_BUYER', 'FAVOR_SELLER'].includes(resolution)) throw new Error('Invalid resolution');
+    
+    const result = await adminWorkflowService.resolveP2PDispute(escrowId, resolution, req.user.id, reason);
+    res.json(result);
+  } catch(err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });

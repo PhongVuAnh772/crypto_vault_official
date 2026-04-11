@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AxiosInstance from 'src/core/network/config/AxiosInstance';
 import transform from 'src/core/network/transform';
+import ErrorLogger from 'src/core/services/ErrorLogger';
 
 export type SendPostParamsType = {
     endPoint?: string;
@@ -35,6 +36,7 @@ async function sendPost<T>({
         );
         return transform.Response<T>(apiResponse);
     } catch (err) {
+        ErrorLogger.log(err, 'network/sendPost');
         if (axios.isAxiosError(err) && err.response) {
             return transform.Error<T>(err.response);
         } else {

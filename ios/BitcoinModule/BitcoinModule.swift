@@ -1,4 +1,5 @@
 import Foundation
+import React
 import WalletCore
 import CryptoKit
 
@@ -15,8 +16,8 @@ class BitcoinModule: NSObject {
   @objc static func isValidBitcoinAddress(
     isTestNet: Bool,
     address: String,
-    successCallback: @escaping RCTResponseSenderBlock,
-    failCallback: @escaping RCTResponseSenderBlock
+    successCallback: RCTResponseSenderBlock,
+    failCallback: RCTResponseSenderBlock
   ) {
     print("Check address: ", address)
 
@@ -49,8 +50,8 @@ class BitcoinModule: NSObject {
     utxoDataFormRN: [[String: Any]],
     adminFee: Int64,
     spendSizeBytes: Int64,
-    successCallback: @escaping RCTResponseSenderBlock,
-    failCallback: @escaping RCTResponseSenderBlock
+    successCallback: RCTResponseSenderBlock,
+    failCallback: RCTResponseSenderBlock
   ) {
     let coin: CoinType = .bitcoin
     var utxoDataArray = [UTXOData]()
@@ -144,8 +145,8 @@ class BitcoinModule: NSObject {
     adminFee: Int64,
     utxoDataFormRN: [[String: Any]],
     spendSizeBytes: Int64,
-    successCallback: @escaping RCTResponseSenderBlock,
-    failCallback: @escaping RCTResponseSenderBlock
+    successCallback: RCTResponseSenderBlock,
+    failCallback: RCTResponseSenderBlock
   ) {
     let coin: CoinType = .bitcoin
     var utxoDataArray = [UTXOData]()

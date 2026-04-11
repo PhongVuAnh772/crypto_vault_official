@@ -6,7 +6,7 @@ enum RemoteConfigKey {
     block_ton_nft_transfer = 'block_ton_nft_transfer',
     block_ton_transfer = 'block_ton_transfer',
     block_bitcoin_transfer = 'block_bitcoin_transfer',
-    enable_red_x_new_theme = 'enable_red_x_new_theme',
+    enable_ledgerify_new_theme = 'enable_ledgerify_new_theme',
     use_remote_theme_config = 'use_remote_theme_config',
     jetton_admin_bounce = 'jetton_admin_bounce',
     ton_admin_bounce = 'ton_admin_bounce',

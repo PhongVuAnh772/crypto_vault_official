@@ -77,11 +77,11 @@ async function seed() {
     await client.query(`
       INSERT INTO rpc_endpoints (chain_id, url, priority)
       VALUES 
-        ('${ethId}', 'https://mainnet.infura.io/v3/redx', 1),
+        ('${ethId}', 'https://mainnet.infura.io/v3/ledgerify', 1),
         ('${tonId}', 'https://toncenter.com/api/v2/jsonRPC', 1)
       ON CONFLICT DO NOTHING;
     `);
-    
+
     // 7. Insert Profiles (Contacts)
     await client.query(`
       INSERT INTO profiles (user_id, nickname, avatar_url, is_verified)

@@ -1,7 +1,7 @@
 #import <React/RCTBridgeModule.h>
 #import "RCTBitcoinModule.h"
 #import <React/RCTLog.h>
-#import "CryptoVault-Swift.h"
+#import "Ledgerify-Swift.h"
 
 @implementation RCTBitcoinModule
 

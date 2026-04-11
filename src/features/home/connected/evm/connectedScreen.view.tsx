@@ -5,7 +5,7 @@ import AppModal from 'src/components/common/AppModal';
 import { Remove2SvgIcon } from 'src/core/constants/AppIconsSvg';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import appStyles from 'src/core/styles';
-import useTonConnected from './evmConnect.hook';
+import useEvmConnected from './evmConnect.hook';
 import { DappItem, ListEmpty, SessionDapp } from './evmConnected.component';
 
 const EvmConnectedScreen = () => {
@@ -17,7 +17,7 @@ const EvmConnectedScreen = () => {
         showModalRemove,
         closeModalRemove,
         confirmRemoveSession,
-    } = useTonConnected();
+    } = useEvmConnected();
     const dataList: SessionDapp[] = Object.entries(activeSessions).map(
         ([key, value]) => ({
             dAppData: {

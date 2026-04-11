@@ -77,15 +77,15 @@ const blockTransferConfig = (dispatch: AppDispatch) => {
 
 const themeConfig = () => {
     // MARK: Theme config
-    const enableRedXNewTheme = remoteConfig().getBoolean(
-        RemoteConfigKey.enable_red_x_new_theme,
+    const enableledgerifyNewTheme = remoteConfig().getBoolean(
+        RemoteConfigKey.enable_ledgerify_new_theme,
     );
     const useRemoteThemeConfig = remoteConfig().getBoolean(
         RemoteConfigKey.use_remote_theme_config,
     );
-    console.log('Remote enable_red_x_new_theme', enableRedXNewTheme);
+    console.log('Remote enable_ledgerify_new_theme', enableledgerifyNewTheme);
     console.log('Remote use_remote_theme_config', useRemoteThemeConfig);
-    GlobalUtils.setRemoteRedXNewTheme(enableRedXNewTheme);
+    GlobalUtils.setRemoteledgerifyNewTheme(enableledgerifyNewTheme);
     GlobalUtils.setUseRemoteThemeConfig(useRemoteThemeConfig);
 };
 

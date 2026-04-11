@@ -1,13 +1,15 @@
+import { t } from "i18next";
 import React from "react";
-import { RefreshControl, ScrollView, View, Text, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Swiper from 'react-native-swiper';
 import { ScreenWrapper } from "src/components";
-import CryptoButton from "src/components/homeComponents/CryptoButton";
-import appStyles from "src/core/styles";
-import TonUtils from "src/core/utils/tonUtils";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
+import LanguageKey from "src/core/locales/LanguageKey";
+import appStyles from "src/core/styles";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import { rootNavigate } from "src/navigation/stacks/type/RootParamListType";
+import DraggableWidgets from '../components/DraggableWidgets';
 import HomeHeader from "../components/HomeHeader";
 import HomeSkeletonLoading from "../components/HomeSkeletonLoading";
 import ListCrypto from "../components/ListCrypto";
@@ -16,10 +18,6 @@ import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomShee
 import { ListCryptoDataType } from "../home.type";
 import { setSelectedCryptoDataId } from "../slice/home.slice";
 import useTonHome from "./ton.home.hook";
-import Swiper from 'react-native-swiper';
-import DraggableWidgets from '../components/DraggableWidgets';
-import { t } from "i18next";
-import LanguageKey from "src/core/locales/LanguageKey";
 
 const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
   const theme = useAppTheme();
@@ -55,6 +53,8 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
     handlePressWallet,
     onShowMenuWallet,
     onChangeMenuActionType,
+    goToScan,
+    goToAIDetail,
   } = useTonHome({
     navigation,
   });
@@ -120,6 +120,8 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
             goToDepositOptions={() => navigation.navigate(HomeStackScreenKey.DepositOptions)}
             goToMoreActionScreen={() => navigation.navigate(HomeStackScreenKey.MoreActionScreen)}
             onPressAccount={showBottomSheetModalAction}
+            onPressScan={goToScan}
+            onPressAI={goToAIDetail}
           />
 
           {/* Promo Swiper Section */}
@@ -135,24 +137,24 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
               {/* Slide 1 - Invite Friends */}
               <TouchableOpacity activeOpacity={0.9} style={styles.promoCardInside}>
                 <View style={styles.promoTextContainer}>
-                    <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_invite_title)}</Text>
-                    <Text style={styles.promoSub}>{t(LanguageKey.home_promo_invite_desc)}</Text>
+                  <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_invite_title)}</Text>
+                  <Text style={styles.promoSub}>{t(LanguageKey.home_promo_invite_desc)}</Text>
                 </View>
-                <Image 
-                    source={{ uri: 'https://i.ibb.co/V9hV9V9/gift.png' }} 
-                    style={styles.promoImage} 
+                <Image
+                  source={{ uri: 'https://i.ibb.co/V9hV9V9/gift.png' }}
+                  style={styles.promoImage}
                 />
               </TouchableOpacity>
 
               {/* Slide 2 - Learn & Earn */}
               <TouchableOpacity activeOpacity={0.9} style={styles.promoCardInside}>
                 <View style={styles.promoTextContainer}>
-                    <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_learn_earn_title)}</Text>
-                    <Text style={styles.promoSub}>{t(LanguageKey.home_promo_learn_earn_desc)}</Text>
+                  <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_learn_earn_title)}</Text>
+                  <Text style={styles.promoSub}>{t(LanguageKey.home_promo_learn_earn_desc)}</Text>
                 </View>
-                <Image 
-                    source={{ uri: 'https://i.ibb.co/XzVzVzV/avatar.png' }} 
-                    style={styles.promoImage} 
+                <Image
+                  source={{ uri: 'https://i.ibb.co/XzVzVzV/avatar.png' }}
+                  style={styles.promoImage}
                 />
               </TouchableOpacity>
             </Swiper>
@@ -172,49 +174,49 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
 };
 
 const useStyles = (theme: any) => StyleSheet.create({
-    swiperWrapper: {
-        height: 135,
-        marginTop: -30,
-    },
-    promoCardInside: {
-        backgroundColor: '#fff',
-        borderRadius: 20,
-        marginHorizontal: 20,
-        padding: 15,
-        flexDirection: 'row',
-        alignItems: 'center',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 3,
-        height: 100,
-    },
-    promoTextContainer: {
-        flex: 1,
-        paddingRight: 10,
-    },
-    promoTitle: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: '#1C1C1E',
-        marginBottom: 4,
-    },
-    promoSub: {
-        fontSize: 12,
-        color: '#8E8E93',
-        lineHeight: 16,
-    },
-    promoImage: {
-        width: 80,
-        height: 60,
-        resizeMode: 'contain',
-    },
-    promoClose: {
-        position: 'absolute',
-        top: 10,
-        right: 15,
-    },
+  swiperWrapper: {
+    height: 135,
+    marginTop: -30,
+  },
+  promoCardInside: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    marginHorizontal: 20,
+    padding: 15,
+    flexDirection: 'row',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 3,
+    height: 100,
+  },
+  promoTextContainer: {
+    flex: 1,
+    paddingRight: 10,
+  },
+  promoTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1C1C1E',
+    marginBottom: 4,
+  },
+  promoSub: {
+    fontSize: 12,
+    color: '#8E8E93',
+    lineHeight: 16,
+  },
+  promoImage: {
+    width: 80,
+    height: 60,
+    resizeMode: 'contain',
+  },
+  promoClose: {
+    position: 'absolute',
+    top: 10,
+    right: 15,
+  },
 });
 
 export default TonHomeView;

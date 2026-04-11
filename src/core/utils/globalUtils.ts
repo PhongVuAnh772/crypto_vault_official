@@ -1,25 +1,25 @@
-const getRemoteRedXNewTheme = (): boolean => (global as any).remoteRedXNewTheme;
-const setRemoteRedXNewTheme = (value: boolean) =>
-    ((global as any).remoteRedXNewTheme = value);
+const getRemoteledgerifyNewTheme = (): boolean => (global as any).remoteledgerifyNewTheme;
+const setRemoteledgerifyNewTheme = (value: boolean) =>
+    ((global as any).remoteledgerifyNewTheme = value);
 
 const getUseRemoteThemeConfig = (): boolean =>
     (global as any).useRemoteThemeConfig;
 const setUseRemoteThemeConfig = (value: boolean) =>
     ((global as any).useRemoteThemeConfig = value);
 
-const getEnableRedXNewTheme = (): boolean => {
-    const localConfig = (global as any).redXNewTheme;
-    const remoteConfig = getRemoteRedXNewTheme();
+const getEnableledgerifyNewTheme = (): boolean => {
+    const localConfig = (global as any).ledgerifyNewTheme;
+    const remoteConfig = getRemoteledgerifyNewTheme();
 
     const useRemoteConfig = getUseRemoteThemeConfig();
     return useRemoteConfig ? remoteConfig : localConfig;
 };
 
 const GlobalUtils = {
-    getEnableRedXNewTheme,
-    getRemoteRedXNewTheme,
+    getEnableledgerifyNewTheme,
+    getRemoteledgerifyNewTheme,
     getUseRemoteThemeConfig,
-    setRemoteRedXNewTheme,
+    setRemoteledgerifyNewTheme,
     setUseRemoteThemeConfig,
 };
 

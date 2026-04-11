@@ -23,7 +23,7 @@ import { updateCryptoBalance } from 'src/features/home/slice/home.slice';
 import { ErrorResponse } from 'src/features/home/slice/types';
 import {
     GetTonEventsParams,
-    PriceRedXResponse,
+    PriceledgerifyResponse,
     TonSliceType,
 } from './ton.coinDetails.type';
 
@@ -240,19 +240,19 @@ export const getTonEvents = createAsyncThunk(
     },
 );
 
-export const getRedXPrice = createAsyncThunk(
-    '/ton/getRedXPrice',
+export const getledgerifyPrice = createAsyncThunk(
+    '/ton/getledgerifyPrice',
     async (_, { rejectWithValue }) => {
         try {
-            const redxPriceResponse = await sendGet<
-                PriceRedXResponse | ErrorResponse
+            const ledgerifyPriceResponse = await sendGet<
+                PriceledgerifyResponse | ErrorResponse
             >({
-                endPoint: '/mobile/tokens/get-redx-price',
+                endPoint: '/mobile/tokens/get-ledgerify-price',
             });
-            if (redxPriceResponse.status !== 200) {
+            if (ledgerifyPriceResponse.status !== 200) {
                 return rejectWithValue(undefined);
             }
-            return redxPriceResponse.data as PriceRedXResponse;
+            return ledgerifyPriceResponse.data as PriceledgerifyResponse;
         } catch (error) {
             return rejectWithValue(error);
         }

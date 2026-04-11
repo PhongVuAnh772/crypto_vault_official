@@ -46,6 +46,8 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
         isFirstInitial,
         showBottomSheetModalAction,
         menuActionType,
+        goToScan,
+        goToAIDetail,
     } = useBitcoinHome({
         navigation,
     });
@@ -80,8 +82,11 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                 onShowMenuWallet={(item, index) => {
                     onShowMenuWallet(item, index);
                 }}
-                buttonRefs={{ current: {} } as any}
-            />
+                buttonRefs={{ current: {} } as any} removeWalletAction={function (): Promise<void> {
+                    throw new Error('Function not implemented.');
+                }} editWalletAction={function (): Promise<void> {
+                    throw new Error('Function not implemented.');
+                }} />
             <ScrollView
                 refreshControl={
                     <RefreshControl
@@ -101,6 +106,8 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                         goToDepositOptions={() => navigation.navigate(HomeStackScreenKey.DepositOptions)}
                         goToMoreActionScreen={() => navigation.navigate(HomeStackScreenKey.MoreActionScreen)}
                         onPressAccount={showBottomSheetModalAction}
+                        onPressScan={goToScan}
+                        onPressAI={goToAIDetail}
                     />
 
                     {/* Promo Swiper Section */}
@@ -142,7 +149,7 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                     <ListCrypto
                         data={listCryptoData}
                         handleSeeAll={goToMangeCryptoScreen}
-                        handlePressItem={() => {}}
+                        handlePressItem={() => { }}
                     />
 
                     <DraggableWidgets />
