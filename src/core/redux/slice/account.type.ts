@@ -66,6 +66,7 @@ export interface ProtocolDataFromBEType {
     createdAt: string;
     nftTransferFee: number;
     rpcUrl?: string;
+    rpcUrls?: string[];
     status: 'active' | 'inactive';
     symbol: string;
     tokenTransferFee: number;

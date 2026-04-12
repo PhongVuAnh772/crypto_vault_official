@@ -30,12 +30,25 @@ async function sendPost<T>({
             idToken,
             customHeaders,
         );
+        const url = endPoint ?? '';
+        // console.log(`[🚀 Calling POST]: ${customBaseUrl ?? 'BASE'}${url}`, body ? body : '');
+
         const apiResponse = await axiosInstance.post(
-            endPoint ?? '',
+            url,
             JSON.stringify(body),
         );
         return transform.Response<T>(apiResponse);
-    } catch (err) {
+    } catch (err: any) {
+        console.group('[❌ NETWORK ERROR - POST]');
+        console.error('Endpoint:', endPoint);
+        console.error('Full URL:', err?.config?.url);
+        console.error('Message:', err.message);
+        if (err.response) {
+            console.error('Data:', err.response.data);
+            console.error('Status:', err.response.status);
+        }
+        console.groupEnd();
+
         ErrorLogger.log(err, 'network/sendPost');
         if (axios.isAxiosError(err) && err.response) {
             return transform.Error<T>(err.response);

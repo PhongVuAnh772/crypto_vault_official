@@ -5,6 +5,7 @@ import { AppThemeType } from "src/core/type/ThemeType";
 import { ListCryptoDataType } from "../home.type";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { t } from "i18next";
+import Utils from "src/core/utils/commonUtils";
 
 type ListCryptoType = {
   data: ListCryptoDataType[];
@@ -12,44 +13,53 @@ type ListCryptoType = {
   handleSeeAll?: () => void;
 };
 
-const ListCrypto: React.FC<ListCryptoType> = ({ data, handlePressItem, handleSeeAll }) => {
+const ListCryptoComponent: React.FC<ListCryptoType> = ({
+  data,
+  handlePressItem,
+  handleSeeAll,
+}) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
 
-  const renderItem = ({ item }: { item: ListCryptoDataType }) => (
-    <TouchableOpacity 
-      style={styles.itemRow} 
-      onPress={() => handlePressItem && handlePressItem(item)}
-    >
-      <View style={styles.tokenInfo}>
-        <View style={styles.tokenIcon}>
-          {item.logo ? (
-            typeof item.logo === 'string' ? (
-              <Image source={{ uri: item.logo }} style={styles.logoImage} />
+  const renderItem = React.useCallback(
+    ({ item }: { item: ListCryptoDataType }) => (
+      <TouchableOpacity
+        style={styles.itemRow}
+        onPress={() => handlePressItem && handlePressItem(item)}
+      >
+        <View style={styles.tokenInfo}>
+          <View style={styles.tokenIcon}>
+            {item.logo ? (
+              typeof item.logo === 'string' ? (
+                <Image source={{ uri: item.logo }} style={styles.logoImage} />
+              ) : (
+                item.logo
+              )
             ) : (
-              item.logo
-            )
-          ) : (
-            <Text style={styles.tokenInitial}>{item.symbol?.[0]}</Text>
-          )}
+              <Text style={styles.tokenInitial}>{item.symbol?.[0]}</Text>
+            )}
+          </View>
+          <View>
+            <Text style={styles.tokenName}>{item.name}</Text>
+            <Text style={styles.tokenSymbol}>{item.symbol}</Text>
+          </View>
         </View>
-        <View>
-          <Text style={styles.tokenName}>{item.name}</Text>
-          <Text style={styles.tokenSymbol}>{item.symbol}</Text>
+        <View style={styles.amountInfo}>
+          <Text style={styles.tokenAmount}>{item.balance}</Text>
+          <Text style={styles.tokenValue}>{item.balanceToCurrency}</Text>
         </View>
-      </View>
-      <View style={styles.amountInfo}>
-        <Text style={styles.tokenAmount}>{item.balance}</Text>
-        <Text style={styles.tokenValue}>{item.balanceToCurrency}</Text>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    ),
+    [handlePressItem, styles]
   );
 
   return (
     <View style={styles.cardContainer}>
       <View style={styles.headerRow}>
         <Text style={styles.headerText}>{t(LanguageKey.token_list)}</Text>
-        <Text style={styles.headerText}>{t(LanguageKey.project_detail_amount)}</Text>
+        <Text style={styles.headerText}>
+          {t(LanguageKey.project_detail_amount)}
+        </Text>
       </View>
       <FlatList
         data={data}
@@ -63,6 +73,16 @@ const ListCrypto: React.FC<ListCryptoType> = ({ data, handlePressItem, handleSee
     </View>
   );
 };
+
+const ListCrypto = React.memo(ListCryptoComponent, (prevProps, nextProps) => {
+  return (
+    Utils.deepEqual(prevProps.data, nextProps.data) &&
+    prevProps.handlePressItem === nextProps.handlePressItem &&
+    prevProps.handleSeeAll === nextProps.handleSeeAll
+  );
+});
+
+export default ListCrypto;
 
 const useStyles = (theme: AppThemeType) =>
   StyleSheet.create({
@@ -151,5 +171,3 @@ const useStyles = (theme: AppThemeType) =>
       fontWeight: '600',
     },
   });
-
-export default ListCrypto;

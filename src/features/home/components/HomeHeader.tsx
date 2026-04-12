@@ -113,6 +113,7 @@ const useStyles = (theme: AppThemeType) =>
       alignItems: 'center',
       justifyContent: 'space-between',
       marginBottom: 20,
+      marginTop: 40
     },
     logoBtn: {
       width: 40,
@@ -150,6 +151,7 @@ const useStyles = (theme: AppThemeType) =>
       flexDirection: 'row',
       justifyContent: 'space-between',
       marginTop: 25,
+      marginBottom: 25
     },
     actionItem: {
       alignItems: 'center',

@@ -24,9 +24,9 @@ async function getAxiosInstance(
 
     instance.interceptors.request.use(
         async (config: any) => {
-            console.log('-----API CALL-----');
-            console.warn(`--${config?.url}--`);
-            console.log('-------------------');
+            // console.log('-----API CALL-----');
+            // console.warn(`--${config?.url}--`);
+            // console.log('-------------------');
 
             const token = await AsyncStorage.getItem('token');
 

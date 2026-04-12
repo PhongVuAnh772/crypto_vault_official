@@ -276,27 +276,46 @@ const transformBitcoinTransactionHistory = async ({
 };
 
 const isValidAddress = async (address: string, isTestNetParam?: boolean) => {
+    // Basic Regex Check for BTC formats (Legacy, SegWit, Bech32)
+    const btcRegex = /^(1|3|bc1|tb1|bc1p|tb1p)[a-zA-HJ-NP-Z0-9]{25,90}$/i;
+    if (!btcRegex.test(address)) {
+        return false;
+    }
+
     const bitcoinModule = new NativeBitcoinModules();
     const isTestNet = isTestNetParam ?? (EnvConfig.ENV === 'development');
 
-    console.log('=============================================');
-    console.log('CheckBitcoinAddress');
-    console.log('address', address);
-    console.log('=============================================');
+    let resCheck = false;
 
+    // First attempt
     try {
-        const resCheck = await bitcoinModule.isValidBitcoinAddress({
+        const res = await bitcoinModule.isValidBitcoinAddress({
             isTestNet: isTestNet,
             address: address,
         });
-        if (resCheck) {
-            return true;
-        }
-        return false;
-    } catch (error) {
-        ErrorLogger.log(error, 'bitcoinUtils/isValidAddress');
-        return false;
+        resCheck = !!res;
+    } catch (e) {
+        console.warn('Bitcoin initial check failed, trying fallback...');
     }
+
+    // Fallback attempt (if first failed or errored)
+    if (!resCheck) {
+        try {
+            const res = await bitcoinModule.isValidBitcoinAddress({
+                isTestNet: !isTestNet,
+                address: address,
+            });
+            resCheck = !!res;
+        } catch (e) {
+            console.warn('Bitcoin fallback check failed');
+        }
+    }
+
+    if (!resCheck) {
+        ErrorLogger.log(new Error(`Invalid BTC address: ${address}`), 'bitcoinUtils/isValidAddress');
+    }
+
+    return resCheck;
 };
 
 const getMaxBalanceCompareWithUTXOandNetworkFee = async (

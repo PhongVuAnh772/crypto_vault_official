@@ -125,10 +125,6 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   };
 
   const createCryptoData = async () => {
-    console.log("==============================");
-    console.log("Call createCryptoData");
-    console.log("==============================");
-
     try {
       await handleGenerateListToken();
     }
@@ -320,7 +316,12 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
           };
           return data;
         });
-      setListCryptoData(listCustomCryptoConverted);
+      setListCryptoData((prev) => {
+        if (Utils.deepEqual(prev, listCustomCryptoConverted)) {
+          return prev;
+        }
+        return listCustomCryptoConverted;
+      });
 
       if (listToken.length === 0) {
         setIsFirstInitGenerateData(true);
@@ -333,7 +334,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       console.error("handleGenerateListToken Error:", error);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listToken, protocolBaseData?.rpcUrl, wallet]);
+  }, [listToken.length, protocolBaseData?.rpcUrl, wallet?.address]);
 
   const processUpdateToken = async () => {
     queueRef.current = [...listToken];
@@ -537,8 +538,8 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    accountProtocolSelected,
-    protocolDataLists,
+    accountProtocolSelected?._id,
+    protocolBaseData?._id,
     listToken.length,
     wallet?.address,
   ]);
@@ -561,7 +562,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
     listCryptoData.length,
     protocolBaseData?.rpcUrl,
     isFirstInitGenerateData,
-    wallet,
+    wallet?.address,
   ]);
   useEffect(() => {
     if (!protocolBaseData && protocolDataLists && protocolDataLists.length > 0) {
@@ -583,12 +584,9 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   }, [wallet?.address]);
 
   useEffect(() => {
-
     if (!listCryptoData.length || !listToken.length) return;
 
     const nativeBalance = listToken.find((item) => item.isNativeToken === true);
-
-    console.log(`nativeBalance ${nativeBalance?.isNativeToken}`);
 
     if (!nativeBalance) return;
 
@@ -603,16 +601,13 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
         };
       })
     );
-  }, [listToken]);
+  }, [listToken.length]);
 
 
 
   useEffect(() => {
     try {
       if (updateBalanceState) {
-        console.log("===================");
-        console.log("Update Balance");
-        console.log("===================");
         updateBalance();
         fetchNativeBalanceOnce();
       }

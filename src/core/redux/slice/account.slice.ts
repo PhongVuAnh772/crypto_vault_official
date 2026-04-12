@@ -11,6 +11,7 @@ import AppI18Next from "src/core/locales";
 import LanguageKey from "src/core/locales/LanguageKey";
 import NativeWalletCoreModule from "src/core/modules/WalletCoreModules/NativeWalletCoreModule";
 import sendGet from "src/core/network/requests/sendGet";
+import sendPost from "src/core/network/requests/sendPost";
 import { convertTokenFromBE } from "src/core/redux/slice/customToken/addCustomToken.slice";
 import {
   deleteEVMCollectionByAccount,
@@ -206,7 +207,72 @@ export const changeAccount = createAsyncThunk(
       }
     } catch (error) {
       rejectWithValue(error);
-      return false;
+    }
+  }
+);
+
+// MARK: Sync Wallets to Backend
+export const loadWalletsFromStorage = createAsyncThunk(
+  "account/loadWallets",
+  async (pinCode: string, { dispatch }) => {
+    try {
+      const accountServices = new AccountServices();
+      const accountsData = await accountServices.getAccountDataWithEncrypt(pinCode);
+      if (accountsData) {
+        dispatch(setAccount(accountsData));
+        return accountsData;
+      }
+    } catch (error) {
+      console.error("Load wallets failed:", error);
+    }
+    return undefined;
+  }
+);
+
+export const syncWalletsToBackend = createAsyncThunk(
+  "account/syncWallets",
+  async (_, { getState }) => {
+    try {
+      const state = getState() as RootState;
+      const accountLists = state.account.accountLists;
+      if (!accountLists || accountLists.length === 0) return;
+
+      const userId = accountLists[0].id;
+      const walletsToSync: any[] = [];
+
+      accountLists.forEach(account => {
+        if (account.protocolData) {
+          account.protocolData.forEach(protocol => {
+            if (protocol.addressList) {
+              protocol.addressList.forEach(wallet => {
+                walletsToSync.push({
+                  chainId: protocol._id,
+                  address: wallet.address,
+                  metadata: {
+                    name: wallet.name,
+                    path: wallet.path,
+                    index: wallet.index,
+                    nickname: account.name
+                  }
+                });
+              });
+            }
+          });
+        }
+      });
+
+      if (walletsToSync.length === 0) return;
+
+      console.log(`Syncing ${walletsToSync.length} wallets to backend for user ${userId}...`);
+      await sendPost({
+        endPoint: "public/mobile/wallets/sync",
+        body: {
+          userId,
+          wallets: walletsToSync
+        }
+      });
+    } catch (error) {
+      console.error("Wallet sync failed:", error);
     }
   }
 );
@@ -723,6 +789,16 @@ export const accountSlice = createSlice({
           const payload = action.payload;
           if (payload) {
             state.protocolListsWithSupportedTokensFromBE = payload;
+
+            // Fix: Check if current selected protocol still exists in the new list
+            const stillExists = payload.some(p => p._id === state.selectedProtocolId);
+            if (!stillExists && payload.length > 0) {
+              // Priority: Polygon -> First one
+              const polygon = payload.find(p => p.slip0044 === Slip0044.Polygon);
+              state.selectedProtocolId = polygon ? polygon._id : payload[0]._id;
+            } else if (payload.length === 0) {
+              state.selectedProtocolId = undefined;
+            }
           }
         }
       )

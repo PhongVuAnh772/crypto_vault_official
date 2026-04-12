@@ -1,36 +1,41 @@
-const encodeBalanceOf = (address: string) => {
-  const selector = "70a08231"; // balanceOf(address)
-  const addr = address.toLowerCase().replace("0x", "").padStart(64, "0");
-  return "0x" + selector + addr;
-};
+import { ethers } from "ethers";
 
-const getERC20BalanceRPC = async (
-  rpcUrl: string,
-  tokenAddress: string,
-  userAddress: string
-): Promise<bigint> => {
-  const res = await fetch(rpcUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      jsonrpc: "2.0",
-      id: 1,
-      method: "eth_call",
-      params: [
-        {
-          to: tokenAddress,
-          data: encodeBalanceOf(userAddress),
-        },
-        "latest",
-      ],
-    }),
-  });
+export class RpcFallbackProvider {
+  private urls: string[];
+  private currentIndex: number = 0;
 
-  const json = await res.json();
-
-  if (!json?.result) {
-    throw new Error("RPC_BALANCE_FAILED");
+  constructor(urls: string[], private chainId?: number) {
+    this.urls = urls.filter(url => url && (url.startsWith('http') || url.startsWith('ws')));
   }
 
-  return BigInt(json.result);
-};
+  async getProvider(): Promise<ethers.JsonRpcProvider | null> {
+    if (this.urls.length === 0) return null;
+
+    // Try current provider first
+    for (let i = 0; i < this.urls.length; i++) {
+      const url = this.urls[this.currentIndex];
+      try {
+        // If chainId is provided, we use it to prevent auto-detection which can be slow/fail
+        const provider = new ethers.JsonRpcProvider(url, this.chainId, {
+          staticNetwork: this.chainId ? true : undefined,
+        });
+
+        // Quick check if provider is alive
+        await Promise.race([
+          provider.getBlockNumber(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+        ]);
+
+        return provider;
+      } catch (error) {
+        console.warn(`RPC Fallback: ${url} failed.`, error);
+        // Move to next RPC
+        this.currentIndex = (this.currentIndex + 1) % this.urls.length;
+      }
+    }
+
+    return null;
+  }
+}
+
+export default RpcFallbackProvider;

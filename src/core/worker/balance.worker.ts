@@ -56,6 +56,7 @@ export const startBalanceWorker = () => {
       if (protocol.VM === VMType.EVM) {
         balances = await fetchEvmBalances({
           rpcUrl: protocol.rpcUrl!,
+          rpcUrls: protocol.rpcUrls,
           walletAddress: address,
           tokens: protocol.supportedToken,
           chainId: protocol.chainId ?? 1,

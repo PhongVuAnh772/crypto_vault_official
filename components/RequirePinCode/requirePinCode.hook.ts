@@ -20,6 +20,7 @@ import {
   setRequirePinCode,
   setTimeLock,
 } from "src/core/redux/slices/auth.slice";
+import { syncWalletsToBackend, loadWalletsFromStorage, getMobileProtocolListsWithSupportedTokens } from "src/core/redux/slice/account.slice";
 
 import AccountServices from "src/core/services/AccountServices";
 import FaceIdOrTouch from "src/core/services/LocalAuthentication";
@@ -76,14 +77,14 @@ const useRequirePinCode = ({
       );
       faceIdOrTouch
         .getPinCode()
-        .then((currentPinCode) => {
+        .then((currentPinCode: string | undefined) => {
           if (currentPinCode) {
             continueAction(currentPinCode);
           } else {
             setIgnoreUnfocusCheck(true);
           }
         })
-        .catch((error) => {
+        .catch((error: any) => {
           console.error("Face ID authentication failed:", error);
         });
     }
@@ -134,9 +135,18 @@ const useRequirePinCode = ({
       currentPinCode ?? pinCode
     );
     if (checkPinCodeResult) {
+      const actualPin = currentPinCode ?? pinCode;
       dispatch(resetPinCodeData());
-      dispatch(setPin(currentPinCode ?? pinCode));
+      dispatch(setPin(actualPin));
       dispatch(setRequirePinCode(false));
+      
+      // Load wallets first, then update protocols (with mnemonic), then sync
+      dispatch(loadWalletsFromStorage(actualPin)).then(() => {
+        dispatch(getMobileProtocolListsWithSupportedTokens()).then(() => {
+          dispatch(syncWalletsToBackend());
+        });
+      });
+
       setPinCode("");
       if (continueActionAfterPassPinCode == null) return;
       continueActionAfterPassPinCode(currentPinCode ?? pinCode);

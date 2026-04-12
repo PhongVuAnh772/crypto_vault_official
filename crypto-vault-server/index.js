@@ -39,8 +39,8 @@ const dexRoutes = require('./src/routes/dexRoutes');
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
 app.use('/api/v1', adminRoutes);
-app.use('/api/v1', bitcoinRoutes);
-app.use('/api/v1', dexRoutes);
+app.use('/api/v1/bitcoin', bitcoinRoutes);
+app.use('/api/v1/dex', dexRoutes);
 
 // --- INLINE PUBLIC API (LEGACY) ---
 

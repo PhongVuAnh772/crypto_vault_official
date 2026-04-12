@@ -141,9 +141,11 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
         walletBalance * (finalProtocolBaseData?.price ?? 1)
       );
 
-      dispatch(setListCryptoDataSyn(newListCryptoData));
+      if (!Utils.deepEqual(listCryptoData, newListCryptoData)) {
+        dispatch(setListCryptoDataSyn(newListCryptoData));
+      }
     } catch (error) {
-      console.log("createCryptoData error", error);
+
     } finally {
       setIsFirstInitial(false);
     }
@@ -197,7 +199,7 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
         }
       }
     } catch (error) {
-      console.error("fetchDataCrypto Error:", error);
+
     }
   };
 
@@ -208,12 +210,11 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
         await Promise.all([createCryptoData(), fetchData()]);
         setRefreshingHome(false);
       } catch (error) {
-        console.error("handleHomeRefresh Error:", error);
         setRefreshingHome(false);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAddress, btcAddress, dispatch, protocolBaseData]);
+  }, [selectedAddress?.address, btcAddress, dispatch, protocolBaseData?._id]);
 
   const goToSendScreen = () => {
     dispatch(setTransferSlip0044(Slip0044.Bitcoin));
@@ -258,11 +259,8 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
       createCryptoData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAddress, protocolDataLists, listToken.length, wallet?.address]);
+  }, [selectedAddress?.address, protocolBaseData?._id, listToken.length, wallet?.address]);
 
-  const getBackgroundImage = () => {
-    return appImages.newBgDark;
-  };
 
   const [isAddView, setIsAddView] = useState(false);
   const [showBottomSheetModal, setShowBottomSheetModal] = useState(false);
@@ -312,7 +310,6 @@ const useBitcoinHome = ({ navigation }: RootNavigationType) => {
     listCryptoData,
     isFirstInitial,
     dispatch,
-    getBackgroundImage,
     showBottomSheetModal,
     showBottomSheetModalAction,
     closeShowBottomSheetModal,

@@ -28,14 +28,27 @@ async function sendPut<T>({
             idToken,
             customHeaders,
         );
-        const apiResponse = await axiosInstance.put(endPoint ?? '', params);
+        const url = endPoint ?? '';
+        console.log(`[🚀 Calling PUT]: ${customBaseUrl ?? 'BASE'}${url}`, params ? params : '');
+
+        const apiResponse = await axiosInstance.put(url, params);
         return transform.Response<T>(apiResponse);
     } catch (err: any) {
-        ErrorLogger.log(err, 'network');
+        console.group('[❌ NETWORK ERROR - PUT]');
+        console.error('Endpoint:', endPoint);
+        console.error('Full URL:', err?.config?.url);
+        console.error('Message:', err.message);
+        if (err.response) {
+            console.error('Data:', err.response.data);
+            console.error('Status:', err.response.status);
+        }
+        console.groupEnd();
+
+        ErrorLogger.log(err, 'network/sendPut');
         if (axios.isAxiosError(err) && err.response) {
             return transform.Error<T>(err.response);
         } else {
-            return transform.NetworkError<T>(err);
+            return transform.NetworkError<T>(err as Error);
         }
     }
 }

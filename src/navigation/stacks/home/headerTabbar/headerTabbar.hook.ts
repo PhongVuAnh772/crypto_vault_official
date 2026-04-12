@@ -436,7 +436,7 @@ const useHeaderTabBar = (
       setQuantityConnect(connectArray.length);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getAllConnect, tonAddressData]);
+  }, [getAllConnect, tonAddressData?.address]);
   useEffect(() => {
     if (protocolDataLists.length === 0) {
       dispatch(getMobileProtocolListsWithSupportedTokens());

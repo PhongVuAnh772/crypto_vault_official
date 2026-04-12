@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import Slip0044 from 'src/core/enum/Slip0044';
 import { useAppSelector } from '../hooks';
 import {
@@ -18,35 +19,42 @@ export const useSelectedCurrencySetting = () => {
         selectorSelectedCurrencySetting,
     );
     const settingCurrency = useAppSelector(selectorSettingCurrency);
-    let defaultCurrency = settingCurrency?.find(e =>
-        e.symbol.toLocaleLowerCase().includes('jp'),
-    );
-    defaultCurrency =
-        defaultCurrency ??
-        (settingCurrency ? settingCurrency[0] : defaultSettingCurrency);
-    if (selectedCurrencySetting) {
-        return selectedCurrencySetting;
-    } else {
-        return defaultCurrency;
-    }
+    
+    return useMemo(() => {
+        let defaultCurrency = settingCurrency?.find(e =>
+            e.symbol.toLocaleLowerCase().includes('jp'),
+        );
+        defaultCurrency =
+            defaultCurrency ??
+            (settingCurrency ? settingCurrency[0] : defaultSettingCurrency);
+        if (selectedCurrencySetting) {
+            return selectedCurrencySetting;
+        } else {
+            return defaultCurrency;
+        }
+    }, [selectedCurrencySetting, settingCurrency]);
 };
 
 export const useAccountProtocolSelected = () => {
     const accountLists = useAppSelector(getAllAccount);
     const selectAccountId = useAppSelector(getAccountId);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
-    if (accountLists !== undefined) {
-        const currentAccount = [...accountLists].find(
-            e => e?.id === selectAccountId,
-        );
-        const protocolData = currentAccount?.protocolData;
-        if (selectedProtocolId) {
-            const selectedProtocol = [...(protocolData ?? [])].find(
-                e => e?._id === selectedProtocolId,
+    
+    return useMemo(() => {
+        if (accountLists !== undefined) {
+            const currentAccount = accountLists.find(
+                e => e?.id === selectAccountId,
             );
-            return selectedProtocol;
+            const protocolData = currentAccount?.protocolData;
+            if (selectedProtocolId) {
+                const selectedProtocol = (protocolData ?? []).find(
+                    e => e?._id === selectedProtocolId,
+                );
+                return selectedProtocol;
+            }
         }
-    }
+        return undefined;
+    }, [accountLists, selectAccountId, selectedProtocolId]);
 };
 export const useWalletData = (id: string, address: string) => {
     const accountLists = useAppSelector(getAllAccount);
@@ -79,51 +87,50 @@ export const useProtocolSelected = () => {
 
 export const useCurrentWallet = (): AddressListItemType | undefined => {
     const accountLists = useAppSelector(getAllAccount);
-    console.log('accountLists' + accountLists);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
-    console.log(selectedProtocolId);
     const selectAccountId = useAppSelector(getAccountId);
-    console.log(selectAccountId);
 
-    if (accountLists !== undefined) {
-        const accountWallet = [...accountLists].find(
-            e => e?.id === selectAccountId,
-        );
-        console.log(accountWallet);
-        if (!accountWallet) {
-            return;
+    return useMemo(() => {
+        if (accountLists !== undefined) {
+            const accountWallet = accountLists.find(
+                e => e?.id === selectAccountId,
+            );
+            if (!accountWallet) {
+                return undefined;
+            }
+
+            const { protocolData } = accountWallet;
+            const currentProtocol = protocolData?.find(
+                e => e?._id === selectedProtocolId,
+            );
+
+            if (!currentProtocol) {
+                return undefined;
+            }
+            const { addressList, selectedAddressId } = currentProtocol;
+            const addRessData = addressList.find(e => e.id === selectedAddressId);
+
+            if (!addRessData) {
+                return undefined;
+            }
+            return addRessData;
         }
-
-        const { protocolData } = accountWallet;
-        const currentProtocol = protocolData?.find(
-            e => e?._id === selectedProtocolId,
-        );
-        console.log(currentProtocol);
-
-        if (!currentProtocol) {
-            return;
-        }
-        const { addressList, selectedAddressId } = currentProtocol;
-        const addRessData = addressList.find(e => e.id === selectedAddressId);
-        console.log(addRessData);
-
-        if (!addRessData) {
-            return;
-        }
-        return addRessData;
-    }
-    return undefined;
+        return undefined;
+    }, [accountLists, selectedProtocolId, selectAccountId]);
 };
 
 export const useAccount = () => {
     const accountLists = useAppSelector(getAllAccount);
     const selectAccountId = useAppSelector(getAccountId);
-    if (accountLists !== undefined) {
-        const accountWallet = [...accountLists].find(
-            e => e?.id === selectAccountId,
-        );
-        return accountWallet;
-    }
+    return useMemo(() => {
+        if (accountLists !== undefined) {
+            const accountWallet = accountLists.find(
+                e => e?.id === selectAccountId,
+            );
+            return accountWallet;
+        }
+        return undefined;
+    }, [accountLists, selectAccountId]);
 };
 
 export const useMnemonic = () => {
@@ -133,25 +140,26 @@ export const useMnemonic = () => {
 
 const useAddressDataWithSlip0044 = (slip0044: Slip0044) => {
     const protocolListData = useAppSelector(getProtocolDataLists);
-
-    const coinProtocolData = protocolListData?.find(
-        e => e.slip0044 === slip0044,
-    );
-
     const currentAccount = useAccount();
 
-    const accountProtocolListData = currentAccount?.protocolData;
+    return useMemo(() => {
+        const coinProtocolData = protocolListData?.find(
+            e => e.slip0044 === slip0044,
+        );
 
-    const coinAccountData = accountProtocolListData?.find(
-        e => e._id === coinProtocolData?._id,
-    );
-    const polAddressList = coinAccountData?.addressList;
-    const selectedAddressId = coinAccountData?.selectedAddressId;
-    const currentCoinAddressData = polAddressList?.find(
-        e => e.id === selectedAddressId,
-    );
+        const accountProtocolListData = currentAccount?.protocolData;
 
-    return currentCoinAddressData;
+        const coinAccountData = accountProtocolListData?.find(
+            e => e._id === coinProtocolData?._id,
+        );
+        const polAddressList = coinAccountData?.addressList;
+        const selectedAddressId = coinAccountData?.selectedAddressId;
+        const currentCoinAddressData = polAddressList?.find(
+            e => e.id === selectedAddressId,
+        );
+
+        return currentCoinAddressData;
+    }, [protocolListData, currentAccount, slip0044]);
 };
 
 export const usePolAddressData = () => {

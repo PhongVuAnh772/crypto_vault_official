@@ -7,6 +7,38 @@ const adminWorkflowService = require('../services/adminService'); // File Servic
 const globalEvents = require('../utils/events');
 const { requireAuth, requireRole, hashPassword, JWT_SECRET } = require('../middlewares/authMiddleware');
 
+// --- MOBILE COMPATIBILITY ENDPOINTS (NO AUTH) ---
+
+router.get('/mobile/setting-currency', async (req, res) => {
+  try {
+    const MOCK_SETTING_CURRENCIES = [
+      { name: "US Dollar", rate: 1, symbol: "USD", sign: "$" },
+      { name: "Euro", rate: 0.92, symbol: "EUR", sign: "€" },
+      { name: "Vietnamese Dong", rate: 25000, symbol: "VND", sign: "₫" },
+      { name: "Japanese Yen", rate: 155, symbol: "JPY", sign: "¥" },
+      { name: "British Pound", rate: 0.79, symbol: "GBP", sign: "£" }
+    ];
+    res.json({ success: true, data: MOCK_SETTING_CURRENCIES });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/mobile/cryptos/currency', async (req, res) => {
+  try {
+    const MOCK_CRYPTOS_CURRENCY = [
+      { name: "Bitcoin", price: 43000, slug: "bitcoin", symbol: "BTC" },
+      { name: "Ethereum", price: 2300, slug: "ethereum", symbol: "ETH" },
+      { name: "BNB", price: 310, slug: "binance-coin", symbol: "BNB" },
+      { name: "Polygon", price: 0.78, slug: "polygon", symbol: "POL" },
+      { name: "Toncoin", price: 2.35, slug: "toncoin", symbol: "TON" }
+    ];
+    res.json({ success: true, data: MOCK_CRYPTOS_CURRENCY });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // --- AUTHENTICATION & INITIALIZE ---
 router.post('/admin/setup', async (req, res) => {
   try {
@@ -30,7 +62,7 @@ router.post('/admin/login', async (req, res) => {
     const { email, password } = req.body;
     const pwdHash = hashPassword(password);
     const result = await db.query(
-      'SELECT id, email, role, is_active FROM admins WHERE email = $1 AND password_hash = $2 AND is_active = true', 
+      'SELECT id, email, role, is_active FROM admins WHERE email = $1 AND password_hash = $2 AND is_active = true',
       [email, pwdHash]
     );
 
@@ -83,7 +115,7 @@ router.put('/admin/tokens/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    
+
     // Build dynamic query
     const fields = Object.keys(updates).filter(k => ['symbol', 'name', 'is_active', 'decimals', 'contract_address'].includes(k));
     if (fields.length === 0) return res.json({ success: true, message: 'No fields to update' });
@@ -167,7 +199,7 @@ router.put('/admin/chains/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body;
-    
+
     // Build dynamic query
     const fields = Object.keys(updates).filter(k => ['name', 'is_active', 'rpc_url', 'is_testnet'].includes(k));
     if (fields.length === 0) return res.json({ success: true, message: 'No fields to update' });
@@ -180,7 +212,7 @@ router.put('/admin/chains/:id', async (req, res) => {
       `UPDATE chains SET ${setClause}, updated_at = NOW() WHERE id = $${values.length} RETURNING *`,
       values
     );
-    
+
     globalEvents.emit('broadcast', { event: 'config_update', data: { type: 'chain', id, ...updates } });
     res.json({ success: true, data: result.rows[0] });
   } catch (err) {
@@ -274,7 +306,7 @@ router.get('/admin/withdrawals', async (req, res) => {
       ORDER BY t.created_at DESC
     `);
     res.json({ success: true, data: result.rows });
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -284,7 +316,7 @@ router.post('/admin/withdrawals/:id/approve', requireRole(['super_admin', 'manag
   try {
     const result = await adminWorkflowService.approveWithdrawal(req.params.id, req.user.id);
     res.json(result);
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -294,7 +326,7 @@ router.post('/admin/withdrawals/:id/reject', requireRole(['super_admin', 'manage
   try {
     const result = await adminWorkflowService.rejectWithdrawal(req.params.id, req.user.id, req.body.reason || 'Admin Rejected');
     res.json(result);
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
@@ -305,10 +337,10 @@ router.post('/admin/p2p/disputes/:escrowId/resolve', requireRole(['super_admin']
     const { escrowId } = req.params;
     const { resolution, reason } = req.body;
     if (!['FAVOR_BUYER', 'FAVOR_SELLER'].includes(resolution)) throw new Error('Invalid resolution');
-    
+
     const result = await adminWorkflowService.resolveP2PDispute(escrowId, resolution, req.user.id, reason);
     res.json(result);
-  } catch(err) {
+  } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });

@@ -104,10 +104,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
   const createCryptoData = async (
     currentProtocolBaseData?: ProtocolDataWithSupportedTokensFormBEType
   ) => {
-    console.log("==============================");
-    console.log("Call createCryptoData");
-    console.log("==============================");
-
     const finalProtocolBaseData = currentProtocolBaseData ?? protocolBaseData;
 
     const { supportedToken = [] } = finalProtocolBaseData ?? {};
@@ -174,7 +170,9 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
 
     updateTotalBalance(newListCryptoData);
 
-    dispatch(setListCryptoDataSyn(newListCryptoData));
+    if (!Utils.deepEqual(listCryptoData, newListCryptoData)) {
+      dispatch(setListCryptoDataSyn(newListCryptoData));
+    }
     setIsFirstInitial(false);
   };
 
@@ -394,8 +392,8 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    accountProtocolSelected,
-    protocolDataLists,
+    accountProtocolSelected?._id,
+    protocolBaseData?._id,
     listToken.length,
     wallet?.address,
   ]);
@@ -425,9 +423,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
 
   useEffect(() => {
     if (updateBalanceState) {
-      console.log("===================");
-      console.log("Update Balance");
-      console.log("===================");
       updateBalance();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -481,10 +476,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     // Implement if needed
   };
 
-  const getBackgroundImage = () => {
-    return lightMode ? appImages.newBackground2 : appImages.newBackground2;
-  };
-
   return {
     lightMode,
     goToSendScreen,
@@ -497,7 +488,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
     isFirstInitial,
     walletBalanceCurrency,
     selectedCurrencySetting,
-    getBackgroundImage,
     dispatch,
     // New variables
     showBottomSheetModal,

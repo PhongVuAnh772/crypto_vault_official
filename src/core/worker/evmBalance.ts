@@ -1,4 +1,5 @@
 import { ethers } from "ethers";
+import RpcFallbackProvider from "../utils/rpcUtils";
 
 const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
@@ -7,6 +8,7 @@ const ERC20_ABI = [
 
 type Params = {
   rpcUrl: string;
+  rpcUrls?: string[];
   walletAddress: string;
   tokens: {
     isNativeToken?: boolean;
@@ -20,6 +22,7 @@ type Params = {
 
 export const fetchEvmBalances = async ({
   rpcUrl,
+  rpcUrls,
   walletAddress,
   tokens,
   chainId = 1,
@@ -31,17 +34,16 @@ export const fetchEvmBalances = async ({
   console.log("Tokens:", tokens.length);
 
   const result: Record<string, any> = {};
-  let provider: ethers.JsonRpcProvider;
+  let provider: ethers.JsonRpcProvider | null = null;
 
   try {
-    const network = ethers.Network.from({
-      chainId,
-      name: chainName,
-    });
-
-    provider = new ethers.JsonRpcProvider(rpcUrl, network, {
-      staticNetwork: network,
-    });
+    const urls = rpcUrls && rpcUrls.length > 0 ? rpcUrls : [rpcUrl];
+    const fallback = new RpcFallbackProvider(urls, chainId);
+    provider = await fallback.getProvider();
+    
+    if (!provider) {
+      throw new Error("No healthy RPC found");
+    }
 
     // 🔥 TEST RPC NGAY
     const blockNumber = await provider.getBlockNumber();

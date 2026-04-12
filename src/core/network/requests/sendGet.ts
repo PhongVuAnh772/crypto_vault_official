@@ -30,11 +30,24 @@ async function sendGet<T>({
             idToken,
             customHeaders,
         );
-        const apiResponse = await axiosInstance.get(endPoint ?? '', {
+        const url = endPoint ?? '';
+        // console.log(`[🚀 Calling GET]: ${customBaseUrl ?? 'BASE'}${url}`, params ? params : '');
+        
+        const apiResponse = await axiosInstance.get(url, {
             params: params,
         });
         return transform.Response<T>(apiResponse);
-    } catch (err) {
+    } catch (err: any) {
+        console.group('[❌ NETWORK ERROR - GET]');
+        console.error('Endpoint:', endPoint);
+        console.error('Full URL:', err?.config?.url);
+        console.error('Message:', err.message);
+        if (err.response) {
+            console.error('Data:', err.response.data);
+            console.error('Status:', err.response.status);
+        }
+        console.groupEnd();
+
         ErrorLogger.log(err, 'network/sendGet');
         if (axios.isAxiosError(err) && err.response) {
             return transform.Error<T>(err.response);

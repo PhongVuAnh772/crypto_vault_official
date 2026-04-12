@@ -354,7 +354,6 @@ export const getCurrentWalletAndProtocol = createSelector(
     );
 
     if (!addRessData) return;
-    console.log(`currentProtocolBaseData ${currentProtocolBaseData}`);
     return {
       currentProtocol: currentProtocolBaseData,
       currentWallet: addRessData,
@@ -371,9 +370,6 @@ export const getFullListTokens = createSelector(
   ],
   (data, listTokenByProtocol, listTokenBE) => {
     if (!data) return [];
-    const { currentProtocol, currentWallet } = data;
-
-    console.log("currentProtocol getFullListTokens ${getFullListTokens");
 
     const listLocal =
       listTokenByProtocol[
@@ -395,7 +391,6 @@ export const filterTokenByWalletAddress = createSelector(
     (state: RootState) => state.tokenLocal.listTokenFromBE,
   ],
   (data, listTokenByProtocol, listTokenFromBE) => {
-    console.log(`listTokenFromBE ${listTokenFromBE}`);
     if (!data) return [];
     const { currentProtocol, currentWallet } = data;
     
@@ -451,8 +446,6 @@ export const filterTokenByWalletAddress = createSelector(
       }
       return item;
     });
-    console.log(`checkTokenData ${checkTokenData}`);
-
     return checkTokenData;
   }
 );
