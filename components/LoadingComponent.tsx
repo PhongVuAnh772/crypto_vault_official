@@ -1,7 +1,7 @@
 import React from "react";
 import { View } from "react-native";
 import appStyles from "src/core/styles";
-import Utils from "src/utils/commonUtils";
+import Utils from "src/core/utils/commonUtils";
 import AppLogoLoadingAnimation from "./AppLogoLoadingAnimation";
 
 type AppLoadingType = {

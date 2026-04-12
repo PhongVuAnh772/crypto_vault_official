@@ -10,6 +10,8 @@ enum NavigationStackKey {
 enum AuthStackScreenKey {
   SplashScreen = "SplashScreen",
   OnboardingScreen = "OnboardingScreen",
+  ShowPassPhrase = "ShowPassPhrase",
+  ValidatePassPhrase = "ValidatePassPhrase",
 }
 
 enum HomeStackScreenKey {

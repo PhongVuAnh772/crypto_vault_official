@@ -1,5 +1,6 @@
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import * as Clipboard from 'expo-clipboard';
 import { Alert } from 'react-native';
 import {
     Code,
@@ -51,31 +52,11 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         }
     };
 
-    const onPasteURI = () => {
-        Alert.prompt(
-            'Paste WalletConnect URI',
-            'Paste the wc: URL here to connect',
-            [
-                {
-                    text: 'Cancel',
-                    style: 'cancel',
-                },
-                {
-                    text: 'Connect',
-                    onPress: async (uri) => {
-                        if (uri) {
-                            try {
-                                await walletKit.pair({ uri });
-                                navigation.goBack();
-                            } catch (error) {
-                                Alert.alert('Error', 'Invalid WalletConnect URI');
-                            }
-                        }
-                    },
-                },
-            ],
-            'plain-text'
-        );
+    const onPasteURI = async () => {
+        const text = await Clipboard.getStringAsync();
+        if (text) {
+            pair(text);
+        }
     };
 
     return {
@@ -85,6 +66,8 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         isActive,
         codeScanner,
         onPasteURI,
+        isSimulator: Utils.checkingEmulator(),
         insets,
+        goBack: () => navigation.goBack(),
     };
 };

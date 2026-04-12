@@ -1,5 +1,5 @@
-import useAppSafeAreaInsets from "hooks/useAppSafeAreaInsets";
-import useAppTheme from "hooks/useAppThemeHook";
+import useAppSafeAreaInsets from "src/core/hooks/useAppSafeAreaInsets";
+import { useAppTheme } from "src/core/hooks/useAppTheme";
 import { t } from "i18next";
 import moment from "moment";
 import { useEffect, useState } from "react";
@@ -16,14 +16,13 @@ import {
   selectorEnableFaceIdOrTouch,
   setFailedPinAttempts,
   setMaxPinCodeAttempts,
-  setPin,
   setRequirePinCode,
   setTimeLock,
-} from "src/core/redux/slices/auth.slice";
-import { syncWalletsToBackend, loadWalletsFromStorage, getMobileProtocolListsWithSupportedTokens } from "src/core/redux/slice/account.slice";
+} from "src/core/redux/slice/app.slice";
+import { syncWalletsToBackend, loadWalletsFromStorage, getMobileProtocolListsWithSupportedTokens, setPin } from "src/core/redux/slice/account.slice";
 
 import AccountServices from "src/core/services/AccountServices";
-import FaceIdOrTouch from "src/core/services/LocalAuthentication";
+import FaceIdOrTouch from "src/core/services/FaceIdOrTouch";
 
 type UseRequirePinCodeType = {
   continueActionAfterPassPinCode?: (pinCode: string) => void;
@@ -139,7 +138,7 @@ const useRequirePinCode = ({
       dispatch(resetPinCodeData());
       dispatch(setPin(actualPin));
       dispatch(setRequirePinCode(false));
-      
+
       // Load wallets first, then update protocols (with mnemonic), then sync
       dispatch(loadWalletsFromStorage(actualPin)).then(() => {
         dispatch(getMobileProtocolListsWithSupportedTokens()).then(() => {

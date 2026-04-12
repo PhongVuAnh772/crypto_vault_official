@@ -2,8 +2,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import HideHeaderStack from "src/components/layout/HideHeaderStack";
 import { SplashScreen } from "src/features/auth";
-import CongratulationCreateWallet from "src/features/auth/CongratulationCreateWallet/index.view";
+ import CongratulationCreateWallet from "src/features/auth/CongratulationCreateWallet/index.view";
 import OnboardingScreen from "src/features/auth/onboardingScreen/onboarding.view";
+import ShowPassPhrase from "src/auth/ShowPassPhrase/ShowPassPhrase.view.tsx";
+import ValidatePassPhrase from "src/auth/ValidatePassPhrase/ValidatePassPhrase.view.tsx";
 import {
   AuthStackScreenKey,
   NavigationStackKey,
@@ -58,6 +60,14 @@ const AuthStack = () => (
         headerBackVisible: false,
         headerShadowVisible: false,
       }}
+    />
+    <Stack.Screen
+      name={AuthStackScreenKey.ShowPassPhrase}
+      component={ShowPassPhrase}
+    />
+    <Stack.Screen
+      name={AuthStackScreenKey.ValidatePassPhrase}
+      component={ValidatePassPhrase}
     />
   </HideHeaderStack>
 );

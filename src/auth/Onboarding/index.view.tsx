@@ -1,50 +1,51 @@
 import { useIsFocused, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import AppText from "components/AppText";
-import { useVideoPlayer, VideoView } from "expo-video";
-import React, { useEffect } from "react";
+import { ResizeMode, Video } from "expo-av";
+import React, { useEffect, useRef } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
+import AppText from "src/components/common/AppText";
 import { useAppDispatch } from "src/core/redux/hooks";
-import { setIsFirstTime } from "src/core/redux/slices/auth.slice";
-import TermValidation from "src/features/components/TermValidation";
-import OnboardingTextSlider from "src/features/components/TextSlideAnimate";
-import { AuthStackScreenKey } from "src/navigation/enum/NavigationKey";
-import { AuthStackParamList } from "src/navigation/stack/auth/AuthParamsListType";
-import appColors from "../../../../src/core/constants/AppColors";
+import { setIsFirstTime } from "src/core/redux/slice/app.slice";
+// import TermValidation from "src/features/components/TermValidation";
+import appColors from "src/core/constants/AppColors";
+import OnboardingTextSlider from "src/features/auth/components/TextSlideAnimate";
+import { NavigationStackKey } from "src/navigation/enum/NavigationKey";
+import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 
 const videoSource = require("../../../../assets/video/onboarding.mp4");
-type VideoScreenNavigationProp = StackNavigationProp<AuthStackParamList>;
 
 export default function VideoScreen() {
-  const navigation = useNavigation<VideoScreenNavigationProp>();
+  const navigation = useNavigation<RootNavigationType["navigation"]>();
   const isFocused = useIsFocused();
   const dispatch = useAppDispatch();
+  const videoRef = useRef<Video>(null);
 
-  const player = useVideoPlayer(videoSource, (player) => {
-    player.loop = true;
-    player.play();
-  });
-
-  
+  useEffect(() => {
+    if (isFocused) {
+      videoRef.current?.playAsync();
+    } else {
+      videoRef.current?.pauseAsync();
+    }
+  }, [isFocused]);
 
   useEffect(() => {
     dispatch(setIsFirstTime(false));
-  }, []);
+  }, [dispatch]);
 
   return (
     <View style={styles.contentContainer}>
-      <VideoView
+      <Video
+        ref={videoRef}
+        source={videoSource}
         style={styles.video}
-        player={player}
-        allowsFullscreen
-        allowsPictureInPicture
-        nativeControls={false}
+        resizeMode={ResizeMode.COVER}
+        shouldPlay
+        isLooping
       />
       <OnboardingTextSlider />
       <Pressable
         style={styles.button}
         onPress={() => {
-          navigation.navigate(AuthStackScreenKey.CreatePinCode);
+          navigation.navigate(NavigationStackKey.PinCodeStack as any);
         }}
       >
         <AppText
@@ -56,7 +57,7 @@ export default function VideoScreen() {
       <Pressable
         style={styles.button2}
         onPress={() => {
-          navigation.navigate(AuthStackScreenKey.ImportPassphase);
+          navigation.navigate(NavigationStackKey.RestoreWalletStack as any);
         }}
       >
         <AppText
@@ -65,7 +66,7 @@ export default function VideoScreen() {
           styles={styles.buttonText}
         />
       </Pressable>
-      <TermValidation onPress1={() => {}} onPress2={() => {}} />
+      {/* <TermValidation onPress1={() => {}} onPress2={() => {}} /> */}
     </View>
   );
 }

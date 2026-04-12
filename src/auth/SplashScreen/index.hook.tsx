@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import BootSplash from "react-native-bootsplash";
 import SecureStorageKey from "src/core/enum/SecureStorageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
-import { addAccount } from "src/core/redux/slices/app.slice";
+import { addAccount } from "src/core/redux/slice/account.slice";
 import {
   getFailedPinAttempts,
   getIsFirstTime,
   getTimeLock,
-  resetAllSlice,
+  resetAppSlice,
   resetPinCodeData,
-  setIsAllModalShow,
+  setIsModalShow,
   setKeepSplash,
-} from "src/core/redux/slices/auth.slice";
+} from "src/core/redux/slice/app.slice";
 import AccountServices from "src/core/services/AccountServices";
 import EncryptAES from "src/core/services/EncryptAES";
 import SecureStorage from "src/core/services/SecureStorage";
@@ -57,7 +57,7 @@ const useSplash = ({ navigation }: { navigation: any }) => {
   };
   const initLogic = async () => {
     checkLockTime();
-    dispatch(setIsAllModalShow(false));
+    dispatch(setIsModalShow(false));
     if (isFirstTime) {
       await SecureStorage.clear();
     }
@@ -75,14 +75,14 @@ const useSplash = ({ navigation }: { navigation: any }) => {
     } else {
       await SecureStorage.clear();
       timeOutKeepSplashAction(goToOnboarding);
-      dispatch(resetAllSlice());
+      dispatch(resetAppSlice());
     }
   };
   const navigateReplaceAction = (navigateName: string) =>
     navigation.dispatch(StackActions.replace(navigateName));
   const actionAfterPassPinCode = async (currentPinCode: string) => {
     setLoading(true);
-    dispatch(setIsAllModalShow(false));
+    dispatch(setIsModalShow(false));
 
     try {
       const accountServices = new AccountServices();

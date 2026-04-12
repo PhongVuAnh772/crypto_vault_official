@@ -7,6 +7,7 @@ import {
     useCameraDevice,
     useCodeScanner,
 } from 'react-native-vision-camera';
+import * as Clipboard from 'expo-clipboard';
 import { useDispatch } from 'react-redux';
 
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
@@ -154,6 +155,13 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         }
     };
 
+    const onPasteURI = async () => {
+        const text = await Clipboard.getStringAsync();
+        if (text) {
+            checkUrl(text);
+        }
+    };
+
     return {
         theme,
         device,
@@ -164,5 +172,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         goBack,
         openSettingsAction,
         isShowModalRequestCameraPermission,
+        onPasteURI,
+        isSimulator: Utils.checkingEmulator(),
     };
 };

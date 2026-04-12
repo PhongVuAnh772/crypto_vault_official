@@ -25,6 +25,8 @@ const ScanScreen: React.FC<RootNavigationType> = ({ navigation }) => {
         isShowModalRequestCameraPermission,
         goBack,
         openSettingsAction,
+        isSimulator,
+        onPasteURI,
     } = useScan({
         navigation,
     });
@@ -34,40 +36,67 @@ const ScanScreen: React.FC<RootNavigationType> = ({ navigation }) => {
         <ScreenWrapper
             enableDismissKeyboard
             backgroundColor={theme.colors.surface_surface_default}>
-            {showCamera && device && (
-                <View style={style.viewScanQRContainer}>
-                    <Camera
-                        style={style.scanQRContainer}
-                        device={device}
-                        isActive={isActive}
-                        codeScanner={codeScanner}
+            {isSimulator ? (
+                <View style={[appStyles.flex1, appStyles.center, { padding: 20 }]}>
+                    <AppText
+                        text="Simulator Mode"
+                        variant={TextVariantKeys.titleLarge}
+                        textColor={theme.colors.text_on_surface_text_brand}
                     />
-
-                    <ScanArena />
-                    <View style={[appStyles.flex1, appStyles.center]}>
-                        <AppText
-                            titleWithI18n={LanguageKey.scan_qr_title}
-                            variant={TextVariantKeys.labelLarge}
-                            styles={appStyles.textAlignCenter}
-                            textColor={appColors.neutral.white}
-                        />
-                        <AppText
-                            titleWithI18n={LanguageKey.scan_qr_sub_title}
-                            variant={TextVariantKeys.bodyMMedium}
-                            styles={appStyles.textAlignCenter}
-                            textColor={appColors.neutral.n600}
-                        />
-                        <AppButton
-                            textVariant={TextVariantKeys.labelLarge}
-                            titleWithI18n={
-                                LanguageKey.transaction_history_close
-                            }
-                            textColor={theme.colors.text_on_surface_text_brand}
-                            styles={style.closeButton}
-                            onPress={goBack}
-                        />
-                    </View>
+                    <AppText
+                        text="Camera is not available on simulator. Please paste your connection URL below."
+                        variant={TextVariantKeys.bodyMMedium}
+                        styles={[{ marginTop: 10, marginBottom: 30 }, appStyles.textAlignCenter]}
+                        textColor={theme.colors.text_on_surface_text_brand_2}
+                    />
+                    <AppButton
+                        title="Paste Connection URL"
+                        onPress={onPasteURI}
+                        styles={{ width: '100%' }}
+                    />
+                    <AppButton
+                        titleWithI18n={LanguageKey.transaction_history_close}
+                        onPress={goBack}
+                        type="clear"
+                        styles={{ marginTop: 20 }}
+                    />
                 </View>
+            ) : (
+                showCamera && device && (
+                    <View style={style.viewScanQRContainer}>
+                        <Camera
+                            style={style.scanQRContainer}
+                            device={device}
+                            isActive={isActive}
+                            codeScanner={codeScanner}
+                        />
+
+                        <ScanArena />
+                        <View style={[appStyles.flex1, appStyles.center]}>
+                            <AppText
+                                titleWithI18n={LanguageKey.scan_qr_title}
+                                variant={TextVariantKeys.labelLarge}
+                                styles={appStyles.textAlignCenter}
+                                textColor={appColors.neutral.white}
+                            />
+                            <AppText
+                                titleWithI18n={LanguageKey.scan_qr_sub_title}
+                                variant={TextVariantKeys.bodyMMedium}
+                                styles={appStyles.textAlignCenter}
+                                textColor={appColors.neutral.n600}
+                            />
+                            <AppButton
+                                textVariant={TextVariantKeys.labelLarge}
+                                titleWithI18n={
+                                    LanguageKey.transaction_history_close
+                                }
+                                textColor={theme.colors.text_on_surface_text_brand}
+                                styles={style.closeButton}
+                                onPress={goBack}
+                            />
+                        </View>
+                    </View>
+                )
             )}
             <AppModal
                 showRequirePinCode={false}

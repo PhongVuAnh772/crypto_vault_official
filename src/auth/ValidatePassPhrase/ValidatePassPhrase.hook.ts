@@ -3,11 +3,11 @@ import { Alert, TextInput } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import { RootNavigationType } from "../SplashScreen/index.view";
 import * as Clipboard from "expo-clipboard";
-import useAppSafeAreaInsets from "hooks/useAppSafeAreaInsets";
-import Utils from "src/utils/commonUtils";
+import useAppSafeAreaInsets from "src/core/hooks/useAppSafeAreaInsets";
+import Utils from "src/core/utils/commonUtils";
 import { StackActions, useRoute } from "@react-navigation/native";
 import Toast from "react-native-toast-message";
-import { addAccount } from "src/core/redux/slices/app.slice";
+import { addAccount } from "src/core/redux/slice/account.slice";
 import { NavigationStackKey } from "src/navigation/enum/NavigationKey";
 import { useAppDispatch } from "src/core/redux/hooks";
 

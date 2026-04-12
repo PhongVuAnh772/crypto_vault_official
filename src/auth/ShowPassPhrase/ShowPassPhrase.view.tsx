@@ -9,7 +9,7 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 import AppText from "components/AppText";
-import TextVariantKeys from "src/core/constants/TextVariantKeys";
+import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import appStyles from "src/core/styles";
 import { RootNavigationType } from "../SplashScreen/index.view";
 import useShowPassPhrase from "./ShowPassPhrase.hook";
@@ -37,7 +37,7 @@ const ShowPassPhrase: React.FC<RootNavigationType> = ({ navigation }) => {
         <View style={styles.indexView}>
           <AppText
             title={(index + 1).toString()}
-            variant={TextVariantKeys.BodyMedium}
+            variant={TextVariantKeys.bodyMMedium}
             styles={appStyles.textAlignCenter}
           />
         </View>
@@ -54,19 +54,19 @@ const ShowPassPhrase: React.FC<RootNavigationType> = ({ navigation }) => {
     <View style={styles.container}>
       <AppText
         title="Bước 1/2"
-        variant={TextVariantKeys.BodySmall}
+        variant={TextVariantKeys.bodyMSmall}
         textColor="#8E8E93"
       />
       <AppText
         title="Cụm từ bí mật"
-        variant={TextVariantKeys.DisplaySmall}
+        variant={TextVariantKeys.headlineSmall}
         textColor="#000000"
         styles={{ fontWeight: "700" }}
       />
       <View style={[styles.row, { paddingTop: 5 }]}>
         <AppText
           title="Hãy cẩn thận bảo mật những cụm từ này"
-          variant={TextVariantKeys.BodyLarge}
+          variant={TextVariantKeys.bodyMLarge}
           textColor="#6E6E73"
         />
         <Feather
@@ -95,7 +95,7 @@ const ShowPassPhrase: React.FC<RootNavigationType> = ({ navigation }) => {
           <Feather name="copy" size={18} color="#7A94FF" />
           <AppText
             title={"Sao chép cụm từ bí mật"}
-            variant={TextVariantKeys.TitleSmall}
+            variant={TextVariantKeys.titleSmall}
             styles={appStyles.textAlignCenter}
             textColor="#7A94FF"
           />

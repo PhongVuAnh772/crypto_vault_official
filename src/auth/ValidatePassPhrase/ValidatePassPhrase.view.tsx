@@ -7,9 +7,9 @@ import {
   View,
 } from "react-native";
 
-import AppText from "components/AppText";
 import LoadingScreen from "components/LoadingComponent";
-import TextVariantKeys from "src/core/constants/TextVariantKeys";
+import AppText from "src/components/common/AppText";
+import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import appStyles from "src/core/styles";
 import { RootNavigationType } from "../SplashScreen/index.view";
 import useShowPassPhrase from "./ValidatePassPhrase.hook";
@@ -44,7 +44,7 @@ const ValidatePassPhrase: React.FC<RootNavigationType> = ({ navigation }) => {
           <View style={styles.indexView}>
             <AppText
               title={(index + 1).toString()}
-              variant={TextVariantKeys.BodyMedium}
+              variant={TextVariantKeys.bodyMMedium}
               styles={appStyles.textAlignCenter}
             />
           </View>
@@ -88,19 +88,19 @@ const ValidatePassPhrase: React.FC<RootNavigationType> = ({ navigation }) => {
       <View style={styles.container}>
         <AppText
           title="Bước 2/2"
-          variant={TextVariantKeys.BodySmall}
+          variant={TextVariantKeys.bodyMSmall}
           textColor="#8E8E93"
         />
         <AppText
           title="Cụm từ bí mật"
-          variant={TextVariantKeys.DisplaySmall}
+          variant={TextVariantKeys.headlineSmall}
           textColor="#000000"
           styles={{ fontWeight: "700" }}
         />
         <View style={[styles.row, { paddingTop: 5 }]}>
           <AppText
             title="Chọn đúng 3 từ bị ẩn để xác nhận cụm từ bí mật"
-            variant={TextVariantKeys.BodyLarge}
+            variant={TextVariantKeys.bodyMLarge}
             textColor="#6E6E73"
           />
         </View>
