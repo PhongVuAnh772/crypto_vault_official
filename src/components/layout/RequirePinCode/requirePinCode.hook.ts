@@ -5,7 +5,7 @@ import { EdgeInsets } from 'react-native-safe-area-context';
 import useAppSafeAreaInsets from 'src/core/hooks/useAppSafeAreaInsets';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { useAppDispatch, useAppSelector } from 'src/core/redux/hooks';
-import { setPin } from 'src/core/redux/slice/account.slice';
+import { loadWalletsFromStorage, setPin } from 'src/core/redux/slice/account.slice';
 import {
     getFailedPinAttempts,
     getKeepSplash,
@@ -13,6 +13,7 @@ import {
     getMaxPinCodeAttempts,
     getRequirePinCode,
     getTimeLock,
+    resetAllSlice,
     resetPinCodeData,
     selectorEnableFaceIdOrTouch,
     setFailedPinAttempts,
@@ -98,9 +99,12 @@ const useRequirePinCode = ({
 
     useEffect(() => {
         if (timeLock !== undefined) {
+            const delays = [1, 2, 5, 10, 30, 60, 300, 600, 1800, 3600];
+            const delayInSeconds = delays[failedPinAttempts - 1] || 3600;
+
             const targetTimestamp = moment(timeLock).add(
-                failedPinAttempts * 3,
-                'minutes',
+                delayInSeconds,
+                'seconds',
             );
             setRemainingTime(targetTimestamp.diff(moment()));
             const interval = setInterval(() => {
@@ -129,26 +133,35 @@ const useRequirePinCode = ({
 
     const continueAction = async (currentPinCode?: string) => {
         const accountServices = new AccountServices();
-        const checkPinCodeResult = await accountServices.checkPinCode(
-            currentPinCode ?? pinCode,
-        );
+        const enteredPin = currentPinCode ?? pinCode;
+        const checkPinCodeResult = await accountServices.checkPinCode(enteredPin);
+
         if (checkPinCodeResult) {
             dispatch(resetPinCodeData());
-            dispatch(setPin(currentPinCode ?? pinCode));
+            dispatch(setPin(enteredPin));
+            dispatch(loadWalletsFromStorage(enteredPin));
             dispatch(setRequirePinCode(false));
             setPinCode('');
             if (continueActionAfterPassPinCode == null) return;
-            continueActionAfterPassPinCode(currentPinCode ?? pinCode);
+            continueActionAfterPassPinCode(enteredPin);
         } else {
-            const newMaxPinCodeAttempts = maxPinCodeAttempts - 1;
-            if (maxPinCodeAttempts > 0) {
-                dispatch(setMaxPinCodeAttempts(newMaxPinCodeAttempts));
+            const newFailedAttempts = failedPinAttempts + 1;
+            dispatch(setFailedPinAttempts(newFailedAttempts));
+
+            // Wipe data after 12 failed attempts
+            if (newFailedAttempts >= 12) {
+                await accountServices.deleteAllAccountData();
+                dispatch(resetAllSlice());
+                return;
             }
-            if (newMaxPinCodeAttempts === 0) {
-                dispatch(setFailedPinAttempts(failedPinAttempts + 1));
-                dispatch(setTimeLock(moment().valueOf()));
-                dispatch(setMaxPinCodeAttempts(5));
-            }
+
+            // Exponential delay logic (1s -> 2s -> 5s...)
+            const delays = [1, 2, 5, 10, 30, 60, 300, 600, 1800, 3600];
+            const delayInSeconds = delays[newFailedAttempts - 1] || 3600;
+            
+            // Set time lock
+            dispatch(setTimeLock(moment().valueOf()));
+
             setIncorrectPin(true);
             setPinCode('');
         }

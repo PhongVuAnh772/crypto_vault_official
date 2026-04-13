@@ -10,7 +10,7 @@ import AppI18Next from 'src/core/locales';
 import LanguageKey from 'src/core/locales/LanguageKey';
 import NativeBitcoinModules from 'src/core/modules/BitcoinModules/NativeBitcoinModules';
 import { sendGet } from 'src/core/network/requests';
-import { getIsTestnet } from 'src/core/redux/slice/app.slice';
+import { getIsTestnet } from "src/core/redux/slice/app.selector";
 import { RootState } from 'src/core/redux/store';
 import BitcoinServices from 'src/core/services/BitcoinServices';
 import {

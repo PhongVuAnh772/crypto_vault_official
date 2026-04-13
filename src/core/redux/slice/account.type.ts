@@ -112,4 +112,5 @@ export type SupportedNativeTokenType = {
 export interface ProtocolDataWithSupportedTokensFormBEType
     extends ProtocolDataFromBEType {
     supportedToken: (SupportedTokenItemType | SupportedNativeTokenType)[];
+    isTestnet?: boolean;
 }

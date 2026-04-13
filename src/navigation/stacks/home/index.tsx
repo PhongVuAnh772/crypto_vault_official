@@ -78,6 +78,7 @@ import TransactionDetails from "src/features/transactionDetials/transactionDetai
 import TransferScreen from "src/features/transfer/transfer.view";
 import TradingScreen from "src/features/trading/TradingScreen";
 import TradingDetailScreen from "src/features/trading/TradingDetailScreen";
+import OfferwallScreen from "src/features/offerwall/OfferwallScreen";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
@@ -385,6 +386,10 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.TradingDetail}
           component={TradingDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.Offerwall}
+          component={OfferwallScreen}
         />
       </HideHeaderStack>
       <AccountListener />

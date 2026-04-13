@@ -14,6 +14,7 @@ import {
   addAccount,
   getAccountId,
   setAccount,
+  setPin,
   setSelectAccountId,
 } from "src/core/redux/slice/account.slice";
 import {
@@ -92,6 +93,7 @@ const useSplash = ({ navigation }: RootNavigationType) => {
         await accountServices.getAccountDataWithEncrypt(currentPinCode);
 
       if (walletData && walletData.length > 0) {
+        dispatch(setPin(currentPinCode));
         const isVersion0 = walletData.some((e) => e.version == null);
 
         if (isVersion0) {

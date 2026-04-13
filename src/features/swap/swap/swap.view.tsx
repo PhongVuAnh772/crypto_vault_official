@@ -25,6 +25,7 @@ import {
     SwapConfirmationBottomSheet,
     WalletBottomSheet,
 } from '../components';
+import RewardedAdButton from 'src/features/ads/components/RewardedAdButton';
 import useSwap from './swap.hook';
 import { SwapSelector } from './swap.types';
 
@@ -191,6 +192,10 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
                                         SwapSelector.YouGet,
                                     )
                                 }
+                            />
+                            <RewardedAdButton 
+                                onAdFinished={handleAdFinished} 
+                                hasBenefit={!!activeBenefit}
                             />
                             <RatePreview rate={from.rate} />
 

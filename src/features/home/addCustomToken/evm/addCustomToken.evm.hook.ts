@@ -27,6 +27,7 @@ import {
     convertChainByProtocol,
 } from 'src/core/utils/evmUtils';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
+import { tokenService } from 'src/core/services/api.service';
 
 const useAddCustomToken = ({ navigation }: RootNavigationType) => {
     const moralis = useMemo(() => new MoralisService(), []);
@@ -187,6 +188,23 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
                 });
                 throw new Error(t(LanguageKey.token_already_added));
             }
+            // Notify backend for Admin management
+            try {
+                await tokenService.requestCustomToken({
+                    chain_id: (protocolBaseData.chainId || protocolBaseData._id).toString(),
+                    symbol: responseToken.symbol,
+                    name: responseToken.name,
+                    decimals: Number(responseToken.decimals),
+                    contract_address: contractAddress.trim(),
+                    metadata: {
+                        logo: responseToken?.logo,
+                        user_address: wallet.address
+                    }
+                });
+            } catch (apiErr) {
+                console.warn('Failed to sync custom token to backend', apiErr);
+            }
+
             dispatch(addCustomToken(data));
             navigation.goBack();
         } catch (error) {

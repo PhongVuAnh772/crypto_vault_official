@@ -31,7 +31,6 @@ import TonServices from '../TonServices';
 import { TonAccountsType } from '../TonServices/type';
 import { TonOpCodes } from '../TonTransactions/opCode';
 import { ConnectEventError } from './ConnectEventError';
-import TonConnectService from './TonConnectService';
 
 const checkProtocolVersionCapability = (protocolVersion: number) => {
     if (
@@ -237,56 +236,6 @@ const getDomainUrl = (url?: string) => {
     const domain = url?.replace(/^https?:\/\//, '') ?? '';
     return domain;
 };
-const handleTransaction = async (
-    data: MessageSSE,
-    state: TonConnectType,
-    isTestNet: boolean,
-    params?: Request,
-    tonAddressData?: AddressListItemType,
-    isDummySecretKey?: boolean,
-): Promise<WalletResponse<RpcMethod> | undefined> => {
-    const tonConnect = new TonConnectService();
-    let response;
-    if (data.request && data.from && tonAddressData && params) {
-        response = await tonConnect.handleRequestFromRemoteBridge(
-            data.request,
-            data.from,
-            state,
-            tonAddressData.privateKey,
-            tonAddressData.publicKey,
-            params.from,
-            isTestNet,
-            tonAddressData?.version,
-            isDummySecretKey ?? false,
-        );
-    }
-    return response;
-};
-const handleTransactionFromInjectBridge = async (
-    getAllConnect: TonConnectType,
-    webViewUrl: string,
-    isTestNet: boolean,
-    tonAddressData?: AddressListItemType,
-    requestTransaction?: AppRequest<RpcMethod>,
-    isDummySecretKey?: boolean,
-): Promise<WalletResponse<RpcMethod> | undefined> => {
-    let response;
-    const tonConnect = new TonConnectService();
-    if (tonAddressData && requestTransaction) {
-        response = await tonConnect.handleRequestFromInjectBridge(
-            webViewUrl,
-            requestTransaction,
-            getAllConnect,
-            tonAddressData?.privateKey,
-            tonAddressData?.publicKey,
-            tonAddressData?.address,
-            isTestNet,
-            tonAddressData?.version,
-            isDummySecretKey ?? false,
-        );
-    }
-    return response;
-};
 const convertDataAllConnect = (
     isTestNet: boolean,
     address: string,
@@ -309,8 +258,6 @@ const TonConnectUtils = {
     getManifest,
     internalMessages,
     getDomainUrl,
-    handleTransaction,
-    handleTransactionFromInjectBridge,
     convertDataAllConnect,
 };
 

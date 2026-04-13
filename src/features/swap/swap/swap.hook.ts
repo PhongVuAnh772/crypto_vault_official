@@ -44,6 +44,7 @@ import {
     SwapSelector,
     SwapTypeFrom,
 } from './swap.types';
+import { useAds } from 'src/features/ads/ads.hook';
 import useWallet from './swap.wallet.hook';
 
 const _rateDefault = '1';
@@ -618,6 +619,8 @@ const useSwap = ({ navigation }: RootNavigationType) => {
         [changeNowService, t],
     );
 
+    const { activeBenefit, refreshBenefit } = useAds();
+
     const getEstimateExchangeAmount = useCallback(
         async (
             youGet: CurrencyChangeNow,
@@ -633,11 +636,21 @@ const useSwap = ({ navigation }: RootNavigationType) => {
                     toNetwork: youGet.network,
                     fromAmount,
                 });
-                const rate = result.toAmount / result.fromAmount;
+                
+                let toAmount = result.toAmount;
+                let rate = toAmount / result.fromAmount;
+
+                // Apply spread discount if benefit is active
+                if (activeBenefit) {
+                    const discountValue = Number(activeBenefit.value) || 0.3;
+                    const boost = toAmount * (discountValue / 100); // Giả định boost 0.3% giá trị nhận được
+                    toAmount += boost;
+                    rate = toAmount / result.fromAmount;
+                }
 
                 setFrom(prev => ({
                     ...prev,
-                    amountYouGet: result.toAmount.toString(),
+                    amountYouGet: toAmount.toString(),
                     forecast: result.transactionSpeedForecast ?? '',
                     rate: `${_rateDefault} ${youSend.ticker.toUpperCase()} ~ ${Utils.formattedBalanceCurrency(rate)} ${youGet.ticker.toUpperCase()}`,
                 }));
@@ -651,8 +664,17 @@ const useSwap = ({ navigation }: RootNavigationType) => {
                 onSetLoadingButton(false);
             }
         },
-        [changeNowService, t],
+        [changeNowService, activeBenefit, t],
     );
+
+    const handleAdFinished = useCallback(async () => {
+        await refreshBenefit();
+        // Sau khi có benefit mới, fetch lại quote nếu đã nhập amount
+        if (from.amountYouSend && currencies.youGetCurrency && currencies.youSendCurrency) {
+            getEstimateExchangeAmount(currencies.youGetCurrency, currencies.youSendCurrency, from.amountYouSend);
+        }
+    }, [refreshBenefit, from.amountYouSend, currencies.youGetCurrency, currencies.youSendCurrency, getEstimateExchangeAmount]);
+
 
     const handleGetBalanceYouSend = useCallback(
         async (currency: CurrencyChangeNow) => {
@@ -1132,6 +1154,8 @@ const useSwap = ({ navigation }: RootNavigationType) => {
         refSendMaximum,
         onCloseSendMaximumBottomSheet,
         onShowSendMaximumBottomSheet,
+        activeBenefit,
+        handleAdFinished,
     };
 };
 export default useSwap;

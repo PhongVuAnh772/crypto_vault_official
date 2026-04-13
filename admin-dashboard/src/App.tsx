@@ -60,8 +60,9 @@ interface UserWallet { id: string; address: string; chain_name: string; wallet_t
 interface TransJob { id: string; type: string; status: string; chain_name: string; tx_hash: string; created_at: string; }
 interface AppConfig { features: { p2pEnabled: boolean; swapEnabled: boolean; bridgeEnabled: boolean; maintenanceMode: boolean; }; }
 interface Withdrawal { id: string; user_id: string; token_id: string; amount: string; status: string; created_at: string; }
+interface CustomTokenRequest { id: string; chain_id: string; chain_name: string; symbol: string; name: string; decimals: number; contract_address: string; status: string; created_at: string; metadata?: any; }
 
-type Tab = 'overview' | 'tokens' | 'chains' | 'p2p' | 'withdrawals' | 'wallets' | 'users' | 'jobs' | 'config';
+type Tab = 'overview' | 'tokens' | 'custom-tokens' | 'chains' | 'p2p' | 'withdrawals' | 'wallets' | 'users' | 'jobs' | 'config';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -82,6 +83,7 @@ function App() {
   const [wallets, setWallets] = useState<UserWallet[]>([]);
   const [jobs, setJobs] = useState<TransJob[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+  const [customTokenRequests, setCustomTokenRequests] = useState<CustomTokenRequest[]>([]);
   const [config, setConfig] = useState<AppConfig | null>(null);
   // Không lưu State Price ở Root App để tránh Re-render hàng loạt mỗi Mili-giây khiến Web bị treo
   // const [prices, setPrices] = useState<Record<string, number>>({});
@@ -99,7 +101,7 @@ function App() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, wdRes, configRes] = await Promise.all([
+      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, wdRes, customRes, configRes] = await Promise.all([
         axios.get(`${API_BASE}/api/v1/admin/tokens`),
         axios.get(`${API_BASE}/api/v1/admin/profiles`),
         axios.get(`${API_BASE}/api/v1/admin/chains`),
@@ -108,6 +110,7 @@ function App() {
         axios.get(`${API_BASE}/api/v1/admin/wallets`),
         axios.get(`${API_BASE}/api/v1/admin/jobs`),
         axios.get(`${API_BASE}/api/v1/admin/withdrawals`),
+        axios.get(`${API_BASE}/api/v1/admin/custom-tokens`),
         axios.get(`${API_BASE}/api/v1/config`)
       ]);
       setTokens(tokenRes.data.data || []);
@@ -118,6 +121,7 @@ function App() {
       setWallets(walletRes.data.data || []);
       setJobs(jobRes.data.data || []);
       setWithdrawals(wdRes.data.data || []);
+      setCustomTokenRequests(customRes.data.data || []);
       setConfig({ features: configRes.data.features });
     } catch (err) {
       console.error('Fetch failed', err);
@@ -185,6 +189,22 @@ function App() {
     } catch (err) { alert('Dispute resolution failed'); }
   };
 
+  const handleApproveToken = async (id: string) => {
+    try {
+      await axios.post(`${API_BASE}/api/v1/admin/custom-tokens/${id}/approve`);
+      alert('Token Approved!');
+      fetchAllData();
+    } catch (err) { alert('Approval failed'); }
+  };
+
+  const handleRejectToken = async (id: string) => {
+    try {
+      await axios.post(`${API_BASE}/api/v1/admin/custom-tokens/${id}/reject`);
+      alert('Token Rejected');
+      fetchAllData();
+    } catch (err) { alert('Rejection failed'); }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -220,6 +240,7 @@ function App() {
         <nav className="nav-list">
           <NavItem icon={<LayoutDashboard size={18} />} label="Overview" active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} />
           <NavItem icon={<Layers size={18} />} label="Asset Tokens" active={activeTab === 'tokens'} onClick={() => setActiveTab('tokens')} />
+          <NavItem icon={<Activity size={18} />} label="Custom Tokens" active={activeTab === 'custom-tokens'} onClick={() => setActiveTab('custom-tokens')} />
           <NavItem icon={<Globe size={18} />} label="Network Chains" active={activeTab === 'chains'} onClick={() => setActiveTab('chains')} />
           <NavItem icon={<ShoppingCart size={18} />} label="P2P Marketplace" active={activeTab === 'p2p'} onClick={() => setActiveTab('p2p')} />
           <NavItem icon={<ArrowRightLeft size={18} />} label="Withdrawals" active={activeTab === 'withdrawals'} onClick={() => setActiveTab('withdrawals')} />
@@ -298,6 +319,33 @@ function App() {
                   </td>
                 </tr>
               )} />}
+
+              {activeTab === 'custom-tokens' && (
+                <div className="glass-card">
+                  <h3>User Custom Token Requests</h3>
+                  <p style={{ color: 'var(--text-secondary)', marginBottom: '1rem' }}>Review tokens added by mobile users. Approving will add them to official Asset Tokens list.</p>
+                  <TableLayout items={customTokenRequests} headers={['Asset', 'Chain', 'Contract Address', 'Requested By', 'Actions']} renderRow={(r: CustomTokenRequest) => (
+                    <tr key={r.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                          <div className="asset-icon">{r.symbol ? r.symbol[0] : '?'}</div>
+                          <div>
+                            <div style={{ fontWeight: 700 }}>{r.symbol}</div>
+                            <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{r.name}</div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{r.chain_name}</td>
+                      <td className="mono" style={{ fontSize: '0.8rem' }}>{r.contract_address}</td>
+                      <td className="mono" style={{ fontSize: '0.8rem' }}>{r.metadata?.user_address?.substring(0, 10)}...</td>
+                      <td>
+                        <button className="btn btn-primary" style={{ marginRight: 8, padding: '0.5rem 1rem' }} onClick={() => handleApproveToken(r.id)}>Approve</button>
+                        <button className="btn" style={{ padding: '0.5rem 1rem', background: 'var(--accent-red)', borderColor: 'var(--accent-red)' }} onClick={() => handleRejectToken(r.id)}>Reject</button>
+                      </td>
+                    </tr>
+                  )} />
+                </div>
+              )}
 
               {activeTab === 'chains' && <TableLayout items={chains} headers={['Network Name', 'Identifier', 'Arch', 'Protocol Support', 'Status', 'Toggle']} renderRow={(c: Chain) => (
                 <tr key={c.id}>

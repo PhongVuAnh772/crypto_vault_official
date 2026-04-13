@@ -28,4 +28,13 @@ const appConstants = {
   listColorsForAccountAndWallet: listColorsForAccountAndWallet,
 };
 
+export const ADMOB_APP_ID = {
+  bannerAdsAndroid: "ca-app-pub-4977121797292191/7375831287",
+  bannerAdsIOS: "ca-app-pub-4977121797292191/2534356113",
+  interstitialAdsAndroid: "ca-app-pub-4977121797292191/2534356113",
+  interstialActionIOS: "ca-app-pub-4977121797292191/4332308503",
+  rewardedAdsAndroid: "ca-app-pub-4977121797292191/5735234520",
+  rewaredAdsIOS: "ca-app-pub-4977121797292191/7922414161"
+};
+
 export default appConstants;

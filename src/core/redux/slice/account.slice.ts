@@ -1,5 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createAsyncThunk, createSlice, createSelector } from "@reduxjs/toolkit";
 import { persistReducer } from "redux-persist";
 import appConstants from "src/core/constants/AppConstants";
 import EnvConfig from "src/core/constants/EnvConfig";
@@ -18,7 +18,7 @@ import {
   deleteTonCollectionByAccount,
 } from "src/core/redux/slice/NFT/NFTImport.slice";
 import { RootState } from "src/core/redux/store";
-import { getIsTestnet } from "./app.slice";
+import { getIsTestnet } from "./app.selector";
 import AccountServices from "src/core/services/AccountServices";
 import AccountUtils from "src/core/utils/accountUtils";
 import Utils from "src/core/utils/commonUtils";
@@ -767,6 +767,11 @@ export const accountSlice = createSlice({
     setSelectAccountId: (state, action: PayloadAction<string>) => {
       state.selectAccountId = action.payload;
     },
+    lockAccount: (state) => {
+      state.pin = null;
+      state.accountLists = undefined;
+      state.temporaryMnemonic = null;
+    },
     resetWalletSlice: () => initialState,
   },
   extraReducers: (build) => {
@@ -871,6 +876,7 @@ export const {
   setAccount,
   setTemporaryMnemonic,
   setPin,
+  lockAccount,
   resetWalletSlice,
   setProtocolListsWithSupportedTokensFromBE,
   setResetAction,
@@ -894,8 +900,18 @@ export const getAccountState = (state: RootState) => state?.account;
 export const getProtocolFromBE = (state: RootState) =>
   state?.account?.protocolListsFromBE;
 export const getResetAction = (state: RootState) => state?.account?.resetAction;
+export const selectorProtocolListsWithSupportedTokensFromBE = (state: RootState) =>
+  state?.account?.protocolListsWithSupportedTokensFromBE;
+
+export const selectorFilteredProtocolListsWithSupportedTokens = createSelector(
+  [selectorProtocolListsWithSupportedTokensFromBE, getIsTestnet],
+  (protocols, isTestnet) => {
+    if (!protocols) return [];
+    return protocols.filter(p => !!p.isTestnet === !!isTestnet);
+  }
+);
 export const getProtocolDataLists = (state: RootState) => {
-  return state?.account?.protocolListsWithSupportedTokensFromBE;
+  return selectorFilteredProtocolListsWithSupportedTokens(state);
 };
 
 const ProtocolListConfig = {

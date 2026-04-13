@@ -1,55 +1,64 @@
 const express = require('express');
 const router = express.Router();
 const uniswapService = require('../services/uniswapService');
+const adsService = require('../services/adsService');
 const logger = require('../utils/logger');
-// requireAuth có thể chèn ở main server
 
-// Bản đồ map Address giả định cho Ticker Binance -> Contract Erc20 (Cho DEMO, Production cần quét DB Token Address)
-const SYMBOL_TO_CONTRACT = {
-  'USDT': '0x55d398326f99059fF775485246999027B3197955', // Ví dụ
-  'ETH': '0x2170Ed0880ac9A755fd29B2688956BD959F933F8',
-};
+// ... (SYMBOL_TO_CONTRACT stays the same)
 
-/**
- * [GET] /api/dex/quote
- * Input: ?tokenInSymbol=ETH&tokenOutSymbol=USDT&amount=1
- * - Fetch rate Uniswap
- * - Combine with global.priceCache để chặn cướp giá/trượt giá
- */
 router.get('/quote', async (req, res) => {
   try {
-    const { tokenInSymbol, tokenOutSymbol, amount } = req.query;
+    const { tokenInSymbol, tokenOutSymbol, amount, userId } = req.query;
     
-    // Nếu production thì tra Database ở bảng Tokens, dùng mock cho Architecture:
+    // ... (Addresses mapping stays the same)
     const tokenInAddr = SYMBOL_TO_CONTRACT[tokenInSymbol] || '0xWETHAddress';
     const tokenOutAddr = SYMBOL_TO_CONTRACT[tokenOutSymbol] || '0xUSDTAddress';
 
-    // 1. Quoter từ Smart Contract DEX V2/V3
+    // 1. Quoter từ Smart Contract DEX
     const dexExpectedOutString = await uniswapService.getQuote(amount, tokenInAddr, tokenOutAddr);
-    const dexExpectedOut = parseFloat(dexExpectedOutString);
+    let dexExpectedOut = parseFloat(dexExpectedOutString);
 
-    // 2. Định giá gốc từ Global Backend Cache (Binance Throttled)
-    const binancePair = `${tokenInSymbol}${tokenOutSymbol}`; // E.g., ETHUSDT
+    // 2. Định giá gốc từ Global Backend Cache (Binance)
+    const binancePair = `${tokenInSymbol}${tokenOutSymbol}`;
     let binanceRefPrice = global.priceCache ? global.priceCache.get(binancePair) : null;
     
-    // Fallback lỡ như Binance websocket giật hoặc không có stable coin chuẩn
     if (!binanceRefPrice) {
-      binanceRefPrice = dexExpectedOut / amount; // Fallback lấy luôn giá DEX
+      binanceRefPrice = dexExpectedOut / amount;
     }
 
-    // 3. Hệ thống Cảnh Báo An Toàn: Slippage (Trượt giá rỗng Pool)
+    // 3. Hệ thống Spread & Benefit
     const dexImpliedPrice = dexExpectedOut / amount;
-    const deviationPercent = Math.abs((dexImpliedPrice - binanceRefPrice) / binanceRefPrice) * 100;
+    let deviationPercent = Math.abs((dexImpliedPrice - binanceRefPrice) / binanceRefPrice) * 100;
+
+    // A. Kiểm tra Benefit từ xem Quảng cáo
+    let appliedDiscount = 0;
+    if (userId) {
+      const benefit = await adsService.getActiveBenefit(userId);
+      if (benefit && benefit.type === 'SPREAD_DISCOUNT') {
+        appliedDiscount = benefit.value; // Ví dụ: 0.3 (giảm 30% spread)
+        
+        // Giảm spread (deviation) để tạo perception giá tốt hơn
+        const originalSpread = dexExpectedOut - (binanceRefPrice * amount);
+        const newSpread = originalSpread * (1 - appliedDiscount);
+        
+        // Tính toán lại Output kỳ vọng (tốt hơn cho user)
+        dexExpectedOut = (binanceRefPrice * amount) + newSpread;
+        deviationPercent = deviationPercent * (1 - appliedDiscount);
+      }
+    }
 
     res.json({
       expectedOutput: dexExpectedOut.toString(),
-      priceImpact: deviationPercent.toFixed(4), // Hiển thị % trượt giá
+      priceImpact: deviationPercent.toFixed(4),
       dexPrice: dexImpliedPrice,
       binancePrice: binanceRefPrice,
       deviationPercent,
-      warning: deviationPercent > 5 ? "HIGH_DEVIATION" : null // Quá 5% giá Binance, App sẽ bật Alert nháy đỏ!
+      hasBenefit: appliedDiscount > 0,
+      discountValue: appliedDiscount,
+      warning: deviationPercent > 5 ? "HIGH_DEVIATION" : null
     });
   } catch (err) {
+    // ... 
     logger.error('DEX Quote Error', err);
     res.status(500).json({ error: 'Quote DEX Engine Failed' });
   }

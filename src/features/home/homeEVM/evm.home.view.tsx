@@ -1,3 +1,4 @@
+import { Feather } from '@expo/vector-icons';
 import { t } from "i18next";
 import React from 'react';
 import { Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -9,6 +10,7 @@ import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from 'src/core/styles';
 import Utils from 'src/core/utils/commonUtils';
+import NativeAd from 'src/features/ads/components/NativeAd';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import DraggableWidgets from '../components/DraggableWidgets';
@@ -211,9 +213,22 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                                     style={styles.promoImage}
                                 />
                             </TouchableOpacity>
+                            {/* Slide 3 - Offerwall */}
+                            <TouchableOpacity
+                                activeOpacity={0.9}
+                                style={styles.promoCardInside}
+                                onPress={() => navigation.navigate(HomeStackScreenKey.Offerwall)}
+                            >
+                                <View style={styles.promoTextContainer}>
+                                    <Text style={styles.promoTitle}>Earn More Rewards</Text>
+                                    <Text style={styles.promoSub}>Complete tasks to earn up to 10 USDT</Text>
+                                </View>
+                                <Feather name="gift" size={40} color={theme.colors.onPrimaryContainer} />
+                            </TouchableOpacity>
                         </Swiper>
                     </View>
 
+                    <NativeAd />
                     <ListCrypto
                         data={listCryptoData}
                         handleSeeAll={goToMangeCryptoScreen}

@@ -87,6 +87,7 @@ enum HomeStackScreenKey {
   P2POrderDetails = "P2POrderDetails",
   Trading = "Trading",
   TradingDetail = "TradingDetail",
+  Offerwall = "Offerwall",
 }
 
 enum CreateWalletStackScreenKey {

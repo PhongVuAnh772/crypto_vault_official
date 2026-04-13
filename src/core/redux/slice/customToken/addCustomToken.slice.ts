@@ -274,9 +274,6 @@ export const localTokenReducer = createSlice({
         if (tokens[lowerCaseToken]) {
           token.balance = +tokens[lowerCaseToken].balance;
           token.balanceCurrency = tokens[lowerCaseToken].usd_price;
-        } else {
-          token.balance = 0;
-          token.balanceCurrency = 0;
         }
         return token;
       });
@@ -290,9 +287,6 @@ export const localTokenReducer = createSlice({
           if (tokens[lowerCaseToken]) {
             token.balance = +tokens[lowerCaseToken].balance;
             token.balanceCurrency = tokens[lowerCaseToken].usd_price;
-          } else {
-            token.balance = 0;
-            token.balanceCurrency = 0;
           }
           return token;
         }
@@ -370,6 +364,7 @@ export const getFullListTokens = createSelector(
   ],
   (data, listTokenByProtocol, listTokenBE) => {
     if (!data) return [];
+    const { currentProtocol, currentWallet } = data;
 
     const listLocal =
       listTokenByProtocol[

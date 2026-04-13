@@ -10,6 +10,7 @@ import {
     selectorIspressActionNoti,
     setRequirePinCode,
 } from 'src/core/redux/slice/app.slice';
+import { lockAccount } from 'src/core/redux/slice/account.slice';
 import SecureStorage from 'src/core/services/SecureStorage';
 
 const useRequirePinCode = () => {
@@ -36,6 +37,7 @@ const useRequirePinCode = () => {
 
                     if (walletEncryptedData) {
                         dispatch(setRequirePinCode(true));
+                        dispatch(lockAccount());
                     } else {
                         dispatch(setRequirePinCode(false));
                     }

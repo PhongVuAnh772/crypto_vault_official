@@ -1,6 +1,6 @@
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { StatusBar } from "expo-status-bar";
-import React from "react";
+import React, { useEffect } from "react";
 import { Provider as PaperProvider } from "react-native-paper";
 import CommonErrorModal from "./components/layout/CommonErrorModal";
 import ForceUpdateModal from "./components/layout/ForceUpdateModal";
@@ -18,6 +18,7 @@ import useWalletKitEventsManager from "./core/hooks/useWalletKitEventsManager";
 import TonConnectLayout from "./features/tonConnect";
 import WalletConnectModal from "./features/walletConnect/indext";
 import AppNavigator from "./navigation";
+
 const Main = () => {
   const { paperTheme, fonts, barStyle } = useAppThemeHook();
   const { isModalShow, isWebViewShowing, enablePassword } = useRequirePinCode();

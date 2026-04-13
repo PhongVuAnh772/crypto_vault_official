@@ -215,12 +215,11 @@ export const useDAppBridge = () => {
         setVisibleLoading(true);
         try {
             const response =
-                await TonConnectUtils.handleTransactionFromInjectBridge(
-                    getAllConnect,
-                    titleDApp,
-                    isTestNet,
-                    tonAddressData,
+                await tonConnect.handleTransactionFromInjectBridge(
+                    webViewUrl,
                     requestTransaction,
+                    getAllConnect,
+                    tonAddressData,
                 );
             if (response) {
                 postMessage({
@@ -282,12 +281,12 @@ export const useDAppBridge = () => {
                     setIsCheckEmulate(false);
                 } else {
                     const response =
-                        (await TonConnectUtils.handleTransactionFromInjectBridge(
+                        (await tonConnect.handleTransactionFromInjectBridge(
+                            webViewUrl,
+                            requestTransaction as any,
                             getAllConnect,
-                            titleDApp,
-                            isTestNet,
                             tonAddressData,
-                            requestTransaction,
+                            isTestNet,
                             true,
                         )) as any;
 

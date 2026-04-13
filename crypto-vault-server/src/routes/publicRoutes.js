@@ -154,6 +154,7 @@ router.get('/mobile/protocols/get-supported-tokens', async (req, res) => {
         updatedAt: chain.updated_at,
         logo: chain.metadata?.icon_url || 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/info/logo.png',
         isDefault: true,
+        isTestnet: chain.is_testnet,
         beneficiary: {
           status: 'approved',
           walletAddress: beneficiaryAddress

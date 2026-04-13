@@ -22,6 +22,7 @@ import {
   default as Utils,
 } from "src/core/utils/commonUtils";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
+import { tokenService } from "src/core/services/api.service";
 import {
   AddTokenParamsType,
   DetailJettonByAddressData,
@@ -182,6 +183,23 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
         });
         throw new Error(t(LanguageKey.token_already_added));
       }
+      // Notify backend for Admin management
+      try {
+        await tokenService.requestCustomToken({
+          chain_id: (protocolBaseData.chainId || protocolBaseData._id).toString(),
+          symbol: symbolToken,
+          name: nameToken,
+          decimals: Number(decimalsToken),
+          contract_address: parsedRawAddress,
+          metadata: {
+            logo: icon,
+            user_address: wallet.address
+          }
+        });
+      } catch (apiErr) {
+        console.warn('Failed to sync custom token to backend', apiErr);
+      }
+
       dispatch(addCustomToken(data));
       navigation.goBack();
     } catch (error) {

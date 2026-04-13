@@ -19,6 +19,7 @@ import {
 } from 'src/core/redux/slice/account.slice';
 import { AccountType } from 'src/core/redux/slice/account.type';
 import TonConnectUtils from 'src/core/services/TonConnect/TonConnectUntil';
+import TonConnectService from 'src/core/services/TonConnect/TonConnectService';
 import TonServices from 'src/core/services/TonServices';
 import { TonAccountsType } from 'src/core/services/TonServices/type';
 import { getAccountTonWithAndAddress } from 'src/core/utils/accountUtils';
@@ -36,6 +37,7 @@ const useTonConnectTransaction = () => {
     const isTestNet = EnvConfig.ENV === 'development';
     const insets = useAppSafeAreaInsets();
     const tonService = new TonServices();
+    const tonConnect = new TonConnectService();
     const data = useAppSelector(getMessageSSE);
     const state = useAppSelector(getAppConnection);
     const { sessionCrypto } = useContext(AppContext);
@@ -72,7 +74,7 @@ const useTonConnectTransaction = () => {
             if (account.balance <= amountRequest) {
                 setInsufficientBalance(true);
             } else {
-                const response = (await TonConnectUtils.handleTransaction(
+                const response = (await tonConnect.handleTransaction(
                     data,
                     state,
                     isTestNet,
@@ -102,7 +104,7 @@ const useTonConnectTransaction = () => {
         setRequirePinCode(false);
         setVisibleLoading(true);
         try {
-            const response = await TonConnectUtils.handleTransaction(
+            const response = await tonConnect.handleTransaction(
                 data,
                 state,
                 isTestNet,

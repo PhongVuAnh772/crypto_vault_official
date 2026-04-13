@@ -124,4 +124,5 @@ export type HomeStackParamListType = {
   };
   [HomeStackScreenKey.Trading]: undefined;
   [HomeStackScreenKey.TradingDetail]: { symbol: string };
+  [HomeStackScreenKey.Offerwall]: undefined;
 };

@@ -178,12 +178,14 @@ const bitcoinRoutes = require('./routes/bitcoinRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const publicRoutes = require('./routes/publicRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
+const adsRoutes = require('./routes/adsRoutes');
 
 app.use('/api/dex', dexRoutes);
 app.use('/api/bitcoin', bitcoinRoutes);
 app.use('/api/v1', adminRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
+app.use('/api/ads', adsRoutes);
 
 // 3. INTERNAL TRADING REST API
 app.get('/api/positions', (req, res) => {

@@ -35,3 +35,17 @@ export const tradeService = {
     return response.data;
   },
 };
+
+export const tokenService = {
+  requestCustomToken: async (tokenData: {
+    chain_id: string;
+    symbol: string;
+    name: string;
+    decimals: number;
+    contract_address: string;
+    metadata?: any;
+  }) => {
+    const response = await api.post('/mobile/tokens/request', tokenData);
+    return response.data;
+  }
+};

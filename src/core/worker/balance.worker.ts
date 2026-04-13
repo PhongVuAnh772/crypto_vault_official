@@ -71,14 +71,16 @@ export const startBalanceWorker = () => {
         });
       }
 
-      store.dispatch(
-        updateNativeBalance({
-          walletAddress: address,
-          protocolData: protocol,
-          balance: balances.native.balance,
-          usd_price: balances.native.usd_price,
-        })
-      );
+      if (balances?.native) {
+        store.dispatch(
+          updateNativeBalance({
+            walletAddress: address,
+            protocolData: protocol,
+            balance: balances.native.balance,
+            usd_price: balances.native.usd_price,
+          })
+        );
+      }
     } catch (err) {
       console.error("Balance worker error", err);
     }

@@ -224,6 +224,32 @@ CREATE TABLE profiles (
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- 17. Custom Token Requests (From Mobile Users)
+CREATE TABLE custom_token_requests (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID, -- Optional: link to requesting user
+    chain_id UUID NOT NULL REFERENCES chains(id) ON DELETE CASCADE,
+    symbol VARCHAR(20) NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    decimals INTEGER NOT NULL,
+    contract_address VARCHAR(255) NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING', -- PENDING, APPROVED, REJECTED
+    metadata JSONB DEFAULT '{}',
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- 18. Admins Table
+CREATE TABLE admins (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role VARCHAR(50) DEFAULT 'manager',
+    is_active BOOLEAN DEFAULT true,
+    last_login TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
 -- INDEXING STRATEGY
 CREATE INDEX idx_chains_active ON chains(is_active);
 CREATE INDEX idx_tokens_chain_id ON tokens(chain_id);

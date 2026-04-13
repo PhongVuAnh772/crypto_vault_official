@@ -21,13 +21,15 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
 import { getPin } from "src/core/redux/slice/account.slice";
 import {
+  setEnableFaceIdOrTouch,
+  setIsTestnet,
+} from "src/core/redux/slice/app.slice";
+import {
   getIsTestnet,
   getLockoutLocalAuthentication,
   getSwapGuidingShow,
   selectorEnableFaceIdOrTouch,
-  setEnableFaceIdOrTouch,
-  setIsTestnet,
-} from "src/core/redux/slice/app.slice";
+} from "src/core/redux/slice/app.selector";
 import { getIsShowSwap } from "src/core/redux/slice/swap/swap.slice";
 import FaceIdOrTouch from "src/core/services/FaceIdOrTouch";
 import { FaceIdOrTouchCheckType } from "src/core/services/FaceIdOrTouch/faceIdOrTouchType";

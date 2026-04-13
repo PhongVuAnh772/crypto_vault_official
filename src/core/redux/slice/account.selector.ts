@@ -13,6 +13,7 @@ import {
     selectorSelectedCurrencySetting,
     selectorSettingCurrency,
 } from './app.slice';
+import { getThemeMode } from './app.selector';
 
 export const useSelectedCurrencySetting = () => {
     const selectedCurrencySetting = useAppSelector(

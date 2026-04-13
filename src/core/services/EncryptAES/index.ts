@@ -12,32 +12,59 @@ class EncryptAES {
             typeof variable.iv === 'string'
         );
     };
-    generateKey = (password: string) =>
-        Aes.pbkdf2(password, 'ledgerify', 5000, 256, 'sha256');
 
-    encryptText = async (text: string, key: string) => {
-        const keyAes = await this.generateKey(key);
+    /**
+     * Generate a key using PBKDF2
+     * @param password PIN or passphrase
+     * @param salt Unique salt per user
+     * @returns Derived key
+     */
+    generateKey = (password: string, salt: string) =>
+        Aes.pbkdf2(password, salt, 100000, 256, 'sha256');
+
+    /**
+     * Generate a random master key
+     * @returns 32-byte random key
+     */
+    generateRandomKey = async () => {
+        return await Aes.randomKey(32);
+    };
+
+    /**
+     * Generate a random salt
+     * @returns 16-byte random salt
+     */
+    generateRandomSalt = async () => {
+        return await Aes.randomKey(16);
+    };
+
+    /**
+     * Encrypt text using a technical key (already derived or master key)
+     */
+    encryptTextWithKey = async (text: string, technicalKey: string) => {
         const iv = await Aes.randomKey(16);
-        const cipher = await Aes.encrypt(text, keyAes, iv, 'aes-256-cbc');
+        const cipher = await Aes.encrypt(text, technicalKey, iv, 'aes-256-cbc');
         return {
             cipher,
             iv,
         };
     };
 
-    decryptText = async (
+    /**
+     * Decrypt text using a technical key
+     */
+    decryptTextWithKey = async (
         encryptedData: {
             cipher: string;
             iv: string;
         },
-        key: string,
+        technicalKey: string,
     ) => {
         const checkData = this.isAccountEncryptedType(encryptedData);
-        const keyAes = await this.generateKey(key);
         if (checkData) {
             const res = Aes.decrypt(
                 encryptedData.cipher,
-                keyAes,
+                technicalKey,
                 encryptedData.iv,
                 'aes-256-cbc',
             );
@@ -48,19 +75,18 @@ class EncryptAES {
         }
     };
 
-    encryptObject = async (value: object, key: string) => {
+    encryptObject = async (value: object, technicalKey: string) => {
         const stringValue: string = JSON.stringify(value);
-
-        return this.encryptText(stringValue, key);
+        return this.encryptTextWithKey(stringValue, technicalKey);
     };
 
     decryptObject = async (
         encryptedData: AccountEncryptedType,
-        key: string,
+        technicalKey: string,
     ) => {
         const checkTypeData = this.isAccountEncryptedType(encryptedData);
         if (checkTypeData) {
-            const decryptDataRes = await this.decryptText(encryptedData, key);
+            const decryptDataRes = await this.decryptTextWithKey(encryptedData, technicalKey);
             if (decryptDataRes) {
                 return JSON.parse(decryptDataRes);
             } else {

@@ -15,11 +15,13 @@ import { TonAccountsType } from 'src/core/services/TonServices/type';
 import {
     IConnectedApp,
     IConnectedAppConnection,
+    MessageSSE,
     Request,
     TonConnectBridgeType,
     TonConnectEvent,
     TonConnectType,
 } from 'src/features/tonConnect/slice/tonConnect.type';
+import { AddressListItemType } from 'src/core/redux/slice/account.type';
 
 import { tonConnectDeviceInfo } from 'src/core/constants/TonConnectDevice';
 import TransferUtils from 'src/core/services/TonTransactions/transferUtils';
@@ -418,6 +420,54 @@ class TonConnectService {
             isTestNet,
             isDummySecretKey,
         );
+    }
+    async handleTransaction(
+        data: MessageSSE,
+        state: TonConnectType,
+        isTestNet: boolean,
+        params?: Request,
+        tonAddressData?: AddressListItemType,
+        isDummySecretKey?: boolean,
+    ): Promise<WalletResponse<RpcMethod> | undefined> {
+        let response;
+        if (data.request && data.from && tonAddressData && params) {
+            response = await this.handleRequestFromRemoteBridge(
+                data.request,
+                data.from,
+                state,
+                tonAddressData.privateKey,
+                tonAddressData.publicKey,
+                params.from,
+                isTestNet,
+                tonAddressData?.version,
+                isDummySecretKey ?? false,
+            );
+        }
+        return response;
+    }
+    async handleTransactionFromInjectBridge(
+        webViewUrl: string,
+        requestTransaction: AppRequest<RpcMethod>,
+        getAllConnect: TonConnectType,
+        tonAddressData?: AddressListItemType,
+        isTestNet?: boolean,
+        isDummySecretKey?: boolean,
+    ): Promise<WalletResponse<RpcMethod> | undefined> {
+        let response;
+        if (tonAddressData && requestTransaction) {
+            response = await this.handleRequestFromInjectBridge(
+                webViewUrl,
+                requestTransaction,
+                getAllConnect,
+                tonAddressData?.privateKey,
+                tonAddressData?.publicKey,
+                tonAddressData?.address,
+                isTestNet ?? false,
+                tonAddressData?.version,
+                isDummySecretKey ?? false,
+            );
+        }
+        return response;
     }
 }
 

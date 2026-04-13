@@ -39,6 +39,20 @@ router.get('/mobile/cryptos/currency', async (req, res) => {
   }
 });
 
+router.post('/mobile/tokens/request', async (req, res) => {
+  try {
+    const { chain_id, symbol, name, decimals, contract_address, user_id, metadata } = req.body;
+    const result = await db.query(
+      `INSERT INTO custom_token_requests (chain_id, symbol, name, decimals, contract_address, user_id, metadata) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+      [chain_id, symbol, name, decimals, contract_address, user_id, metadata || {}]
+    );
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // --- AUTHENTICATION & INITIALIZE ---
 router.post('/admin/setup', async (req, res) => {
   try {
@@ -340,6 +354,65 @@ router.post('/admin/p2p/disputes/:escrowId/resolve', requireRole(['super_admin']
 
     const result = await adminWorkflowService.resolveP2PDispute(escrowId, resolution, req.user.id, reason);
     res.json(result);
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// --- CUSTOM TOKEN REQUESTS ---
+router.get('/admin/custom-tokens', async (req, res) => {
+  try {
+    const result = await db.query(`
+      SELECT r.*, c.name as chain_name 
+      FROM custom_token_requests r 
+      JOIN chains c ON r.chain_id = c.id 
+      WHERE r.status = 'PENDING'
+      ORDER BY r.created_at DESC
+    `);
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/admin/custom-tokens/:id/approve', requireRole(['super_admin', 'manager']), async (req, res) => {
+  const client = await db.pool.connect();
+  try {
+    await client.query('BEGIN');
+    const { id } = req.params;
+    
+    // 1. Get request data
+    const reqData = await client.query('SELECT * FROM custom_token_requests WHERE id = $1', [id]);
+    if (reqData.rows.length === 0) throw new Error('Request not found');
+    const token = reqData.rows[0];
+
+    // 2. Insert into official tokens table
+    const insertResult = await client.query(
+      `INSERT INTO tokens (chain_id, symbol, name, decimals, contract_address, is_native, is_active, metadata) 
+       VALUES ($1, $2, $3, $4, $5, false, true, $6) 
+       ON CONFLICT (chain_id, symbol, contract_address) DO UPDATE SET is_active = true
+       RETURNING *`,
+      [token.chain_id, token.symbol, token.name, token.decimals, token.contract_address, token.metadata]
+    );
+
+    // 3. Update request status
+    await client.query('UPDATE custom_token_requests SET status = $1, updated_at = NOW() WHERE id = $2', ['APPROVED', id]);
+
+    await client.query('COMMIT');
+    res.json({ success: true, data: insertResult.rows[0] });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ success: false, error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+router.post('/admin/custom-tokens/:id/reject', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query("UPDATE custom_token_requests SET status = 'REJECTED', updated_at = NOW() WHERE id = $1", [id]);
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
