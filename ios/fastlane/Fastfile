@@ -1,0 +1,66 @@
+default_platform(:ios)
+
+platform :ios do
+  desc "Build the app and distribute via OTA server"
+  lane :ota do
+    # 1. Build the app
+    build_app(
+      scheme: "Ledgerify",
+      workspace: "Ledgerify.xcworkspace",
+      include_bitcode: false,
+      export_method: "development", # Đổi sang development để thử với tài khoản cá nhân
+      output_directory: "./build",
+      output_name: "Ledgerify.ipa",
+      xcargs: "-allowProvisioningUpdates"
+    )
+
+    # 2. Upload to S3 using Presigned URL (Bypass Render Timeout)
+    ota_server_url = ENV["OTA_SERVER_URL"] || "https://ota-distribution-v1.onrender.com"
+    ipa_path = lane_context[SharedValues::IPA_OUTPUT_PATH]
+    version = get_version_number(target: 'Ledgerify')
+    
+    UI.message("Requesting upload session from #{ota_server_url}...")
+    
+    # Step A: Get Presigned URL
+    session_response = sh("curl -s -X POST #{ota_server_url}/api/ota/session " \
+                          "-H 'Content-Type: application/json' " \
+                          "-d '{\"appName\":\"Ledgerify\", \"version\":\"#{version}\", \"bundleId\":\"com.phongvuanh772.CryptoVault\"}'")
+    
+    session_data = JSON.parse(session_response)["data"]
+    upload_url = session_data["uploadUrl"]
+    
+    UI.message("Uploading IPA directly to S3 (this may take a few minutes)...")
+    
+    # Step B: Direct Upload to S3
+    sh("curl -X PUT '#{upload_url}' " \
+       "-H 'Content-Type: application/octet-stream' " \
+       "--upload-file '#{ipa_path}'")
+    
+    UI.message("Finalizing distribution...")
+    
+    # Step C: Publish metadata to server
+    publish_payload = {
+      id: session_data["id"],
+      appName: session_data["appName"],
+      version: session_data["version"],
+      bundleId: session_data["bundleId"],
+      ipaUrl: session_data["ipaUrl"]
+    }.to_json
+
+    File.write("publish_payload.json", publish_payload)
+
+    sh("curl -s -X POST #{ota_server_url}/api/ota/publish " \
+       "-H 'Content-Type: application/json' " \
+       "-d @publish_payload.json")
+    
+    File.delete("publish_payload.json") if File.exist?("publish_payload.json")
+    
+    UI.success("Successfully distributed via OTA!")
+  end
+
+  desc "Increment build number and build"
+  lane :build_only do
+    increment_build_number(xcodeproj: "Ledgerify.xcodeproj")
+    build_app(scheme: "Ledgerify")
+  end
+end

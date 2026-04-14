@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: default_platform" time="0.000146">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: build_app" time="267.495828">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: get_version_number" time="0.011351">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: curl -s -X POST https://ota-distribution-v1.onrender.com/api/ota/session -H 'Content-Type: application/json' -d '{&quot;appName&quot;:&quot;Ledgerify&quot;, &quot;version&quot;:&quot;1.0.0&quot;, &quot;bundleId&quot;:&quot;com.phongvuanh772.CryptoVault&quot;}'" time="0.943742">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: curl -X PUT 'https://amzn-s3-cryptovault.s3.ap-southeast-2.amazonaws.com/ota/1776183656825-_E6GYKH0RQ.ipa?X-Amz-Algorithm=AWS4-HMAC-SHA256&amp;X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&amp;X-Amz-Credential=AKIATBBVFVADPTXIZ7HW%2F20260414%2Fap-southeast-2%2Fs3%2Faws4_request&amp;X-Amz-Date=20260414T162056Z&amp;X-Amz-Expires=3600&amp;X-Amz-Signature=bd206505987b85aa411f7f84b1c722260511381b51e70270bbdaa18c50519a57&amp;X-Amz-SignedHeaders=host&amp;x-amz-checksum-crc32=AAAAAA%3D%3D&amp;x-amz-sdk-checksum-algorithm=CRC32&amp;x-id=PutObject' -H 'Content-Type: application/octet-stream' --upload-file '/Users/phongva/Code/CryptoVault/ios/build/Ledgerify.ipa'" time="166.354145">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: curl -s -X POST https://ota-distribution-v1.onrender.com/api/ota/publish -H 'Content-Type: application/json' -d @publish_payload.json" time="0.543925">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

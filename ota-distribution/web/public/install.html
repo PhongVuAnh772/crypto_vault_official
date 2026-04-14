@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>App Installation | OTA Distribution</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%), 
+                radial-gradient(at 100% 100%, rgba(168, 85, 247, 0.15) 0, transparent 50%);
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+            border-radius: 22%;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .version {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin-bottom: 32px;
+            display: block;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 16px;
+            border-radius: 16px;
+            display: inline-block;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .qr-container img {
+            display: block;
+            width: 180px;
+            height: 180px;
+        }
+
+        .btn-install {
+            display: block;
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
+        }
+
+        .btn-install:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-install:active {
+            transform: translateY(0);
+        }
+
+        .error-message {
+            color: #ef4444;
+            display: none;
+        }
+
+        .loading {
+            color: var(--text-dim);
+        }
+
+        #content {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loader" class="loading">Loading app details...</div>
+        <div id="error" class="error-message">App not found or link expired.</div>
+        
+        <div id="content">
+            <div class="app-icon" id="app-initial">V</div>
+            <h1 id="app-name">App Name</h1>
+            <span class="version" id="app-version">Version 1.0.0</span>
+
+            <div class="qr-container">
+                <img id="qr-code" src="" alt="Scan to install">
+            </div>
+
+            <button class="btn-install" id="install-btn">Download and Install</button>
+            
+            <p style="margin-top: 24px; font-size: 12px; color: var(--text-dim);">
+                Open this page in Safari on your iOS device to install.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const appId = window.location.pathname.split('/').pop();
+        const content = document.getElementById('content');
+        const loader = document.getElementById('loader');
+        const error = document.getElementById('error');
+
+        async function fetchDetails() {
+            try {
+                const response = await fetch(`/api/ota/details/${appId}`);
+                if (!response.ok) throw new Error('Not found');
+                
+                const data = await response.json();
+                
+                document.getElementById('app-name').textContent = data.appName;
+                document.getElementById('app-version').textContent = `Version ${data.version} (${data.bundleId})`;
+                document.getElementById('app-initial').textContent = data.appName.charAt(0).toUpperCase();
+                document.getElementById('qr-code').src = data.qrCode;
+                
+                document.getElementById('install-btn').onclick = () => {
+                    window.location.href = data.installUrl;
+                };
+
+                loader.style.display = 'none';
+                content.style.display = 'block';
+            } catch (err) {
+                loader.style.display = 'none';
+                error.style.display = 'block';
+            }
+        }
+
+        fetchDetails();
+    </script>
+</body>
+</html>

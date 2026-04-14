@@ -1,0 +1,8 @@
+app_identifier("com.phongvuanh772.CryptoVault") # The bundle identifier of your app
+apple_id("your-apple-id@email.com") # Your Apple ID
+
+# itc_team_id("12345678") # App Store Connect Team ID
+# team_id("A1B2C3D4E5") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+# https://docs.fastlane.tools/advanced/#appfile

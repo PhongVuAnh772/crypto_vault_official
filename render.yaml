@@ -28,5 +28,23 @@ services:
       - key: VITE_API_URL
         fromService:
           type: web
-          name: cryptovault-backend
-          property: host
+  # --- SERVICE 3: OTA APP DISTRIBUTION ---
+  - type: web
+    name: ota-app-distribution
+    runtime: docker
+    region: singapore
+    dockerContext: ./ota-distribution
+    dockerfilePath: ./ota-distribution/Dockerfile
+    plan: free # Đổi thành 'starter' nếu bạn muốn dùng Disk lưu trữ lâu dài
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: BASE_URL
+        value: https://ota-app-distribution.onrender.com # Thay bằng URL thật của bạn sau khi deploy
+      - key: NODE_ENV
+        value: production
+    # Nếu dùng gói Starter, hãy bỏ comment phần này để lưu file .ipa vĩnh viễn
+    # disk:
+    #   name: ota-storage
+    #   mountPath: /app/server/uploads
+    #   sizeGB: 10

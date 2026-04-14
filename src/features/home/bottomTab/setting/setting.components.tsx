@@ -19,7 +19,7 @@ const Separator = () => {
 
 type SwitchViewType = {
     value: boolean;
-    onValueChange: () => void;
+    onValueChange: (value: boolean) => void;
     theme: AppThemeType;
 };
 
