@@ -79,6 +79,9 @@ import TransferScreen from "src/features/transfer/transfer.view";
 import TradingScreen from "src/features/trading/TradingScreen";
 import TradingDetailScreen from "src/features/trading/TradingDetailScreen";
 import OfferwallScreen from "src/features/offerwall/OfferwallScreen";
+import FeedScreen from "src/features/socialFeed/FeedScreen";
+import LiveBroadcastScreen from "src/features/socialFeed/LiveBroadcastScreen";
+import LiveViewerScreen from "src/features/socialFeed/LiveViewerScreen";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
@@ -390,6 +393,18 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.Offerwall}
           component={OfferwallScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.FeedScreen}
+          component={FeedScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.LiveBroadcastScreen}
+          component={LiveBroadcastScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.LiveViewerScreen}
+          component={LiveViewerScreen}
         />
       </HideHeaderStack>
       <AccountListener />

@@ -125,4 +125,14 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.Trading]: undefined;
   [HomeStackScreenKey.TradingDetail]: { symbol: string };
   [HomeStackScreenKey.Offerwall]: undefined;
+  [HomeStackScreenKey.FeedScreen]: undefined;
+  [HomeStackScreenKey.LiveBroadcastScreen]: undefined;
+  [HomeStackScreenKey.LiveViewerScreen]: {
+    roomId: string;
+    hostName: string;
+    viewers: number;
+    hostAvatar: string;
+    likes: number;
+    title: string;
+  };
 };

@@ -24,9 +24,9 @@ async function getAxiosInstance(
 
     instance.interceptors.request.use(
         async (config: any) => {
-            // console.log('-----API CALL-----');
-            // console.warn(`--${config?.url}--`);
-            // console.log('-------------------');
+            console.log('-----API CALL-----');
+            console.warn(`--${config?.url}--`);
+            console.log('-------------------');
 
             const token = await AsyncStorage.getItem('token');
 
@@ -57,12 +57,6 @@ async function getAxiosInstance(
         err => {
             if (axios.isAxiosError(err)) {
                 const response = err?.response?.data as ErrorFromBEType;
-
-                // if (err?.response?.status === 400) {
-                //     if (response?.errorCode === '1000157') {
-                //         dispatch(setAccountDeactivate(true));
-                //     }
-                // }
                 ErrorHandler.showError(response?.errorCode);
                 return Promise.reject(err);
             } else {

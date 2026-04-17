@@ -13,6 +13,7 @@ import appStyles from "src/core/styles";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import { ListSettingScreen } from "./setting.components";
 import { useSetting } from "./setting.hook";
+import TelegramLoginModal from "src/components/common/TelegramLoginModal";
 
 const SettingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   const {
@@ -30,6 +31,9 @@ const SettingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
     closeShowRequirePinCode,
     openCloseShowRequirePinCode,
     onModalRecoveryPhraseDismiss,
+    showTelegramLogin,
+    setShowTelegramLogin,
+    handleTelegramSuccess
   } = useSetting({ navigation });
 
   return (
@@ -119,6 +123,12 @@ const SettingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
             </View>
           </View>
         }
+      />
+      <TelegramLoginModal
+        visible={showTelegramLogin}
+        onClose={() => setShowTelegramLogin(false)}
+        onLoginSuccess={handleTelegramSuccess}
+        botName="crypto_vault_setting_bot"
       />
     </ScreenWrapper>
   );

@@ -1,6 +1,7 @@
 import { StackActions } from "@react-navigation/native";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BootSplash from "react-native-bootsplash";
 import SecureStorageKey from "src/core/enum/SecureStorageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
@@ -16,6 +17,7 @@ import {
 } from "src/core/redux/slice/app.slice";
 import AccountServices from "src/core/services/AccountServices";
 import EncryptAES from "src/core/services/EncryptAES";
+import FaceIdOrTouch from "src/core/services/FaceIdOrTouch";
 import SecureStorage from "src/core/services/SecureStorage";
 import {
   AuthStackScreenKey,
@@ -23,6 +25,7 @@ import {
 } from "src/navigation/enum/NavigationKey";
 
 const useSplash = ({ navigation }: { navigation: any }) => {
+  const { t } = useTranslation();
   const [showRequirePinCode, setShowRequirePinCode] = useState(false);
   const [loading, setLoading] = useState(false);
   const isFirstTime = useAppSelector(getIsFirstTime);
@@ -60,6 +63,12 @@ const useSplash = ({ navigation }: { navigation: any }) => {
     dispatch(setIsModalShow(false));
     if (isFirstTime) {
       await SecureStorage.clear();
+      const faceIdOrTouch = new FaceIdOrTouch(
+        t,
+        dispatch,
+        false
+      );
+      await faceIdOrTouch.reset();
     }
     console.log(isFirstTime, "isFirstTime");
     const encryptAES = new EncryptAES();

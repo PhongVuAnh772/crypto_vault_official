@@ -4,9 +4,8 @@ import { Feature } from "src/core/enum/ContactFailedAction";
 import { ProtocolType } from "src/core/enum/ProtocolType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
-import { getPin } from "src/core/redux/slice/account.slice";
+import { changePinCode, getPin } from "src/core/redux/slice/account.slice";
 import {
-  changePinCode,
   getLockoutLocalAuthentication,
   setActionFailedNeedToContact,
   setShowCommonErrorModal,

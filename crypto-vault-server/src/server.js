@@ -7,6 +7,7 @@ const BinanceWSManager = require('./services/websocketManager');
 const BinanceService = require('./services/binanceService');
 const tradingEngine = require('./services/tradingEngine');
 const cors = require('cors');
+const socialFeedSeeder = require('./services/socialFeedSeeder');
 
 const app = express();
 const server = http.createServer(app);
@@ -110,6 +111,13 @@ wss.on('connection', (ws) => {
         if (cached) {
           ws.send(JSON.stringify({ event: 'priceChange', ...cached }));
         }
+      } else if (message.type === 'live_chat' || message.type === 'join_live') {
+        // Broadcast Live events (chat, join viewers) to all connected clients
+        wss.clients.forEach(client => {
+          if (client.readyState === WebSocket.OPEN) {
+            client.send(JSON.stringify(message));
+          }
+        });
       }
     } catch (err) {
       logger.error('[SERVER PROTOCOL] Error parsing client message', err);
@@ -179,6 +187,7 @@ const adminRoutes = require('./routes/adminRoutes');
 const publicRoutes = require('./routes/publicRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const adsRoutes = require('./routes/adsRoutes');
+const feedRoutes = require('./routes/feedRoutes');
 
 app.use('/api/dex', dexRoutes);
 app.use('/api/bitcoin', bitcoinRoutes);
@@ -186,6 +195,7 @@ app.use('/api/v1', adminRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
 app.use('/api/ads', adsRoutes);
+app.use('/api/v1/feed', feedRoutes);
 
 // 3. INTERNAL TRADING REST API
 app.get('/api/positions', (req, res) => {
@@ -297,6 +307,9 @@ server.listen(PORT, () => {
   // Khởi động Background Worker theo dõi hàng đợi Blockchain Transactions (cứ mỗi 10 giây query 1 lần)
   const transactionWorker = require('./workers/transactionWorker');
   transactionWorker.start(10000);
+
+  // Tự động seed dữ liệu Social Feed nếu DB trống
+  socialFeedSeeder.seedIfEmpty();
 });
 
 module.exports = { server, app, globalEvents };

@@ -230,26 +230,7 @@ export const resetAllSlice = createAsyncThunk(
     },
 );
 
-// MARK: Add wallet.
-export const changePinCode = createAsyncThunk(
-    'app/changePinCode',
-    async ({ pinCode }: { pinCode: string }, { getState, rejectWithValue }) => {
-        try {
-            const rootState = getState() as RootState;
-            const accountLists = rootState.account.accountLists;
-            const accountServices = new AccountServices();
-            if (accountLists == null) {
-                return rejectWithValue(null);
-            }
-            return await accountServices.saveAccountDataWithEncrypt(
-                accountLists,
-                pinCode,
-            );
-        } catch (error) {
-            return rejectWithValue(error);
-        }
-    },
-);
+
 
 // MARK: App Slice
 

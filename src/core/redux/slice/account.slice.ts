@@ -72,9 +72,13 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
         endPoint: "public/mobile/protocols/get-supported-tokens",
       });
 
+      console.log('--- API GET PROTOCOL LIST ---');
+      console.log('Result Success:', res.isSuccess);
       if (res.isSuccess) {
+        console.log('Data count:', res.data?.length);
         protocolDataFromBe = res?.data;
       } else {
+        console.log('Error API:', res);
         protocolDataFromBe = [];
       }
 
@@ -739,6 +743,29 @@ export const editWallet = createAsyncThunk(
   }
 );
 
+
+// MARK: Change PIN Code
+export const changePinCode = createAsyncThunk(
+  "account/changePinCode",
+  async ({ pinCode }: { pinCode: string }, { getState, rejectWithValue }) => {
+    try {
+      const rootState = getState() as RootState;
+      const accountLists = rootState.account.accountLists;
+      const accountServices = new AccountServices();
+      if (accountLists == null) {
+        return rejectWithValue(null);
+      }
+      const res = await accountServices.saveAccountDataWithEncrypt(
+        accountLists,
+        pinCode
+      );
+      return res ? pinCode : rejectWithValue(null);
+    } catch (error) {
+      return rejectWithValue(error);
+    }
+  }
+);
+
 export const accountSlice = createSlice({
   name: "accountSlice",
   initialState: initialState,
@@ -865,6 +892,12 @@ export const accountSlice = createSlice({
         removeWallet.fulfilled,
         (state, action: PayloadAction<AccountType[] | undefined>) => {
           state.accountLists = action.payload;
+        }
+      )
+      .addCase(
+        changePinCode.fulfilled,
+        (state, action: PayloadAction<string>) => {
+          state.pin = action.payload;
         }
       );
   },

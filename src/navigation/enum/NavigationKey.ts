@@ -88,6 +88,9 @@ enum HomeStackScreenKey {
   Trading = "Trading",
   TradingDetail = "TradingDetail",
   Offerwall = "Offerwall",
+  FeedScreen = "FeedScreen",
+  LiveBroadcastScreen = "LiveBroadcastScreen",
+  LiveViewerScreen = "LiveViewerScreen",
 }
 
 enum CreateWalletStackScreenKey {

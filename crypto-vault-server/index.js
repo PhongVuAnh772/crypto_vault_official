@@ -34,6 +34,8 @@ const transactionRoutes = require('./src/routes/transactionRoutes');
 const adminRoutes = require('./src/routes/adminRoutes');
 const bitcoinRoutes = require('./src/routes/bitcoinRoutes');
 const dexRoutes = require('./src/routes/dexRoutes');
+const nftRoutes = require('./src/routes/nftRoutes');
+const telegramRoutes = require('./src/routes/telegramRoutes');
 
 // Mount under /api/v1/public to match mobile app expectations
 app.use('/api/v1/public', publicRoutes);
@@ -41,6 +43,8 @@ app.use('/api/v1', transactionRoutes);
 app.use('/api/v1', adminRoutes);
 app.use('/api/v1/bitcoin', bitcoinRoutes);
 app.use('/api/v1/dex', dexRoutes);
+app.use('/api/v1/nft', nftRoutes);
+app.use('/api/v1/telegram', telegramRoutes);
 
 // --- INLINE PUBLIC API (LEGACY) ---
 

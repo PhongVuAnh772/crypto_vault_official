@@ -127,14 +127,14 @@ const ReEnterPin: React.FC<RootNavigationType> = ({ navigation }) => {
               onPress={() => navigation.goBack()}
               style={styles.backButton}
             >
-              <Feather name="chevron-left" size={28} color="#000" />
+              <Feather name="chevron-left" size={25} color="#000" />
             </TouchableOpacity>
           </View>
 
           <View style={styles.content}>
             <AppText
               titleWithI18n={LanguageKey.pin_input_title}
-              variant={TextVariantKeys.bodyRLarge}
+              variant={TextVariantKeys.bodyMMedium}
               textColor="#1F2937"
               styles={styles.title}
             />
@@ -173,12 +173,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   backButton: {
-    width: 75,
-    height: 75,
-    borderRadius: 37.5,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.5)',
+    width: 25,
+    height: 25,
+
     justifyContent: 'center',
     alignItems: 'center',
     margin: 12,

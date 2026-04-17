@@ -35,8 +35,13 @@ class AccountServices {
             const masterKey = await this.encryptAES.decryptTextWithKey(encryptedMasterKey, pinDerivedKey);
             
             return masterKey;
-        } catch (error) {
-            console.error('getDecryptedMasterKey Error:', error);
+        } catch (error: any) {
+            // "Decrypt failed" usually means the PIN is wrong or the data was encrypted with a different key.
+            if (error?.message === 'Decrypt failed') {
+                console.warn('getDecryptedMasterKey: Decryption failed (likely wrong PIN).');
+            } else {
+                console.error('getDecryptedMasterKey Unexpected Error:', error);
+            }
             return undefined;
         }
     };

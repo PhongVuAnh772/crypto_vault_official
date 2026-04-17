@@ -8,6 +8,7 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from 'src/core/styles';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
+import SocialFeedSection from '../../socialFeed/components/SocialFeedSection';
 import DraggableWidgets from '../components/DraggableWidgets';
 import HomeHeader from '../components/HomeHeader';
 import HomeSkeletonLoading from '../components/HomeSkeletonLoading';
@@ -153,6 +154,8 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                     />
 
                     <DraggableWidgets />
+
+                    <SocialFeedSection limit={3} />
                 </HomeSkeletonLoading>
             </ScrollView>
             <AppLogoLoadingAnimation isLoading={false} />

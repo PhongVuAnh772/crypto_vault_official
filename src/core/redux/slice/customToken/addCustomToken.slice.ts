@@ -172,6 +172,7 @@ export const localTokenReducer = createSlice({
 
             const data: TokenType = {
               ...token,
+              logo: (token.isNativeToken && !token.logo) ? (protocol.logo || "") : (token.logo || ""),
               idProtocol: protocol._id,
               active: findItemSaved?.active ?? false,
               balance: findItemSaved?.balance ?? 0,

@@ -37,7 +37,10 @@ const DepositOptionsScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       desc: "Get free TON Testnet tokens from the official Telegram bot faucet",
       icon: "send",
       color: "#0088CC",
-      onPress: () => Linking.openURL("https://t.me/testgiver_ton_bot"),
+      onPress: () => {
+        const url = "tg://resolve?domain=testgiver_ton_bot";
+        Linking.openURL(url).catch(() => Linking.openURL("https://t.me/testgiver_ton_bot"));
+      },
       badges: ["FAUCET", "FREE"]
     }] : []),
     {

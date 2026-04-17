@@ -161,7 +161,7 @@ const TonScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       balanceCurrencyTitle={balanceCurrencyTitle}
       sendAction={goToSendScreen}
       receiveAction={goToReceiveScreen}
-      faucetAction={isTestnet ? () => Linking.openURL("https://t.me/testgiver_ton_bot") : undefined}
+      faucetAction={isTestnet ? () => Linking.openURL("tg://resolve?domain=testgiver_ton_bot").catch(() => Linking.openURL("https://t.me/testgiver_ton_bot")) : undefined}
       onShowTypeBottomSheet={onShowTypeBottomSheet}
       sectionData={transactionData}
       titleWithI18n={LanguageKey.ton_coin_title}

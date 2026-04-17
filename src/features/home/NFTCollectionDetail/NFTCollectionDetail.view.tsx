@@ -24,10 +24,10 @@ const NFTCollectionDetailScreen = () => {
     const { collection } = route.params || {};
 
     const items = [
-        { id: '1', name: 'NFT #1', price: '1.5', image: collection?.image },
-        { id: '2', name: 'NFT #2', price: '2.8', image: collection?.image },
-        { id: '3', name: 'NFT #3', price: '3.2', image: collection?.image },
-        { id: '4', name: 'NFT #4', price: '2.3', image: collection?.image },
+        { id: '1', name: 'NFT #1', price: 1.5, image: collection?.image, isOwner: false },
+        { id: '2', name: 'My NFT', price: 2.8, image: collection?.image, isOwner: true },
+        { id: '3', name: 'Rare NFT', price: 10.5, image: collection?.image, isOwner: false },
+        { id: '4', name: 'NFT #4', price: 2.3, image: collection?.image, isOwner: false },
     ];
 
     const renderNFTItem = ({ item }: any) => (
@@ -35,7 +35,10 @@ const NFTCollectionDetailScreen = () => {
             style={NFTCollectionDetailStyle.nftCard}
             onPress={() => navigation.navigate(HomeStackScreenKey.AIDetailScreen, {
                 imageUri: item.image,
-                title: item.name
+                title: item.name,
+                price: item.price,
+                isOwner: item.isOwner,
+                id: item.id
             })}
         >
             <Image source={{ uri: item.image }} style={NFTCollectionDetailStyle.nftImage} />

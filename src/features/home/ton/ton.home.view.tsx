@@ -13,6 +13,7 @@ import DraggableWidgets from '../components/DraggableWidgets';
 import HomeHeader from "../components/HomeHeader";
 import HomeSkeletonLoading from "../components/HomeSkeletonLoading";
 import ListCrypto from "../components/ListCrypto";
+import SocialFeedSection from "../../socialFeed/components/SocialFeedSection";
 import WalletBottomSheet from "../components/WalletBottomSheet/WalletBottomSheet";
 import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
 import { ListCryptoDataType } from "../home.type";
@@ -167,6 +168,8 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
           />
 
           <DraggableWidgets />
+          
+          <SocialFeedSection limit={3} />
         </HomeSkeletonLoading>
       </ScrollView>
     </ScreenWrapper>

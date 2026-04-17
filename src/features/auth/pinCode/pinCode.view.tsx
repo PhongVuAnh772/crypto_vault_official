@@ -61,7 +61,7 @@ const PinCode: React.FC<RootNavigationType> = ({ navigation }) => {
       <View style={styles.content}>
         <AppText
           titleWithI18n={LanguageKey.pin_input_title}
-          variant={TextVariantKeys.bodyRLarge}
+          variant={TextVariantKeys.bodyMMedium}
           textColor="#1F2937"
           styles={styles.title}
         />

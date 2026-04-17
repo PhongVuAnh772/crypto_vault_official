@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Linking } from "react-native";
 import { openSettings } from "react-native-permissions";
+import { RootNavigationType } from "src/auth/SplashScreen/index.view";
 import {
   AttachMoneySvgIcon,
   ContactSvgIcon,
@@ -19,6 +20,7 @@ import AppToastType from "src/core/enum/AppToastType";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
+import { useTonAddressData } from "src/core/redux/slice/account.selector";
 import { getPin } from "src/core/redux/slice/account.slice";
 import {
   getIsTestnet,
@@ -33,16 +35,17 @@ import {
 import { getIsShowSwap } from "src/core/redux/slice/swap/swap.slice";
 import FaceIdOrTouch from "src/core/services/FaceIdOrTouch";
 import { FaceIdOrTouchCheckType } from "src/core/services/FaceIdOrTouch/faceIdOrTouchType";
+import TelegramService, { TelegramUser } from "src/core/services/TelegramService";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
-import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import { SwitchView } from "./setting.components";
 import settingStyles from "./setting.styles";
 import { SettingListType } from "./setting.type";
 
 export const useSetting = ({ navigation }: RootNavigationType) => {
   const dispatch = useAppDispatch();
+  const tonAddressData = useTonAddressData();
   const pinCode = useAppSelector(getPin);
   const enableFaceIdOrTouch = useAppSelector(selectorEnableFaceIdOrTouch);
   const isLockoutLocalAuthentication = useAppSelector(
@@ -59,6 +62,10 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
   const [showModalWarningRecoveryPhrase, setShowModalWarningRecoveryPhrase] =
     useState(false);
   const [showRequirePinCode, setShowRequirePinCode] = useState(false);
+  const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
+  const [showTelegramLogin, setShowTelegramLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const closeShowRequirePinCode = () => setShowRequirePinCode(false);
   const openCloseShowRequirePinCode = () => setShowRequirePinCode(true);
   const [openSettingsModal, setOpenSettingsModal] = useState(false);
@@ -246,10 +253,60 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
     },
   };
 
+  const handleTelegramSuccess = async (authData: any) => {
+    setShowTelegramLogin(false);
+    const tonAddress = tonAddressData?.address;
+    if (!tonAddress) return;
+
+    setLoading(true);
+    try {
+      const result = await TelegramService.verifyLogin(authData, tonAddress);
+      if (result.success) {
+        setTelegramUser(result.user);
+        Utils.showToast({ msg: `LoggedIn as ${result.user.firstName}`, type: AppToastType.success });
+      }
+    } catch (err) {
+      console.error(err);
+      Utils.showToast({ msg: "Telegram verification failed", type: AppToastType.error });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const featureTelegramLogin = {
+    icon: ContactSvgIcon,
+    title: telegramUser ? `Linked: @${telegramUser.username || telegramUser.firstName}` : "Link Telegram Account",
+    onPress: () => {
+      if (!telegramUser) setShowTelegramLogin(true);
+    },
+  };
+
+  const featureTelegramFaucet = {
+    icon: ContactSvgIcon,
+    title: "Get free TON (Telegram Bot)",
+    onPress: () => {
+      // Deep link to TON Faucet Bot with start parameter for wallet address
+      const address = tonAddressData?.address;
+      const url = address
+        ? `tg://resolve?domain=testgiver_ton_bot&start=${address}`
+        : "tg://resolve?domain=testgiver_ton_bot";
+      Linking.openURL(url).catch(() => {
+        const webUrl = address
+          ? `https://t.me/testgiver_ton_bot?start=${address}`
+          : "https://t.me/testgiver_ton_bot";
+        Linking.openURL(webUrl);
+      });
+    },
+  };
+
   const listScreen: SettingListType[] = [
     {
       title: "Network Environment",
-      data: [featureTestnet],
+      data: isTestnet ? [featureTestnet, featureTelegramFaucet] : [featureTestnet],
+    },
+    {
+      title: "Social Accounts",
+      data: [featureTelegramLogin],
     },
     {
       title: "Administration",
@@ -322,5 +379,10 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
     closeShowRequirePinCode,
     openCloseShowRequirePinCode,
     onModalRecoveryPhraseDismiss,
+    telegramUser,
+    showTelegramLogin,
+    setShowTelegramLogin,
+    handleTelegramSuccess,
+    loading,
   };
 };

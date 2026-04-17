@@ -13,6 +13,7 @@ import Utils from 'src/core/utils/commonUtils';
 import NativeAd from 'src/features/ads/components/NativeAd';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
+import SocialFeedSection from '../../socialFeed/components/SocialFeedSection';
 import DraggableWidgets from '../components/DraggableWidgets';
 import HomeHeader from '../components/HomeHeader';
 import HomeSkeletonLoading from '../components/HomeSkeletonLoading';
@@ -236,6 +237,8 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                     />
 
                     <DraggableWidgets />
+
+                    <SocialFeedSection limit={3} />
                 </HomeSkeletonLoading>
             </ScrollView>
             <AppLogoLoadingAnimation isLoading={false} />
