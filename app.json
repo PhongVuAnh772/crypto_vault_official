@@ -28,6 +28,13 @@
     },
     "plugins": [
       [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-4977121797292191~6297719187",
+          "iosAppId": "ca-app-pub-4977121797292191~2622198051"
+        }
+      ],
+      [
         "expo-av",
         {
           "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."

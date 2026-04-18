@@ -16,25 +16,17 @@ import Utils from "src/core/utils/commonUtils";
 import Main from "src/main";
 import "./reanimatedConfig";
 import AppI18Next from "./src/core/locales";
-import * as Sentry from "@sentry/react-native";
-import { SENTRY_DSN } from "./env.config";
 
-require("buffer"); // for TON SDK
 
-// Sentry.init({
-//   dsn: SENTRY_DSN,
-//   debug: __DEV__,
-//   integrations: [
-//     new Sentry.ReactNativeTracing({
-//       // Pass tracing options here
-//     }),
-//   ],
-//   // integrations: (integrations) => integrations.filter((i) => i.name !== 'ExpoUpdates'),
-// });
+import AdMobService from "src/features/admob/AdMobService";
 
 function App() {
   LogBox.ignoreAllLogs();
   Utils.logConfig();
+
+  React.useEffect(() => {
+    AdMobService.init();
+  }, []);
 
   return (
     <GestureHandlerRootView style={appStyles.flex1}>
@@ -54,4 +46,4 @@ function App() {
   );
 }
 
-export default App; // Sentry.wrap(App);
+export default App;

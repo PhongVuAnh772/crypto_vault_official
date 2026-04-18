@@ -1,59 +1,53 @@
 import React from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import AppText from 'src/components/common/AppText';
-import TextVariantKeys from 'src/core/enum/TextVariantKeys';
-import { useAppTheme } from 'src/core/hooks/useAppTheme';
+import { Platform, StyleSheet, View } from 'react-native';
+import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+
+// Mã ID thật của bạn
+const PRODUCTION_AD_UNIT_ID = Platform.select({
+  ios: 'ca-app-pub-4977121797292191/2658828359',
+  android: 'ca-app-pub-4977121797292191/6968007786',
+});
+
+// Tự động dùng Test ID nếu đang ở chế độ DEV
+const adUnitId = __DEV__ ? TestIds.BANNER : (PRODUCTION_AD_UNIT_ID || TestIds.BANNER);
 
 const NativeAd: React.FC = () => {
-  const theme = useAppTheme();
-
   return (
-    <TouchableOpacity style={[styles.container, { backgroundColor: theme.colors.surface_surface_brand }]}>
-      <View style={styles.header}>
-        <AppText title="Sponsored" variant={TextVariantKeys.bodyRSmall} textColor={theme.colors.text_on_surface_text_medium} />
-      </View>
-      <View style={styles.content}>
-        <Image 
-          source={{ uri: 'https://images.unsplash.com/photo-1621761191319-c6fb62004040?q=80&w=300&auto=format&fit=crop' }} 
-          style={styles.adImage} 
+    <View style={styles.outerContainer}>
+      <View style={styles.innerContainer}>
+        <BannerAd
+          unitId={adUnitId}
+          size={BannerAdSize.BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+          onAdLoaded={() => console.log('[AdMob] Premium Banner LOADED')}
         />
-        <View style={styles.textContainer}>
-          <AppText title="Top trending coins today" variant={TextVariantKeys.titleSmall} />
-          <AppText 
-            title="Discover the most profitable gems in the market right now. Trade with low fees." 
-            variant={TextVariantKeys.bodyRSmall} 
-            textColor={theme.colors.text_on_surface_text_medium}
-            numberOfLines={2}
-          />
-        </View>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginHorizontal: 16,
+  outerContainer: {
+    paddingHorizontal: 20,
     marginVertical: 12,
-    borderRadius: 12,
-    padding: 12,
+    width: '100%',
+  },
+  innerContainer: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
     overflow: 'hidden',
-  },
-  header: {
-    marginBottom: 8,
-  },
-  content: {
-    flexDirection: 'row',
-  },
-  adImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 8,
-  },
-  textContainer: {
-    flex: 1,
-    marginLeft: 12,
+    alignItems: 'center',
     justifyContent: 'center',
+    paddingVertical: 4,
+    // Shadow cho iOS
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    // Elevation cho Android
+    elevation: 4,
   },
 });
 

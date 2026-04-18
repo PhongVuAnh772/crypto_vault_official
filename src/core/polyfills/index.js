@@ -1,32 +1,91 @@
-// src/polyfills.js
-import { Buffer } from "buffer";
+import { Buffer } from "@craftzdog/react-native-buffer";
+import process from "process";
+import { NativeModules } from 'react-native';
+
+global.Buffer = Buffer;
+global.process = process;
+
+// Fix for some libraries that check for Buffer on window/global
+if (typeof global.Buffer === 'undefined') {
+  global.Buffer = Buffer;
+}
 
 // Base64 -> ArrayBuffer
 if (typeof global.base64ToArrayBuffer === "undefined") {
   global.base64ToArrayBuffer = (base64) => {
-    const binary_string = Buffer.from(base64, "base64").toString("binary");
-    const len = binary_string.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-      bytes[i] = binary_string.charCodeAt(i);
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    const lookup = new Uint8Array(256);
+    for (let i = 0; i < chars.length; i++) lookup[chars.charCodeAt(i)] = i;
+    
+    let bufferLength = base64.length * 0.75,
+        len = base64.length, i, p = 0,
+        encoded1, encoded2, encoded3, encoded4;
+    
+    if (base64[base64.length - 1] === "=") {
+        bufferLength--;
+        if (base64[base64.length - 2] === "=") bufferLength--;
     }
-    return bytes.buffer;
+    
+    const arraybuffer = new ArrayBuffer(bufferLength),
+        bytes = new Uint8Array(arraybuffer);
+    
+    for (i = 0; i < len; i += 4) {
+        encoded1 = lookup[base64.charCodeAt(i)];
+        encoded2 = lookup[base64.charCodeAt(i + 1)];
+        encoded3 = lookup[base64.charCodeAt(i + 2)];
+        encoded4 = lookup[base64.charCodeAt(i + 3)];
+        
+        bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
+        bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
+        bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
+    }
+    
+    return arraybuffer;
   };
 }
 
 // ArrayBuffer -> Base64
 if (typeof global.base64FromArrayBuffer === "undefined") {
   global.base64FromArrayBuffer = (arrayBuffer) => {
-    return Buffer.from(arrayBuffer).toString("base64");
+    const bytes = new Uint8Array(arrayBuffer);
+    const len = bytes.byteLength;
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let base64 = "";
+
+    for (let i = 0; i < len; i += 3) {
+      base64 += chars[bytes[i] >> 2];
+      base64 += chars[((bytes[i] & 3) << 4) | (bytes[i + 1] >> 4)];
+      base64 += chars[((bytes[i + 1] & 15) << 2) | (bytes[i + 2] >> 6)];
+      base64 += chars[bytes[i + 2] & 63];
+    }
+
+    if (len % 3 === 2) base64 = base64.substring(0, base64.length - 1) + "=";
+    else if (len % 3 === 1) base64 = base64.substring(0, base64.length - 2) + "==";
+
+    return base64;
   };
 }
 
 // Polyfill atob
 if (typeof global.atob === "undefined") {
-  global.atob = (b64) => Buffer.from(b64, "base64").toString("binary");
+  global.atob = (b64) => {
+    const ab = global.base64ToArrayBuffer(b64);
+    const bytes = new Uint8Array(ab);
+    let str = "";
+    for (let i = 0; i < bytes.length; i++) {
+      str += String.fromCharCode(bytes[i]);
+    }
+    return str;
+  };
 }
 
 // Polyfill btoa
 if (typeof global.btoa === "undefined") {
-  global.btoa = (bin) => Buffer.from(bin, "binary").toString("base64");
+  global.btoa = (bin) => {
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) {
+        bytes[i] = bin.charCodeAt(i);
+    }
+    return global.base64FromArrayBuffer(bytes.buffer);
+  };
 }

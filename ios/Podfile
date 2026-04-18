@@ -45,7 +45,9 @@ setup_permissions([
 target 'Ledgerify' do
   use_expo_modules!
   config = use_native_modules!
+  use_frameworks! :linkage => :static
   pod 'TrustWalletCore', '4.1.5'
+  pod 'RNGoogleMobileAds', :path => '../node_modules/react-native-google-mobile-ads'
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']

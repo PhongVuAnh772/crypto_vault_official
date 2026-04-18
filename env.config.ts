@@ -54,4 +54,4 @@ export const PINATA_API_SECRET = 'your-pinata-api-secret-here';
 export const TON_API_KEY = 'your-ton-api-key-here';
 export const WALLET_CONNECT_PROJECT_ID = 'defce3a32e3413b628acdf43e351afed';
 export const ANDROID_APP_ID = 'com.phongvuanh772.CryptoVault';
-export const IOS_APP_ID = 'com.phongvuanh772.CryptoVault'; export const SENTRY_DSN = 'https://00000000000000000000000000000000@o4500000000000000.ingest.sentry.io/4500000000000000';
+export const IOS_APP_ID = 'com.phongvuanh772.CryptoVault';
