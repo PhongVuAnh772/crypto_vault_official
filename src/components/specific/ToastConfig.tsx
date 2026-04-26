@@ -34,7 +34,7 @@ const ToastView: React.FC<ToastViewType> = ({ props, icon, currentStyles }) => {
                     {props.text2 ? (
                         <AppText
                             title={props.text2}
-                            variant={TextVariantKeys.bodyRLarge}
+                            variant={TextVariantKeys.bodyLarge}
                             textColor={appColors.neutral.black}
                         />
                     ) : null}

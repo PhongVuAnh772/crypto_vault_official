@@ -17,6 +17,7 @@ enum ReduxKey {
     swap = 'swap',
     TonConnect = 'tonConnect',
     walletConnect='walletConnect',
+    auth = 'auth',
 }
 
 export default ReduxKey;

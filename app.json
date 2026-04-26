@@ -11,7 +11,21 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.phongvuanh772.CryptoVault",
-      "googleServicesFile": "./firebase/GoogleService-Info.plist"
+      "googleServicesFile": "./firebase/GoogleService-Info.plist",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera",
+        "NSMicrophoneUsageDescription": "Allow $(PRODUCT_NAME) to access your microphone",
+        "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location for check-in",
+        "NSPhotoLibraryUsageDescription": "Allow $(PRODUCT_NAME) to access your photo library to pick images for your post",
+        "NSPhotoLibraryAddUsageDescription": "Allow $(PRODUCT_NAME) to save images to your photo library",
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.1012826749135-9m69i54mss7otk7oh59c9itei6udgsio"
+            ]
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -50,14 +64,23 @@
         }
       ],
       [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+        }
+      ],
+      [
         "expo-dev-launcher",
         {
           "launchMode": "most-recent"
         }
       ],
       "expo-router",
+      "expo-location",
       "@react-native-firebase/app",
       "@react-native-firebase/crashlytics",
+      "expo-apple-authentication",
       [
         "expo-build-properties",
         {

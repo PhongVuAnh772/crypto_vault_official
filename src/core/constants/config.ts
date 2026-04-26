@@ -10,7 +10,8 @@
 
 // Khi test trên Simulator/Emulator, hãy dùng 'http://localhost:3000'
 // Khi test trên máy thật, hãy dùng IP của máy tính (VD: 'http://192.168.1.10:3000')
-const NGROK_URL = 'http://localhost:3000'; 
+// Production Render URL
+const NGROK_URL = 'https://cryptovault-backend-latest.onrender.com';
 
 export const CONFIG = {
   API_BASE_URL: NGROK_URL,

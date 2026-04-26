@@ -1,197 +1,429 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Dimensions,
+  FlatList,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 import { BASE_URL } from '../../../env.config';
 
+const { width, height } = Dimensions.get('window');
+
+interface Message {
+  id: string;
+  user: string;
+  text: string;
+  avatar?: string;
+}
+
+const FloatingHeart = ({ onComplete }: { onComplete: () => void }) => {
+  const animatedValue = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 2500,
+      useNativeDriver: true,
+    }).start(() => onComplete());
+  }, []);
+
+  const translateY = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -height * 0.4],
+  });
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 0.1, 0.8, 1],
+    outputRange: [0, 1, 1, 0],
+  });
+
+  const scale = animatedValue.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.5, 1.2, 0.8],
+  });
+
+  const translateX = animatedValue.interpolate({
+    inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1],
+    outputRange: [0, 15, -15, 15, -15, 0],
+  });
+
+  return (
+    <Animated.View
+      style={[
+        styles.heartContainer,
+        {
+          transform: [{ translateY }, { scale }, { translateX }],
+          opacity
+        }
+      ]}
+    >
+      <MaterialCommunityIcons
+        name="heart"
+        size={24}
+        color={['#ff4d4d', '#ff3366', '#ff66b2', '#FCD535', '#4dff88'][Math.floor(Math.random() * 5)]}
+      />
+    </Animated.View>
+  );
+};
+
 const LiveViewerScreen = ({ route, navigation }: any) => {
-  const { title, streamUrl, viewers = 0, hostName = 'Host', roomId, hostAvatar = 'https://via.placeholder.com/40', likes = 0 } = route.params || {};
+  const { hostName = 'Lord Busuz', roomId, hostAvatar = 'https://i.pravatar.cc/150?u=host' } = route.params || {};
   const [chatMessage, setChatMessage] = useState('');
-  const [messages, setMessages] = useState<{ id: string, user: string, text: string, avatar?: string }[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [viewerCount, setViewerCount] = useState(1280);
+  const [hearts, setHearts] = useState<{ id: number }[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
 
-  // 1. Fetch Real-time data from Backend using WebSockets
   useEffect(() => {
-    const WS_URL = BASE_URL.replace('http', 'ws').replace('/api/v1/', '/');
+    const WS_URL = BASE_URL.replace('http', 'ws').replace('/api/v1/feed', '').replace('/api/v1/', '/');
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
     ws.onopen = () => {
       ws.send(JSON.stringify({ type: 'join_live', roomId: roomId || 'global' }));
-      console.log('Connected to Live WS:', WS_URL);
+      console.log('Joined real livestream room:', roomId);
     };
 
     ws.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
         if (data.type === 'live_chat') {
-          setMessages(prev => [...prev, data.message]);
+          setMessages(prev => [...prev.slice(-25), data.message]);
+        } else if (data.type === 'viewer_count') {
+          setViewerCount(data.count);
+        } else if (data.type === 'send_reaction') {
+          handleAddHeart();
         }
       } catch (e) {
-        console.error(e);
+        console.error('WS Message Error:', e);
       }
     };
 
     return () => {
+      if (wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({ type: 'leave_live', roomId: roomId || 'global' }));
+      }
       ws.close();
     };
   }, [roomId]);
 
+  const handleAddHeart = useCallback(() => {
+    setHearts(prev => [...prev, { id: Date.now() + Math.random() }]);
+  }, []);
+
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
-      const newMsg = { id: Date.now().toString(), user: 'Tôi', text: chatMessage, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' };
-      setMessages(prev => [...prev, newMsg]);
+      const msg: Message = {
+        id: Date.now().toString(),
+        user: 'Me',
+        text: chatMessage,
+        avatar: 'https://i.pravatar.cc/150?u=me'
+      };
 
-      // Broadcast via socket
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({
           type: 'live_chat',
           roomId: roomId || 'global',
-          message: { id: Date.now().toString(), user: 'Viewer', text: chatMessage, avatar: 'https://cdn-icons-png.flaticon.com/512/149/149071.png' }
+          message: msg
         }));
       }
-
       setChatMessage('');
     }
   };
 
+  const handleSendReaction = () => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({
+        type: 'send_reaction',
+        roomId: roomId || 'global'
+      }));
+    }
+    handleAddHeart();
+  };
+
+  const renderChatItem = ({ item }: { item: Message }) => (
+    <View style={styles.chatRow}>
+      <Image source={{ uri: item.avatar || 'https://i.pravatar.cc/150?u=' + item.user }} style={styles.chatAvatar} />
+      <View style={styles.chatContent}>
+        <Text style={styles.chatUser}>{item.user}</Text>
+        <Text style={styles.chatText}>{item.text}</Text>
+      </View>
+    </View>
+  );
+
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Real Video Player Component (e.g., expo-av or react-native-video) */}
-      <View style={styles.videoPlayer}>
-        {/* Placeholder for real stream player */}
-        {streamUrl ? (
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#0B0E11' }]} />
-        ) : (
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: '#000' }]} />
-        )}
-        <View style={styles.overlay}>
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.hostInfoPill}>
-              <Image source={{ uri: hostAvatar }} style={styles.hostAvatar} />
-              <View style={styles.hostTextContainer}>
-                <Text style={styles.hostName} numberOfLines={1}>{hostName}</Text>
-                <Text style={styles.hostLikes}>🤍 {likes}</Text>
-              </View>
-              <TouchableOpacity style={styles.joinButton}>
-                <Text style={styles.joinText}>+ Tham gia</Text>
-              </TouchableOpacity>
-            </View>
+    <View style={styles.container}>
+      {/* Real Livestream View Background (Simulated with high-quality image) */}
+      <Image
+        source={{ uri: 'https://images.unsplash.com/photo-1492619334760-466d74483783?q=80&w=1000' }}
+        style={[StyleSheet.absoluteFillObject, { backgroundColor: '#1C1C1E' }]}
+        resizeMode="cover"
+      />
 
-            <View style={styles.headerRightControls}>
-              <View style={styles.viewersPill}>
-                <Text style={styles.viewersCountText}>{viewers}</Text>
+      <LinearGradient
+        colors={['rgba(0,0,0,0.4)', 'transparent', 'rgba(0,0,0,0.6)']}
+        style={StyleSheet.absoluteFillObject}
+      />
+
+      <SafeAreaView style={styles.safeArea}>
+        {/* Header Section */}
+        <View style={styles.header}>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity style={styles.circleBtn} onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
+            </TouchableOpacity>
+
+            <View style={styles.profileChip}>
+              <View style={styles.avatarWrap}>
+                <Image source={{ uri: hostAvatar }} style={styles.hostAvatar} />
+                <View style={styles.liveBadge}><Text style={styles.liveBadgeText}>Live</Text></View>
               </View>
-              <TouchableOpacity style={styles.iconButton}>
-                <Text style={styles.iconText}>˅</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.iconText}>✕</Text>
-              </TouchableOpacity>
+              <View style={styles.hostInfo}>
+                <Text style={styles.hostName}>{hostName}</Text>
+                <MaterialCommunityIcons name="check-decagram" size={14} color="#3897f0" />
+              </View>
             </View>
           </View>
 
-          {/* Banner Overlays */}
-          {title ? (
-            <View style={styles.bannerContainer}>
-              <View style={styles.bannerContent}>
-                <Text style={styles.bannerText}>{title.length > 30 ? title.substring(0, 30) + '...' : title}</Text>
-              </View>
-            </View>
-          ) : null}
-
-          {/* Chat List */}
-          <View style={styles.chatContainer}>
-            {messages.length === 0 ? (
-              <View style={styles.systemMessage}><Text style={styles.systemText}>Live Support: Hệ thống chat đang kết nối...</Text></View>
-            ) : (
-              messages.map((msg) => (
-                <View key={msg.id} style={styles.chatMessageRow}>
-                  <Image source={{ uri: msg.avatar || 'https://via.placeholder.com/30' }} style={styles.chatAvatar} />
-                  <View style={styles.chatBubble}>
-                    <Text style={styles.chatUser}>{msg.user}</Text>
-                    <Text style={styles.chatText}>{msg.text}</Text>
-                  </View>
-                </View>
-              ))
-            )}
+          <View style={styles.viewerChip}>
+            <MaterialCommunityIcons name="eye-outline" size={16} color="#fff" />
+            <Text style={styles.viewerText}>{viewerCount.toLocaleString()}</Text>
           </View>
+        </View>
 
-          {/* Footer Actions */}
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-            <View style={styles.footer}>
+        {/* Reaction Layer */}
+        <View style={styles.reactionLayer} pointerEvents="none">
+          {hearts.map(heart => (
+            <FloatingHeart
+              key={heart.id}
+              onComplete={() => setHearts(prev => prev.filter(h => h.id !== heart.id))}
+            />
+          ))}
+        </View>
 
-              {/* Shopping Bag */}
-              <TouchableOpacity style={styles.bagIconContainer}>
-                <Text style={styles.bagIcon}>🛍️</Text>
-                <View style={styles.bagBadge}><Text style={styles.bagBadgeText}>99+</Text></View>
-              </TouchableOpacity>
+        {/* Chat List Overlay */}
+        <View style={styles.chatContainer}>
+          <FlatList
+            data={messages}
+            keyExtractor={item => item.id}
+            renderItem={renderChatItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.chatList}
+            inverted={false}
+          />
+        </View>
 
+        {/* Footer Actions */}
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+          <View style={styles.footer}>
+            <View style={styles.inputBar}>
               <TextInput
-                style={styles.chatInput}
-                placeholder="Nhập..."
-                placeholderTextColor="#A0A0A0"
+                style={styles.textInput}
+                placeholder="Type your comment..."
+                placeholderTextColor="rgba(255,255,255,0.7)"
                 value={chatMessage}
                 onChangeText={setChatMessage}
                 onSubmitEditing={handleSendMessage}
               />
-
-              <View style={styles.footerRightIcons}>
-                <Text style={styles.emojiIcon}>😃</Text>
-                <Text style={styles.emojiIcon}>👥</Text>
-                <Text style={styles.emojiIcon}>🌹</Text>
-                <Text style={styles.emojiIcon}>🎁</Text>
-                <Text style={styles.emojiIcon}>🔁</Text>
-              </View>
-
+              <TouchableOpacity onPress={handleSendMessage}>
+                <MaterialCommunityIcons name="send" size={20} color="#fff" />
+              </TouchableOpacity>
             </View>
-          </KeyboardAvoidingView>
-        </View>
-      </View>
-    </SafeAreaView>
+
+            <View style={styles.actionIcons}>
+              <TouchableOpacity style={styles.iconCircle} onPress={() => console.log('Gift pressed')}>
+                <MaterialCommunityIcons name="gift-outline" size={24} color="#FCD535" />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.iconCircle} onPress={handleSendReaction}>
+                <MaterialCommunityIcons name="heart" size={24} color="#ff4d4d" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    </View>
   );
 };
 
 export default LiveViewerScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  videoPlayer: { flex: 1, backgroundColor: '#1E2329' },
-  overlay: { flex: 1, justifyContent: 'space-between', paddingLeft: 12, paddingRight: 10, paddingBottom: 10, paddingTop: Platform.OS === 'ios' ? 10 : 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-
-  hostInfoPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 30, paddingRight: 8 },
-  hostAvatar: { width: 34, height: 34, borderRadius: 17 },
-  hostTextContainer: { marginHorizontal: 6, maxWidth: 70 },
-  hostName: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
-  hostLikes: { color: '#eee', fontSize: 10 },
-  joinButton: { backgroundColor: '#F08000', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  joinText: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
-
-  headerRightControls: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  viewersPill: { backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 },
-  viewersCountText: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  iconButton: { backgroundColor: 'rgba(0,0,0,0.3)', width: 30, height: 30, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
-  iconText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
-
-  bannerContainer: { alignItems: 'center', marginTop: 10 },
-  bannerContent: { backgroundColor: '#0D3A8F', paddingHorizontal: 20, paddingVertical: 6, borderRadius: 12, borderWidth: 1.5, borderColor: '#fff' },
-  bannerText: { color: '#FCD535', fontSize: 20, fontWeight: '900', fontStyle: 'italic', letterSpacing: 1 },
-
-  chatContainer: { flex: 1, justifyContent: 'flex-end', marginBottom: 10 },
-  systemMessage: { backgroundColor: 'rgba(0,0,0,0.2)', padding: 8, borderRadius: 10, marginBottom: 12, alignSelf: 'flex-start' },
-  systemText: { color: '#00FA9A', fontSize: 12 },
-  chatMessageRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 },
-  chatAvatar: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
-  chatBubble: { backgroundColor: 'rgba(0,0,0,0.2)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, maxWidth: '85%' },
-  chatUser: { color: '#B0C4DE', fontWeight: 'bold', fontSize: 13, marginBottom: 2 },
-  chatText: { color: '#fff', fontSize: 14 },
-
-  footer: { flexDirection: 'row', alignItems: 'center', marginBottom: Platform.OS === 'ios' ? 10 : 0 },
-  bagIconContainer: { marginRight: 10, position: 'relative' },
-  bagIcon: { fontSize: 26 },
-  bagBadge: { position: 'absolute', top: -5, right: -10, backgroundColor: '#FF3366', borderRadius: 10, paddingHorizontal: 4, paddingVertical: 2 },
-  bagBadgeText: { color: '#fff', fontSize: 9, fontWeight: 'bold' },
-  chatInput: { flex: 1, backgroundColor: 'rgba(0,0,0,0.25)', color: '#fff', paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, fontSize: 14 },
-  footerRightIcons: { flexDirection: 'row', alignItems: 'center', marginLeft: 16, gap: 10 },
-  emojiIcon: { fontSize: 22 }
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  circleBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  profileChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    borderRadius: 22,
+    paddingRight: 12,
+    height: 44,
+  },
+  avatarWrap: {
+    position: 'relative',
+  },
+  hostAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: '#ff4d4d',
+  },
+  liveBadge: {
+    position: 'absolute',
+    bottom: -2,
+    alignSelf: 'center',
+    backgroundColor: '#ff4d4d',
+    borderRadius: 6,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+  },
+  liveBadgeText: {
+    color: '#fff',
+    fontSize: 7,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  hostInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: 8,
+  },
+  hostName: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: 'bold',
+    marginRight: 4,
+  },
+  viewerChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  viewerText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+    marginLeft: 4,
+  },
+  chatContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  chatList: {
+    paddingBottom: 20,
+  },
+  chatRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    padding: 8,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    maxWidth: '85%',
+  },
+  chatAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    marginRight: 8,
+  },
+  chatContent: {
+    flex: 1,
+  },
+  chatUser: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  chatText: {
+    color: '#fff',
+    fontSize: 13,
+    marginTop: 2,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 16,
+  },
+  inputBar: {
+    flex: 1,
+    height: 48,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginRight: 12,
+  },
+  textInput: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 14,
+  },
+  actionIcons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reactionLayer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 100,
+    height: height / 2,
+  },
+  heartContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+  }
 });

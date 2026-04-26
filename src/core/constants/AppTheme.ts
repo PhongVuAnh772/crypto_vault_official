@@ -1,8 +1,10 @@
 import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
 import { AppThemeType } from "src/core/type/ThemeType";
+import fontsConfigure from "./FontConfig";
 
 export const AppLightTheme: AppThemeType = {
   ...MD3LightTheme,
+  fonts: fontsConfigure,
   colors: {
     ...MD3LightTheme.colors, // sử dụng base light theme
     // BUTTONS
@@ -52,11 +54,13 @@ export const AppLightTheme: AppThemeType = {
     warning_container: "#fff8e6",
     warning_outline: "#ffd591",
     warning_text: "#ffa940",
+    surface_surface_upcoming: "#fff0f0", // mock value for safety
   },
 };
 
 export const AppDarkTheme: AppThemeType = {
   ...MD3DarkTheme,
+  fonts: fontsConfigure,
   colors: {
     ...MD3LightTheme.colors, // sử dụng base light theme
     // BUTTONS
@@ -106,5 +110,6 @@ export const AppDarkTheme: AppThemeType = {
     warning_container: "#fff8e6",
     warning_outline: "#ffd591",
     warning_text: "#ffa940",
+    surface_surface_upcoming: "#fff0f0", // mock value for safety
   },
 };

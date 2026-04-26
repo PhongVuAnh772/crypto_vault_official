@@ -169,6 +169,21 @@ const AppTabBar = ({
             <TouchableOpacity 
               activeOpacity={0.7}
               style={styles.actionItem} 
+              onPress={() => handleActionPress(HomeStackScreenKey.LiveBroadcastScreen)}
+            >
+              <View style={[styles.actionIcon, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
+                <Feather name="video" size={24} color="#EF4444" />
+              </View>
+              <View style={styles.actionTextContent}>
+                <AppText title={"Go Live"} variant={TextVariantKeys.bodyMLarge} styles={{ color: '#FFFFFF', fontWeight: '700' }} />
+                <AppText title={"Start a livestream and interact with followers"} variant={TextVariantKeys.bodyMSmall} styles={{ color: '#8E8E93' }} />
+              </View>
+              <Feather name="chevron-right" size={20} color="#3A3A3C" />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              activeOpacity={0.7}
+              style={styles.actionItem} 
               onPress={() => handleActionPress(HomeStackScreenKey.Transfer)}
             >
               <View style={[styles.actionIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>

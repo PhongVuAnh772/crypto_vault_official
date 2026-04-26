@@ -78,7 +78,7 @@ const generateProtocolData = async ({
             walletCoreCoinData =
                 await nativeWalletCoreModule.getDataFromSlip0044({
                     mnemonic,
-                    isTestNet,
+                    isTestNet: protocol.isTestnet ?? isTestNet ?? false,
                     slip0044,
                     derivationPath,
                 });
@@ -149,7 +149,7 @@ const checkProtocolData = async ({
                 walletCoreCoinData =
                     await nativeWalletCoreModule.getDataFromSlip0044({
                         mnemonic,
-                        isTestNet,
+                        isTestNet: protocol.isTestnet ?? isTestNet ?? false,
                         slip0044,
                         derivationPath: isTon
                             ? appConstants.defaultTonDerivationPath

@@ -4047,6 +4047,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-google-signin/google-signin@npm:^16.1.2":
+  version: 16.1.2
+  resolution: "@react-native-google-signin/google-signin@npm:16.1.2"
+  peerDependencies:
+    expo: ">=52.0.40"
+    react: "*"
+    react-native: "*"
+  peerDependenciesMeta:
+    expo:
+      optional: true
+  checksum: 10c0/91f8f8c4ed5311e7cd7c2977696624d857abb18b7bedfec0a126d8cca38cd56d48d8e0976ba01cf75db385bdd0a054e51148b5a3c64476305ccfdd79370f57af
+  languageName: node
+  linkType: hard
+
 "@react-native-menu/menu@npm:1.2.2":
   version: 1.2.2
   resolution: "@react-native-menu/menu@npm:1.2.2"
@@ -5214,6 +5228,13 @@ __metadata:
   version: 1.0.3
   resolution: "@types/fast-text-encoding@npm:1.0.3"
   checksum: 10c0/9ec0ca8f2461202ac3321160b0e7b8d07a4728b1b3197fa68c672d792cb7cdfff08924f81b3564d21db9bcb9c90e47680f7ff7b73195192776baecc17293c9c2
+  languageName: node
+  linkType: hard
+
+"@types/geojson@npm:^7946.0.13":
+  version: 7946.0.16
+  resolution: "@types/geojson@npm:7946.0.16"
+  checksum: 10c0/1ff24a288bd5860b766b073ead337d31d73bdc715e5b50a2cee5cb0af57a1ed02cc04ef295f5fa68dc40fe3e4f104dd31282b2b818a5ba3231bc1001ba084e3c
   languageName: node
   linkType: hard
 
@@ -9479,6 +9500,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-apple-authentication@npm:^55.0.13":
+  version: 55.0.13
+  resolution: "expo-apple-authentication@npm:55.0.13"
+  peerDependencies:
+    expo: "*"
+    react-native: "*"
+  checksum: 10c0/1e5a0d28b95792960eac0708ae54d3f3927cdc5d39331758b802dfdef1dac2e8be6812a15b72a7cd490274c29a9c9e7bc9fbfccff818ab01ba57acd7e05baf9e
+  languageName: node
+  linkType: hard
+
 "expo-asset@npm:~10.0.10":
   version: 10.0.10
   resolution: "expo-asset@npm:10.0.10"
@@ -9679,6 +9710,15 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/0726f0b34e160efe016643af5171d92ccc04d1a26fc5f01d23580f552cb4032c382b36edbac9247deebc6f6678127e52a1ef2400ea1b132fb01abe1fba9bde6e
+  languageName: node
+  linkType: hard
+
+"expo-location@npm:~17.0.1":
+  version: 17.0.1
+  resolution: "expo-location@npm:17.0.1"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/b73ab52c3ad91ac3f0457b3ef5fd8c1260288f680a51e75db0d6c2fd4a15e8450b8a7ec405788cffdacc7b0dd7f62318916122cdb377e07697af896163e66a7d
   languageName: node
   linkType: hard
 
@@ -14987,6 +15027,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-maps@npm:1.14.0":
+  version: 1.14.0
+  resolution: "react-native-maps@npm:1.14.0"
+  dependencies:
+    "@types/geojson": "npm:^7946.0.13"
+  peerDependencies:
+    react: ">= 17.0.1"
+    react-native: ">= 0.64.3"
+    react-native-web: ">= 0.11"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/67529b9b11d1dc42a698eb027c6fb0d27aaf2004b380ad3c72453aa2d13b5bde085b10328369381fd30b5afdf8ff1f211fab6138af522523548df64443874e81
+  languageName: node
+  linkType: hard
+
 "react-native-pager-view@npm:6.3.0":
   version: 6.3.0
   resolution: "react-native-pager-view@npm:6.3.0"
@@ -17342,6 +17398,7 @@ __metadata:
     "@react-native-firebase/crashlytics": "npm:^21.6.1"
     "@react-native-firebase/messaging": "npm:^21.6.1"
     "@react-native-firebase/remote-config": "npm:^21.6.1"
+    "@react-native-google-signin/google-signin": "npm:^16.1.2"
     "@react-native-menu/menu": "npm:1.2.2"
     "@react-navigation/bottom-tabs": "npm:^6.6.1"
     "@react-navigation/material-top-tabs": "npm:^6.6.14"
@@ -17373,6 +17430,7 @@ __metadata:
     eslint-config-expo: "npm:~7.1.2"
     ethers: "npm:6.13.5"
     expo: "npm:~51.0.39"
+    expo-apple-authentication: "npm:^55.0.13"
     expo-asset: "npm:~10.0.10"
     expo-av: "npm:~14.0.7"
     expo-blur: "npm:~13.0.2"
@@ -17385,6 +17443,7 @@ __metadata:
     expo-linear-gradient: "npm:~13.0.2"
     expo-linking: "npm:~6.3.1"
     expo-local-authentication: "npm:~14.0.1"
+    expo-location: "npm:~17.0.1"
     expo-router: "npm:~3.5.24"
     expo-status-bar: "npm:~1.12.1"
     expo-web-browser: "npm:~13.0.3"
@@ -17424,6 +17483,7 @@ __metadata:
     react-native-keyboard-controller: "npm:^1.20.7"
     react-native-keychain: "npm:^8.2.0"
     react-native-linear-gradient: "npm:^2.8.3"
+    react-native-maps: "npm:1.14.0"
     react-native-pager-view: "npm:6.3.0"
     react-native-paper: "npm:^5.12.5"
     react-native-permissions: "npm:^4.1.5"

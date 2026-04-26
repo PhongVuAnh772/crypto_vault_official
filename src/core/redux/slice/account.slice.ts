@@ -98,7 +98,7 @@ export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
       const checkSlip0044Data = await AccountUtils.checkProtocolData({
         protocolListsFromBE: protocolDataFromBe,
         mnemonic: mnemonic,
-        isTestNet,
+        isTestNet: isTestNet, // Keep global for now but the selector already shows everything
       });
 
       console.log(`checkSlip0044Data ${checkSlip0044Data}`);
@@ -940,7 +940,11 @@ export const selectorFilteredProtocolListsWithSupportedTokens = createSelector(
   [selectorProtocolListsWithSupportedTokensFromBE, getIsTestnet],
   (protocols, isTestnet) => {
     if (!protocols) return [];
-    return protocols.filter(p => !!p.isTestnet === !!isTestnet);
+    // Nếu bật Testnet: hiện tất cả. Nếu không: chỉ hiện mạng Mainnet (isTestnet = false/null)
+    if (isTestnet) {
+      return protocols;
+    }
+    return protocols.filter(p => !p.isTestnet);
   }
 );
 export const getProtocolDataLists = (state: RootState) => {

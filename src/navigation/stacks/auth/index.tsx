@@ -14,6 +14,8 @@ import CreateNewWalletStack from "./CreateNewWallet";
 import PinCodeStack from "./PinCode";
 import RestoreWalletStack from "./RestoreWallet";
 
+import SocialAuthScreen from "src/features/auth/socialAuth/SocialAuthScreen";
+
 const Stack = createNativeStackNavigator();
 
 const AuthStack = () => (
@@ -68,6 +70,10 @@ const AuthStack = () => (
     <Stack.Screen
       name={AuthStackScreenKey.ValidatePassPhrase}
       component={ValidatePassPhrase}
+    />
+    <Stack.Screen
+      name={AuthStackScreenKey.SocialAuthScreen}
+      component={SocialAuthScreen}
     />
   </HideHeaderStack>
 );

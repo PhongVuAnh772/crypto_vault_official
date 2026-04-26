@@ -9,6 +9,10 @@ import {
 } from 'react-native';
 import { BASE_URL } from '../../../../env.config';
 import FeedItem, { FeedItemData } from './FeedItem';
+import { useAppSelector } from 'src/core/redux/hooks';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { NavigationStackKey, AuthStackScreenKey } from 'src/navigation/enum/NavigationKey';
+import { mockFeedData } from '../mockData';
 
 interface SocialFeedSectionProps {
   limit?: number;
@@ -19,6 +23,8 @@ const SocialFeedSection: React.FC<SocialFeedSectionProps> = ({ limit = 5, title 
   const navigation = useNavigation<any>();
   const [feedData, setFeedData] = useState<FeedItemData[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const { isLoggedIn, user } = useAppSelector(state => state.auth);
 
   const fetchFeed = async () => {
     try {
@@ -41,6 +47,16 @@ const SocialFeedSection: React.FC<SocialFeedSectionProps> = ({ limit = 5, title 
     });
   }, []);
 
+  const handleCreatePost = () => {
+    if (!isLoggedIn) {
+      navigation.navigate(NavigationStackKey.AuthStack, {
+        screen: AuthStackScreenKey.SocialAuthScreen
+      });
+    } else {
+      navigation.navigate('CreatePostScreen');
+    }
+  };
+
   const handleLivePress = useCallback((id: string, name: string, views: number, avatar: string, likes: number, title: string) => {
     navigation.navigate('LiveViewerScreen', {
       roomId: id,
@@ -58,11 +74,29 @@ const SocialFeedSection: React.FC<SocialFeedSectionProps> = ({ limit = 5, title 
 
   return (
     <View style={styles.container}>
+      {/* Post Entry Bar */}
+      <View style={styles.postEntryBar}>
+        <View style={styles.avatarPlaceholder}>
+           <MaterialCommunityIcons name="account" size={24} color="#848E9C" />
+        </View>
+        <TouchableOpacity 
+          style={styles.inputPlaceholder}
+          onPress={handleCreatePost}
+        >
+          <Text style={styles.inputText} numberOfLines={1}>
+            {isLoggedIn ? `Bạn đang nghĩ gì, ${user?.email?.split('@')[0]}?` : "Đăng nhập để chia sẻ cảm nghĩ..."}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleCreatePost}>
+           <MaterialCommunityIcons name="image-plus" size={24} color="#FCD535" />
+        </TouchableOpacity>
+      </View>
+
       <View style={styles.topNav}>
         <Text style={[styles.navItem, styles.navActive]}>Khám phá</Text>
-        <Text style={styles.navItem}>Đang theo dõi</Text>
-        <Text style={styles.navItem}>Chiến dịch</Text>
         <Text style={styles.navItem}>Live</Text>
+        <Text style={styles.navItem}>Đang theo dõi</Text>
+        <Text style={styles.navItem}>Answer</Text>
       </View>
 
       {feedData.map(item => (
@@ -89,6 +123,33 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 20,
     backgroundColor: '#FFFFFF',
+  },
+  postEntryBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F2F2F7',
+  },
+  avatarPlaceholder: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: '#F2F2F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  inputPlaceholder: {
+    flex: 1,
+    height: 36,
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  inputText: {
+    color: '#848E9C',
+    fontSize: 14,
   },
   header: {
     flexDirection: 'row',

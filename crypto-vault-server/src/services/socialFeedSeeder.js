@@ -5,7 +5,7 @@ const mockPosts = [
   {
     user_id: 'user-001',
     user_name: 'The Crypto Whale 🐋',
-    user_avatar: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+    user_avatar: 'https://i.pravatar.cc/150?u=whale',
     type: 'trade',
     content: 'Bullish on ETH! My target is $4500 by the end of next month. Who is with me? 🚀🚀',
     trade_data: {
@@ -25,10 +25,10 @@ const mockPosts = [
   {
     user_id: 'user-002',
     user_name: 'NFT Hunter 🖼️',
-    user_avatar: 'https://i.ibb.co/V9hV9V9/gift.png',
+    user_avatar: 'https://i.pravatar.cc/150?u=nft',
     type: 'live',
     content: 'Reviewing Top 10 NFT Collections on TON Blockchain. JOIN NOW!',
-    images: ['https://i.ibb.co/XzVzVzV/avatar.png'],
+    images: ['https://images.unsplash.com/photo-1620336655055-088d06e7660c?q=80&w=1000&auto=format&fit=crop'],
     likes_count: 1250,
     comments_count: 45,
     views_count: 8900
@@ -36,7 +36,7 @@ const mockPosts = [
   {
     user_id: 'user-003',
     user_name: 'Daily News 📰',
-    user_avatar: 'https://cryptologos.cc/logos/binance-coin-bnb-logo.png',
+    user_avatar: 'https://i.pravatar.cc/150?u=news',
     type: 'news',
     content: 'Binance announces new partnership with Gulf Crypto. BNB price reacts positively.',
     likes_count: 8900,
@@ -46,7 +46,7 @@ const mockPosts = [
   {
     user_id: 'user-004',
     user_name: 'Swing Trader',
-    user_avatar: 'https://via.placeholder.com/40',
+    user_avatar: 'https://i.pravatar.cc/150?u=swing',
     type: 'trade',
     content: 'Shorting BTC from the local top. Market looks exhausted.',
     trade_data: {
@@ -66,10 +66,13 @@ const mockPosts = [
   {
     user_id: 'user-005',
     user_name: 'Master Miner',
-    user_avatar: 'https://via.placeholder.com/40',
+    user_avatar: 'https://i.pravatar.cc/150?u=miner',
     type: 'image',
     content: 'Just received my new mining rig! Ready to earn some BTC.',
-    images: ['https://i.ibb.co/V9hV9V9/gift.png', 'https://i.ibb.co/V9hV9V9/gift.png'],
+    images: [
+      'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?q=80&w=1000&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1518546305927-5a555bb7020d?q=80&w=1000&auto=format&fit=crop'
+    ],
     likes_count: 450,
     comments_count: 120,
     views_count: 5600
@@ -80,6 +83,7 @@ async function seedIfEmpty() {
   try {
     // 1. Ensure table exists
     await db.query(`
+      CREATE EXTENSION IF NOT EXISTS pgcrypto;
       CREATE TABLE IF NOT EXISTS social_posts (
           id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
           user_id VARCHAR(255) DEFAULT 'user-1',
@@ -88,6 +92,7 @@ async function seedIfEmpty() {
           type VARCHAR(50) NOT NULL,
           content TEXT NOT NULL,
           images JSONB DEFAULT '[]',
+          location JSONB DEFAULT 'null',
           trade_data JSONB,
           likes_count INT DEFAULT 0,
           comments_count INT DEFAULT 0,
@@ -104,6 +109,16 @@ async function seedIfEmpty() {
     }
 
     logger.info('[SOCIAL SEED] Database is empty, auto-seeding mock data...');
+
+    // 2.5 Ensure mock users exist to satisfy foreign key constraints
+    const mockUserIds = [...new Set(mockPosts.map(p => p.user_id))];
+    for (const extId of mockUserIds) {
+      await db.query(`
+        INSERT INTO users (ext_user_id) 
+        VALUES ($1) 
+        ON CONFLICT (ext_user_id) DO NOTHING
+      `, [extId]);
+    }
 
     // 3. Insert mock data
     for (const post of mockPosts) {
@@ -127,7 +142,7 @@ async function seedIfEmpty() {
     
     logger.info(`[SOCIAL SEED] Successfully auto-seeded ${mockPosts.length} posts.`);
   } catch (err) {
-    logger.error('[SOCIAL SEED] Error auto-seeding social feed:', err);
+    logger.error(`[SOCIAL SEED] Error auto-seeding social feed: ${err.message}`, err);
   }
 }
 

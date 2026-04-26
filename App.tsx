@@ -1,7 +1,8 @@
 import "@walletconnect/react-native-compat";
-import React from "react";
+import React, { useEffect } from "react";
 import { I18nextProvider } from "react-i18next";
 import { LogBox } from "react-native";
+import { useSupabaseAuth } from 'src/core/hooks/useSupabaseAuth';
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-get-random-values"; // for web3
 import "react-native-reanimated";
@@ -20,11 +21,16 @@ import AppI18Next from "./src/core/locales";
 
 import AdMobService from "src/features/admob/AdMobService";
 
-function App() {
+const AuthInitializer = () => {
+  useSupabaseAuth();
+  return null;
+};
+
+const App = () => {
   LogBox.ignoreAllLogs();
   Utils.logConfig();
 
-  React.useEffect(() => {
+  useEffect(() => {
     AdMobService.init();
   }, []);
 
@@ -33,6 +39,7 @@ function App() {
       <Provider store={store}>
         <I18nextProvider i18n={AppI18Next}>
           <PersistGate loading={null} persistor={persistor}>
+            <AuthInitializer />
             <SessionCryptoProvider>
               <WatchlistContext>
                 <Main />

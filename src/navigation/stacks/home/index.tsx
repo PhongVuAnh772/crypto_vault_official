@@ -82,6 +82,9 @@ import OfferwallScreen from "src/features/offerwall/OfferwallScreen";
 import FeedScreen from "src/features/socialFeed/FeedScreen";
 import LiveBroadcastScreen from "src/features/socialFeed/LiveBroadcastScreen";
 import LiveViewerScreen from "src/features/socialFeed/LiveViewerScreen";
+import SocialProfileScreen from "src/features/socialFeed/SocialProfileScreen";
+import CreatePostScreen from "src/features/socialFeed/CreatePostScreen";
+import PostDetailScreen from "src/features/socialFeed/PostDetailScreen";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
@@ -405,6 +408,18 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.LiveViewerScreen}
           component={LiveViewerScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.SocialProfileScreen}
+          component={SocialProfileScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.CreatePostScreen}
+          component={CreatePostScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.PostDetailScreen}
+          component={PostDetailScreen}
         />
       </HideHeaderStack>
       <AccountListener />

@@ -1,233 +1,468 @@
-import { Camera, CameraView } from 'expo-camera';
-import React, { useEffect, useRef, useState } from 'react';
-import { Alert, Image, KeyboardAvoidingView, Platform, SafeAreaView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { 
+  Alert, 
+  Image, 
+  KeyboardAvoidingView, 
+  Platform, 
+  SafeAreaView, 
+  StyleSheet, 
+  Text, 
+  TextInput, 
+  TouchableOpacity, 
+  View,
+  FlatList,
+  Dimensions,
+  Animated
+} from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { BASE_URL } from '../../../env.config';
 
-const LiveBroadcastScreen = ({ navigation }: any) => {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  const [type, setType] = useState<'front' | 'back'>('front');
-  const [isLive, setIsLive] = useState(false);
-  const [chatMessage, setChatMessage] = useState('');
-  const [messages, setMessages] = useState<{ id: string, user: string, text: string, avatar?: string }[]>([]);
-  const [viewersCount, setViewersCount] = useState(0);
-  const [socialProfile, setSocialProfile] = useState<{ name: string, avatar: string } | null>(null);
-  const wsRef = useRef<WebSocket | null>(null);
+const { height } = Dimensions.get('window');
+
+interface Message {
+  id: string;
+  user: string;
+  text: string;
+  avatar?: string;
+}
+
+const FloatingHeart = ({ onComplete }: { onComplete: () => void }) => {
+  const animatedValue = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-
-    const WS_URL = BASE_URL.replace('http', 'ws').replace('/api/v1/', '/');
-    const ws = new WebSocket(WS_URL);
-    wsRef.current = ws;
-
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ type: 'join_live', roomId: 'global' }));
-      console.log('Host connected to WS:', WS_URL);
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        if (data.type === 'live_chat') {
-          setMessages(prev => [...prev, data.message]);
-        } else if (data.type === 'join_live') {
-          setViewersCount(prev => prev + 1);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    };
-
-    return () => {
-      ws.close();
-    };
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 2500,
+      useNativeDriver: true,
+    }).start(() => onComplete());
   }, []);
 
-  const toggleLive = () => {
-    if (!socialProfile) {
-      Alert.alert(
-        'Yêu cầu Đăng nhập',
-        'Vui lòng liên kết tài khoản Google hoặc Telegram để bắt đầu phát sóng!',
-        [
-          { text: 'Huỷ', style: 'cancel' },
-          { text: 'Google', onPress: () => mockSocialLogin('Google') },
-          { text: 'Telegram', onPress: () => mockSocialLogin('Telegram') },
-        ]
-      );
-      return;
+  const translateY = animatedValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -height * 0.4],
+  });
+
+  const opacity = animatedValue.interpolate({
+    inputRange: [0, 0.1, 0.8, 1],
+    outputRange: [0, 1, 1, 0],
+  });
+
+  const scale = animatedValue.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.5, 1.2, 0.8],
+  });
+
+  const translateX = animatedValue.interpolate({
+    inputRange: [0, 0.2, 0.4, 0.6, 0.8, 1],
+    outputRange: [0, 20, -20, 20, -20, 0],
+  });
+
+  return (
+    <Animated.View 
+      style={[
+        styles.heartContainer, 
+        { 
+          transform: [{ translateY }, { scale }, { translateX }],
+          opacity 
+        }
+      ]}
+    >
+      <MaterialCommunityIcons 
+        name="heart" 
+        size={24} 
+        color={['#ff4d4d', '#ff3366', '#ff66b2', '#FCD535', '#4dff88'][Math.floor(Math.random() * 5)]} 
+      />
+    </Animated.View>
+  );
+};
+
+const LiveBroadcastScreen = ({ navigation }: any) => {
+  const [permission, requestPermission] = useCameraPermissions();
+  const [facing, setFacing] = useState<'front' | 'back'>('front');
+  const [isLive, setIsLive] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [viewerCount, setViewerCount] = useState(0);
+  const [hearts, setHearts] = useState<{ id: number }[]>([]);
+  const wsRef = useRef<WebSocket | null>(null);
+
+  // Mock profile for now
+  const [profile] = useState({
+    name: 'Lord Busuz',
+    avatar: 'https://i.pravatar.cc/150?u=host'
+  });
+
+  useEffect(() => {
+    if (!permission?.granted) {
+      requestPermission();
     }
 
-    if (!isLive) {
-      // POST to backend to register live stream on feed
-      fetch(`${BASE_URL}feed/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'live',
-          user_name: socialProfile.name,
-          content: `${socialProfile.name} đang phát trực tiếp!`,
-          images: [socialProfile.avatar]
-        })
-      }).catch(console.error);
+    let ws: WebSocket | null = null;
+    try {
+      const WS_URL = BASE_URL.replace('http', 'ws').replace('/api/v1/feed', '').replace('/api/v1/', '/');
+      ws = new WebSocket(WS_URL);
+      wsRef.current = ws;
 
-      Alert.alert('Bắt đầu Phát sóng', 'Luồng Live của bạn đã bắt đầu chia sẻ lên Feed!');
+      ws.onopen = () => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({ type: 'join_live', roomId: 'global' }));
+        }
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.type === 'live_chat') {
+            setMessages(prev => [...prev.slice(-20), data.message]);
+          } else if (data.type === 'viewer_count') {
+            setViewerCount(data.count);
+          } else if (data.type === 'send_reaction') {
+            handleAddHeart();
+          }
+        } catch (e) {
+          console.error('WS Message Error:', e);
+        }
+      };
+
+      ws.onerror = (e) => {
+        console.error('WS Error:', e);
+      };
+    } catch (err) {
+      console.error('WS Connection Error:', err);
     }
-    setIsLive(!isLive);
-  };
 
-  const mockSocialLogin = (platform: string) => {
-    // Giả lập luồng OAuth trả về profile
-    setTimeout(() => {
-      setSocialProfile({
-        name: platform === 'Google' ? 'Google User' : 'Tele User',
-        avatar: platform === 'Google'
-          ? 'https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg'
-          : 'https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg'
-      });
-      Alert.alert('Thành công', `Đã liên kết tài khoản ${platform}`);
-    }, 500);
+    return () => {
+      if (ws) ws.close();
+    };
+  }, [permission]);
+
+  const handleAddHeart = useCallback(() => {
+    setHearts(prev => [...prev, { id: Date.now() + Math.random() }]);
+  }, []);
+
+  const toggleLive = async () => {
+    try {
+      if (!isLive) {
+        // Notify backend about new stream
+        const response = await fetch(`${BASE_URL}feed/create`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            type: 'live',
+            user_name: profile.name,
+            content: `${profile.name} is streaming now!`,
+            images: [profile.avatar]
+          })
+        });
+        
+        if (!response.ok) {
+          console.error('Failed to create live feed:', response.status);
+        }
+        setIsLive(true);
+      } else {
+        setIsLive(false);
+        navigation.goBack();
+      }
+    } catch (error) {
+      console.error('Toggle Live Error:', error);
+      Alert.alert('Error', 'Could not start livestream. Please check your connection.');
+    }
   };
 
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
-      const newMsg = { id: Date.now().toString(), user: socialProfile?.name || 'Host (Tôi)', text: chatMessage, avatar: socialProfile?.avatar };
-      setMessages(prev => [...prev, newMsg]);
+      const msg: Message = { 
+        id: Date.now().toString(), 
+        user: 'Host', 
+        text: chatMessage, 
+        avatar: profile.avatar 
+      };
 
-      // Broadcast message to viewers
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({
           type: 'live_chat',
           roomId: 'global',
-          message: { id: Date.now().toString(), user: socialProfile?.name || 'Host', text: chatMessage, avatar: socialProfile?.avatar }
+          message: msg
         }));
       }
-
       setChatMessage('');
     }
   };
 
-  if (hasPermission === null) {
-    return <View style={styles.container}><Text style={styles.text}>Yêu cầu quyền truy cập Camera...</Text></View>;
-  }
-  if (hasPermission === false) {
-    return <View style={styles.container}><Text style={styles.text}>Không có quyền truy cập Camera.</Text></View>;
-  }
+  if (!permission) return <View style={styles.container} />;
+  if (!permission.granted) return (
+    <View style={styles.container}>
+      <Text style={{ color: '#fff', textAlign: 'center', marginTop: 100 }}>
+        No access to camera. Please enable it in settings.
+      </Text>
+      <TouchableOpacity style={styles.startBtn} onPress={requestPermission}>
+        <Text style={styles.startBtnText}>Grant Permission</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <CameraView style={styles.camera} facing={type}>
-        <View style={styles.overlay}>
+    <View style={styles.container}>
+      <CameraView style={styles.camera} facing={facing}>
+        <LinearGradient
+          colors={['rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,0.6)']}
+          style={StyleSheet.absoluteFillObject}
+        />
 
+        <SafeAreaView style={styles.safeArea}>
           {/* Header */}
           <View style={styles.header}>
-            {isLive && socialProfile ? (
-              <View style={styles.hostInfoPill}>
-                <Image source={{ uri: socialProfile.avatar }} style={styles.hostAvatar} />
-                <View style={styles.hostTextContainer}>
-                  <Text style={styles.hostName} numberOfLines={1}>{socialProfile.name}</Text>
-                  <Text style={styles.hostLikes}>🤍 0</Text>
-                </View>
-              </View>
-            ) : (
-              <View /> // Placeholder
-            )}
-
-            <View style={styles.headerRightControls}>
+            <View style={styles.headerLeft}>
+              <TouchableOpacity style={styles.circleBtn} onPress={() => navigation.goBack()}>
+                <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
+              </TouchableOpacity>
+              
               {isLive && (
-                <View style={styles.viewersPill}>
-                  <Text style={styles.viewersCountText}>👁️ {viewersCount}</Text>
+                <View style={styles.liveIndicator}>
+                  <View style={styles.dot} />
+                  <Text style={styles.liveText}>LIVE</Text>
+                  <View style={styles.separator} />
+                  <Text style={styles.viewerText}>{viewerCount.toLocaleString()}</Text>
                 </View>
               )}
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setType(type === 'back' ? 'front' : 'back')}
-              >
-                <Text style={styles.iconText}>🔄</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.iconText}>✕</Text>
+            </View>
+
+            <View style={styles.headerRight}>
+              <TouchableOpacity style={styles.circleBtn} onPress={() => setFacing(facing === 'back' ? 'front' : 'back')}>
+                <MaterialCommunityIcons name="camera-flip-outline" size={24} color="#fff" />
               </TouchableOpacity>
             </View>
           </View>
 
-          {/* Chat List */}
-          <View style={styles.chatContainer}>
-            {messages.map((msg) => (
-              <View key={msg.id} style={styles.chatMessageRow}>
-                <Image source={{ uri: msg.avatar || 'https://via.placeholder.com/30' }} style={styles.chatAvatar} />
-                <View style={styles.chatBubble}>
-                  <Text style={styles.chatUser}>{msg.user}</Text>
-                  <Text style={styles.chatText}>{msg.text}</Text>
-                </View>
-              </View>
+          {/* Reaction Layer */}
+          <View style={styles.reactionLayer} pointerEvents="none">
+            {hearts.map(heart => (
+              <FloatingHeart 
+                key={heart.id} 
+                onComplete={() => setHearts(prev => prev.filter(h => h.id !== heart.id))} 
+              />
             ))}
           </View>
 
+          {/* Chat List Overlay */}
+          <View style={styles.chatContainer}>
+              <FlatList
+                  data={messages}
+                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => (
+                    <View style={styles.chatRow}>
+                      <Image source={{ uri: item.avatar }} style={styles.chatAvatar} />
+                      <View style={styles.chatContent}>
+                        <Text style={styles.chatUser}>{item.user}</Text>
+                        <Text style={styles.chatText}>{item.text}</Text>
+                      </View>
+                    </View>
+                  )}
+                  showsVerticalScrollIndicator={false}
+                  contentContainerStyle={styles.chatList}
+              />
+          </View>
+
           {/* Footer Actions */}
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <View style={styles.footer}>
-              {isLive ? (
-                <>
-                  <TextInput
-                    style={styles.chatInput}
-                    placeholder="Nhập bình luận..."
-                    placeholderTextColor="#EAECEF"
-                    value={chatMessage}
-                    onChangeText={setChatMessage}
-                    onSubmitEditing={handleSendMessage}
-                  />
-                  <TouchableOpacity style={styles.endLiveButton} onPress={toggleLive}>
-                    <Text style={styles.mainButtonText}>END</Text>
-                  </TouchableOpacity>
-                </>
-              ) : (
-                <TouchableOpacity style={[styles.startLiveButton, !socialProfile && { backgroundColor: '#848E9C' }]} onPress={toggleLive}>
-                  <Text style={styles.mainButtonText}>{socialProfile ? 'GO LIVE' : 'LOGIN TO LIVE'}</Text>
+              {!isLive ? (
+                <TouchableOpacity style={styles.startBtn} onPress={toggleLive}>
+                  <Text style={styles.startBtnText}>GO LIVE</Text>
                 </TouchableOpacity>
+              ) : (
+                <View style={styles.broadcastControls}>
+                   <View style={styles.inputBar}>
+                      <TextInput
+                          style={styles.textInput}
+                          placeholder="Type something..."
+                          placeholderTextColor="rgba(255,255,255,0.7)"
+                          value={chatMessage}
+                          onChangeText={setChatMessage}
+                          onSubmitEditing={handleSendMessage}
+                      />
+                      <TouchableOpacity onPress={handleSendMessage}>
+                          <MaterialCommunityIcons name="send" size={20} color="#fff" />
+                      </TouchableOpacity>
+                   </View>
+                   <TouchableOpacity style={styles.endBtn} onPress={toggleLive}>
+                      <MaterialCommunityIcons name="close" size={24} color="#fff" />
+                   </TouchableOpacity>
+                </View>
               )}
             </View>
           </KeyboardAvoidingView>
-
-        </View>
+        </SafeAreaView>
       </CameraView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 export default LiveBroadcastScreen;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  text: { color: '#fff', textAlign: 'center', marginTop: 20 },
-  camera: { flex: 1 },
-  overlay: { flex: 1, justifyContent: 'space-between', paddingLeft: 12, paddingRight: 10, paddingBottom: 10, paddingTop: Platform.OS === 'ios' ? 10 : 30 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-
-  hostInfoPill: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: 30, paddingRight: 8 },
-  hostAvatar: { width: 34, height: 34, borderRadius: 17 },
-  hostTextContainer: { marginHorizontal: 6, maxWidth: 70 },
-  hostName: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
-  hostLikes: { color: '#eee', fontSize: 10 },
-
-  headerRightControls: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  viewersPill: { backgroundColor: 'rgba(0,0,0,0.3)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 12 },
-  viewersCountText: { color: '#fff', fontSize: 13, fontWeight: 'bold' },
-  iconButton: { backgroundColor: 'rgba(0,0,0,0.3)', width: 30, height: 30, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
-  iconText: { color: '#fff', fontSize: 14, fontWeight: 'bold' },
-
-  chatContainer: { flex: 1, justifyContent: 'flex-end', marginBottom: 10 },
-  chatMessageRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 8 },
-  chatAvatar: { width: 30, height: 30, borderRadius: 15, marginRight: 8 },
-  chatBubble: { backgroundColor: 'rgba(0,0,0,0.2)', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 16, maxWidth: '85%' },
-  chatUser: { color: '#B0C4DE', fontWeight: 'bold', fontSize: 13, marginBottom: 2 },
-  chatText: { color: '#fff', fontSize: 14 },
-
-  footer: { flexDirection: 'row', alignItems: 'center', marginBottom: Platform.OS === 'ios' ? 20 : 0 },
-  chatInput: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', color: '#fff', padding: 12, borderRadius: 20, marginRight: 10 },
-  startLiveButton: { flex: 1, backgroundColor: '#FCD535', padding: 16, borderRadius: 30, alignItems: 'center' },
-  endLiveButton: { backgroundColor: '#F6465D', paddingHorizontal: 20, paddingVertical: 12, borderRadius: 20, justifyContent: 'center' },
-  mainButtonText: { color: '#0B0E11', fontSize: 16, fontWeight: 'bold' }
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  camera: {
+    flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 10,
+  },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  headerRight: {
+    flexDirection: 'row',
+  },
+  circleBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  liveIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ff4d4d',
+    height: 32,
+    paddingHorizontal: 12,
+    borderRadius: 16,
+    marginLeft: 12,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#fff',
+    marginRight: 6,
+  },
+  liveText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  separator: {
+    width: 1,
+    height: 14,
+    backgroundColor: 'rgba(255,255,255,0.3)',
+    marginHorizontal: 8,
+  },
+  viewerText: {
+    color: '#fff',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  chatContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    paddingHorizontal: 16,
+    marginBottom: 10,
+  },
+  chatList: {
+    paddingBottom: 20,
+  },
+  chatRow: {
+    flexDirection: 'row',
+    marginBottom: 8,
+    alignItems: 'flex-start',
+    backgroundColor: 'rgba(0,0,0,0.25)',
+    padding: 8,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+    maxWidth: '85%',
+  },
+  chatAvatar: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    marginRight: 8,
+  },
+  chatContent: {
+    flex: 1,
+  },
+  chatUser: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  chatText: {
+    color: '#fff',
+    fontSize: 13,
+    marginTop: 2,
+  },
+  footer: {
+    paddingHorizontal: 16,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 20,
+  },
+  startBtn: {
+    backgroundColor: '#ff4d4d',
+    height: 56,
+    borderRadius: 28,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#ff4d4d',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 8,
+  },
+  startBtnText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    letterSpacing: 1,
+  },
+  broadcastControls: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inputBar: {
+    flex: 1,
+    height: 48,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    marginRight: 12,
+  },
+  textInput: {
+    flex: 1,
+    color: '#fff',
+    fontSize: 14,
+  },
+  endBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#ff4d4d',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  reactionLayer: {
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+    width: 100,
+    height: height / 2,
+  },
+  heartContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+  }
 });

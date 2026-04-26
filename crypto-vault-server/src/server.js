@@ -111,8 +111,31 @@ wss.on('connection', (ws) => {
         if (cached) {
           ws.send(JSON.stringify({ event: 'priceChange', ...cached }));
         }
-      } else if (message.type === 'live_chat' || message.type === 'join_live') {
-        // Broadcast Live events (chat, join viewers) to all connected clients
+      } else if (message.type === 'join_live' || message.type === 'leave_live' || message.type === 'live_chat' || message.type === 'send_reaction') {
+        const roomId = message.roomId || 'global';
+        
+        // Track viewer counts
+        if (!global.liveViewers) global.liveViewers = new Map();
+        let currentCount = global.liveViewers.get(roomId) || 0;
+
+        if (message.type === 'join_live') {
+          currentCount++;
+          global.liveViewers.set(roomId, currentCount);
+          // Broadcast new viewer count
+          const countUpdate = JSON.stringify({ type: 'viewer_count', roomId, count: currentCount });
+          wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) client.send(countUpdate);
+          });
+        } else if (message.type === 'leave_live') {
+          currentCount = Math.max(0, currentCount - 1);
+          global.liveViewers.set(roomId, currentCount);
+          const countUpdate = JSON.stringify({ type: 'viewer_count', roomId, count: currentCount });
+          wss.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) client.send(countUpdate);
+          });
+        }
+
+        // Broadcast original message to everyone in room
         wss.clients.forEach(client => {
           if (client.readyState === WebSocket.OPEN) {
             client.send(JSON.stringify(message));
@@ -310,6 +333,10 @@ server.listen(PORT, () => {
 
   // Tự động seed dữ liệu Social Feed nếu DB trống
   socialFeedSeeder.seedIfEmpty();
+
+  // Khởi động Binance Crawler Worker (60 phút một lần)
+  const binanceCrawlerWorker = require('./workers/binanceCrawlerWorker');
+  binanceCrawlerWorker.start(3600000); 
 });
 
 module.exports = { server, app, globalEvents };

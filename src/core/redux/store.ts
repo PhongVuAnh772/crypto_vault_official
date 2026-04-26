@@ -31,6 +31,7 @@ import NFTReducer from "./slice/NFT/NFTImport.slice";
 import NFTDataReducer from "./slice/NftData.slice";
 import swapReducer from "./slice/swap/swap.slice";
 import appConfigSliceReducer from "./slice/appConfig.slice";
+import authSliceReducer from "./slice/auth.slice";
 
 const persistConfig = {
   storage: AsyncStorage,
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
   swap: swapReducer,
   tonConnect: tonConnectReducer,
   walletConnect: walletConnectSliceReducer,
+  auth: authSliceReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

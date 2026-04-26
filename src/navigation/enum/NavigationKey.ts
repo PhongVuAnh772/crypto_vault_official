@@ -12,6 +12,7 @@ enum AuthStackScreenKey {
   OnboardingScreen = "OnboardingScreen",
   ShowPassPhrase = "ShowPassPhrase",
   ValidatePassPhrase = "ValidatePassPhrase",
+  SocialAuthScreen = "SocialAuthScreen",
 }
 
 enum HomeStackScreenKey {
@@ -91,6 +92,9 @@ enum HomeStackScreenKey {
   FeedScreen = "FeedScreen",
   LiveBroadcastScreen = "LiveBroadcastScreen",
   LiveViewerScreen = "LiveViewerScreen",
+  SocialProfileScreen = "SocialProfileScreen",
+  CreatePostScreen = "CreatePostScreen",
+  PostDetailScreen = "PostDetailScreen",
 }
 
 enum CreateWalletStackScreenKey {

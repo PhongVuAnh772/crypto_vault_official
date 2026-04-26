@@ -135,4 +135,7 @@ export type HomeStackParamListType = {
     likes: number;
     title: string;
   };
+  [HomeStackScreenKey.SocialProfileScreen]: { userId: string } | undefined;
+  [HomeStackScreenKey.CreatePostScreen]: undefined;
+  [HomeStackScreenKey.PostDetailScreen]: { post: any };
 };

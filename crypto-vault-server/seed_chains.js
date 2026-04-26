@@ -33,6 +33,22 @@ const SEED_DATA = {
       }
     },
     {
+      id: '67bfa1e5291e0ce47c6d8e01',
+      name: 'Ethereum Sepolia',
+      chain_key: 'eth_sepolia',
+      architecture: 'EVM',
+      vm: 'EVM',
+      is_active: true,
+      is_testnet: true,
+      metadata: {
+        slip0044: 60,
+        chainId: 11155111,
+        explorer_url: 'https://sepolia.etherscan.io',
+        rpc_url: 'https://rpc.sepolia.org',
+        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png'
+      }
+    },
+    {
       id: '66e3bd3544fc7ffae93443c2',
       name: 'TON',
       chain_key: 'ton',
@@ -62,6 +78,22 @@ const SEED_DATA = {
       }
     },
     {
+      id: '67bfa1e5291e0ce47c6d8e02',
+      name: 'BSC Testnet',
+      chain_key: 'bsc_testnet',
+      architecture: 'EVM',
+      vm: 'EVM',
+      is_active: true,
+      is_testnet: true,
+      metadata: {
+        slip0044: 714,
+        chainId: 97,
+        explorer_url: 'https://testnet.bscscan.com',
+        rpc_url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
+        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042120-bsc%20testnet.png'
+      }
+    },
+    {
       id: '66ed5939499e454b70e63360',
       name: 'Polygon',
       chain_key: 'polygon',
@@ -75,20 +107,47 @@ const SEED_DATA = {
         rpc_url: 'https://polygon-rpc.com',
         icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-041952-polygon.png'
       }
+    },
+    {
+      id: '67bfa1e5291e0ce47c6d8e03',
+      name: 'Polygon Amoy',
+      chain_key: 'polygon_amoy',
+      architecture: 'EVM',
+      vm: 'EVM',
+      is_active: true,
+      is_testnet: true,
+      metadata: {
+        slip0044: 966,
+        chainId: 80002,
+        explorer_url: 'https://amoy.polygonscan.com',
+        rpc_url: 'https://rpc-amoy.polygon.technology',
+        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-041952-polygon.png'
+      }
     }
   ],
   tokens: [
     // Native tokens for each chain
     { chain_id: '66da762f291e0ce47c6d8d56', name: 'Bitcoin', symbol: 'BTC', decimals: 8, is_native: true, contract_address: '' },
     { chain_id: '66da778a291e0ce47c6d8d5c', name: 'Ethereum', symbol: 'ETH', decimals: 18, is_native: true, contract_address: '' },
+    { chain_id: '67bfa1e5291e0ce47c6d8e01', name: 'Sepolia ETH', symbol: 'ETH', decimals: 18, is_native: true, contract_address: '' },
     { chain_id: '66e3bd3544fc7ffae93443c2', name: 'Toncoin', symbol: 'TON', decimals: 9, is_native: true, contract_address: '' },
     { chain_id: '66ed55fb499e454b70e63326', name: 'BNB', symbol: 'BNB', decimals: 18, is_native: true, contract_address: '' },
+    { chain_id: '67bfa1e5291e0ce47c6d8e02', name: 'TBSC BNB', symbol: 'tBNB', decimals: 18, is_native: true, contract_address: '' },
     { chain_id: '66ed5939499e454b70e63360', name: 'Polygon', symbol: 'POL', decimals: 18, is_native: true, contract_address: '' },
-    
+    { chain_id: '67bfa1e5291e0ce47c6d8e03', name: 'Amoy POL', symbol: 'POL', decimals: 18, is_native: true, contract_address: '' },
+
     // Some common tokens
     { chain_id: '66da778a291e0ce47c6d8d5c', name: 'Tether USD', symbol: 'USDT', decimals: 6, is_native: false, contract_address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' }
   ]
 };
+
+// Helper to convert 24-char hex to valid UUID
+function toUuid(id) {
+  if (id.length === 36) return id; // Already a UUID
+  // Convert 24 chars to 32 chars by padding with zeros, then add hyphens
+  const padded = id.padEnd(32, '0');
+  return `${padded.slice(0, 8)}-${padded.slice(8, 12)}-${padded.slice(12, 16)}-${padded.slice(16, 20)}-${padded.slice(20)}`;
+}
 
 async function seed() {
   try {
@@ -96,21 +155,23 @@ async function seed() {
     await db.query('DELETE FROM tokens');
     await db.query('DELETE FROM chains');
 
-    console.log('Seeding chains with original IDs...');
+    console.log('Seeding chains...');
     for (const chain of SEED_DATA.chains) {
+      const uuid = toUuid(chain.id);
       await db.query(`
-        INSERT INTO chains (id, name, chain_key, architecture, vm, metadata, is_active)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `, [chain.id, chain.name, chain.chain_key, chain.architecture, chain.vm, JSON.stringify(chain.metadata), chain.is_active]);
-      console.log(`- Seeded chain: ${chain.name} (${chain.id})`);
+        INSERT INTO chains (id, name, chain_key, architecture, vm, metadata, is_active, is_testnet)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `, [uuid, chain.name, chain.chain_key, chain.architecture, chain.vm, JSON.stringify(chain.metadata), chain.is_active, !!chain.is_testnet]);
+      console.log(`- Seeded chain: ${chain.name} (${uuid})`);
     }
 
     console.log('Seeding tokens...');
     for (const token of SEED_DATA.tokens) {
+      const chainUuid = toUuid(token.chain_id);
       await db.query(`
         INSERT INTO tokens (chain_id, name, symbol, decimals, is_native, contract_address, is_active)
         VALUES ($1, $2, $3, $4, $5, $6, true)
-      `, [token.chain_id, token.name, token.symbol, token.decimals, token.is_native, token.contract_address]);
+      `, [chainUuid, token.name, token.symbol, token.decimals, token.is_native, token.contract_address]);
     }
 
     console.log('Seeding complete!');
