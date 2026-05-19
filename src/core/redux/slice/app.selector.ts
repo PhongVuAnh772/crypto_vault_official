@@ -32,8 +32,13 @@ export const getUpdateBalance = (state: RootState) => state?.app?.updateBalance;
 export const getHeightBottomTab = (state: RootState) => state?.app?.heightBottomTab;
 export const getWebViewShowing = (state: RootState) => state?.app?.webViewIsShowing;
 export const getAppState = (state: RootState) => state?.app;
-export const getStateActionFailedNeedToContact = (state: RootState) => state.app.actionFailedNeedToContact;
-export const getLockoutLocalAuthentication = (state: RootState) => state.app.isLockoutLocalAuthentication;
-export const getSwapGuidingShow = (state: RootState) => state.app.swapGuidingShow;
-export const getEnablePassword = (state: RootState) => state.app.enablePassword;
-export const getIsTestnet = (state: RootState) => state.app.isTestnet;
+export const getStateActionFailedNeedToContact = (state: RootState) =>
+  state?.app?.actionFailedNeedToContact ?? "";
+export const getLockoutLocalAuthentication = (state: RootState) =>
+  state?.app?.isLockoutLocalAuthentication ?? false;
+export const getSwapGuidingShow = (state: RootState) =>
+  state?.app?.swapGuidingShow ?? false;
+export const getEnablePassword = (state: RootState) =>
+  state?.app?.enablePassword ?? true;
+export const getIsTestnet = (state: RootState) =>
+  state?.app?.isTestnet ?? true;

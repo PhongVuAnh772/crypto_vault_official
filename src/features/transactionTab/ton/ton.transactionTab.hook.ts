@@ -1,7 +1,6 @@
 import { StackActions } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import { Linking } from "react-native";
-import EnvConfig from "src/core/constants/EnvConfig";
 import { TransactionType } from "src/core/enum/TransactionType";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
@@ -15,6 +14,7 @@ import { getNFTMetadata } from "src/core/redux/slice/NftData.slice";
 import { HistorySectionDataType } from "src/core/type/HistorySectionDataType";
 import { TransactionHistoryDataType } from "src/core/type/TransactionHistoryDataType";
 import GlobalUtils from "src/core/utils/globalUtils";
+import { getTonViewerUrl } from "src/core/utils/tonNetwork";
 import TonUtils from "src/core/utils/tonUtils";
 import {
   getTonEvents,
@@ -181,7 +181,7 @@ const useTonTransactionTab = ({
   };
 
   const viewMoreHistory = () => {
-    const defaultBaseUrl = EnvConfig.TON_VIEWER_TRANSACTION_URL;
+    const defaultBaseUrl = getTonViewerUrl();
     const blockExplorerUrl = protocolBaseData?.blockExplorerUrl;
 
     Linking.openURL(

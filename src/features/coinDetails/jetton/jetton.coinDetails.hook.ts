@@ -8,7 +8,6 @@ import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { Address } from '@ton/core';
 import { Linking } from 'react-native';
-import EnvConfig from 'src/core/constants/EnvConfig';
 import AppToastType from 'src/core/enum/AppToastType';
 import Slip0044 from 'src/core/enum/Slip0044';
 import { TransactionType } from 'src/core/enum/TransactionType';
@@ -23,6 +22,7 @@ import { HistorySectionDataType } from 'src/core/type/HistorySectionDataType';
 import { TransactionHistoryDataType } from 'src/core/type/TransactionHistoryDataType';
 import Utils from 'src/core/utils/commonUtils';
 import TonUtils from 'src/core/utils/tonUtils';
+import { getTonViewerUrl } from 'src/core/utils/tonNetwork';
 import { updateCryptoBalance } from 'src/features/home/slice/home.slice';
 import { setTransferSlip0044 } from 'src/features/transfer/transfer.slice';
 import { TransactionDetailsProps } from 'src/navigation/stacks/type/HomeParamListType';
@@ -256,7 +256,7 @@ export const useJetton = ({ navigation }: RootNavigationType) => {
 
     const viewMoreHistory = () => {
         Linking.openURL(
-            `${EnvConfig.TON_VIEWER_URL}${tonAddressData?.address}`,
+            `${getTonViewerUrl()}${tonAddressData?.address}`,
         );
     };
 

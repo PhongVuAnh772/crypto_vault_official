@@ -10,7 +10,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity } from "react-native";
 import { LoadingImage } from "src/components/common/AppImage/type";
-import EnvConfig from "src/core/constants/EnvConfig";
 import AppToastType from "src/core/enum/AppToastType";
 import AuthAction from "src/core/enum/AuthAction";
 import LanguageType from "src/core/enum/LanguageType";
@@ -44,6 +43,7 @@ import {
 } from "src/core/redux/slice/account.type";
 import {
   getHeightBottomTab,
+  getIsTestnet,
   resetAllSlice,
   setAuthAction,
 } from "src/core/redux/slice/app.slice";
@@ -94,7 +94,7 @@ const useHeaderTabBar = (
   const listDAppBrowse = useAppSelector(getDAppBrowse);
   const tonAddressData = useTonAddressData();
   const getAllConnect = useAppSelector(getAppConnection);
-  const isTestNet = EnvConfig.ENV === "development";
+  const isTestNet = useAppSelector(getIsTestnet);
   const allWallets = useAppSelector(getAllAccount);
   const heightBottomTab = useAppSelector(getHeightBottomTab);
   const contentOffsetToast = heightBottomTab ? heightBottomTab + 10 : undefined;
@@ -362,7 +362,20 @@ const useHeaderTabBar = (
     }
   }, [dispatch, navigation, resetAction]);
   const bottomSheetProtocolRef = useRef<BottomSheetModal>(null);
-  const onShowModalProtocol = () => bottomSheetProtocolRef.current?.present();
+  const onShowModalProtocol = async () => {
+    if (protocolDataLists.length === 0) {
+      const fetchRes = await dispatch(getMobileProtocolListsWithSupportedTokens());
+      if (getMobileProtocolListsWithSupportedTokens.rejected.match(fetchRes)) {
+        Utils.showToast({
+          type: AppToastType.error,
+          msg: "Cannot load protocols",
+          contentOffSet: contentOffsetToast,
+        });
+        return;
+      }
+    }
+    bottomSheetProtocolRef.current?.present();
+  };
   const onCloseModalProtocol = () => bottomSheetProtocolRef.current?.close();
 
   const handlePressProtocol = (
@@ -459,6 +472,17 @@ const useHeaderTabBar = (
       dispatch(getMobileProtocolListsWithSupportedTokens());
     }
   }, [dispatch, protocolDataLists.length]);
+
+  useEffect(() => {
+    if (protocolDataLists.length === 0) return;
+    const stillValid = protocolDataLists.some((p) => p?._id === selectedProtocolId);
+    if (!stillValid) {
+      const fallbackId = protocolDataLists[0]?._id;
+      if (fallbackId) {
+        dispatch(setSelectedProtocol(fallbackId));
+      }
+    }
+  }, [dispatch, protocolDataLists, selectedProtocolId]);
 
   useEffect(() => {
     setQuantityBrowse(listDAppBrowse.length);

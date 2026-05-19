@@ -38,6 +38,7 @@ import { FaceIdOrTouchCheckType } from "src/core/services/FaceIdOrTouch/faceIdOr
 import TelegramService, { TelegramUser } from "src/core/services/TelegramService";
 import { AppThemeType } from "src/core/type/ThemeType";
 import Utils from "src/core/utils/commonUtils";
+import { setTonIsTestnet } from "src/core/utils/tonNetwork";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { SwitchView } from "./setting.components";
 import settingStyles from "./setting.styles";
@@ -223,6 +224,7 @@ export const useSetting = ({ navigation }: RootNavigationType) => {
       <SwitchView
         value={isTestnet}
         onValueChange={(val: boolean) => {
+          setTonIsTestnet(val);
           dispatch(setIsTestnet(val));
         }}
         theme={theme}

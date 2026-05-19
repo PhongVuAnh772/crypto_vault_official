@@ -31,6 +31,7 @@ import AppToastType from "src/core/enum/AppToastType";
 import Slip0044 from "src/core/enum/Slip0044";
 import { AddressListItemType } from "src/core/redux/slice/account.type";
 import GlobalUtils from "src/core/utils/globalUtils";
+import { getTonViewerUrl } from "src/core/utils/tonNetwork";
 import { transactionHistoryUtils } from "src/core/utils/transactionsHistoryUtils";
 import { getTransactionsHistoryEVM } from "src/features/transfer/evm/send.evm.slice";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
@@ -310,7 +311,7 @@ const useTransaction = ({
     switch (protocolBaseData?.slip0044) {
       case Slip0044.Ton:
         Linking.openURL(
-          `${EnvConfig.TON_VIEWER_URL}${tonAddressData?.address}`
+          `${getTonViewerUrl()}${tonAddressData?.address}`
         );
         break;
       case Slip0044.Bitcoin:

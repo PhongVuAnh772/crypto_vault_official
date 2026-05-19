@@ -3,7 +3,6 @@ import { StackActions } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking } from 'react-native';
-import EnvConfig from 'src/core/constants/EnvConfig';
 import AppToastType from 'src/core/enum/AppToastType';
 import Slip0044 from 'src/core/enum/Slip0044';
 import { TransactionType } from 'src/core/enum/TransactionType';
@@ -19,6 +18,7 @@ import { HistorySectionDataType } from 'src/core/type/HistorySectionDataType';
 import { TransactionHistoryDataType } from 'src/core/type/TransactionHistoryDataType';
 import Utils from 'src/core/utils/commonUtils';
 import TonUtils from 'src/core/utils/tonUtils';
+import { getTonViewerUrl } from 'src/core/utils/tonNetwork';
 import { setTransferSlip0044 } from 'src/features/transfer/transfer.slice';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import { TransactionDetailsProps } from 'src/navigation/stacks/type/HomeParamListType';
@@ -172,7 +172,7 @@ export const useTon = ({ navigation }: RootNavigationType) => {
 
     const viewMoreHistory = () => {
         Linking.openURL(
-            `${protocolBaseData?.blockExplorerUrl ?? EnvConfig.TON_VIEWER_URL}${tonAddressData?.address}`,
+            `${protocolBaseData?.blockExplorerUrl ?? getTonViewerUrl()}${tonAddressData?.address}`,
         );
     };
 

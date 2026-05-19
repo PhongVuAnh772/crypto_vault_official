@@ -68,7 +68,9 @@ const BottomSheetProtocolView: React.FC<BottomSheetProtocolViewType> = ({
                 <FlatList
                     data={protocolDataLists}
                     showsVerticalScrollIndicator={false}
-                    keyExtractor={item => item?._id.toString()}
+                    keyExtractor={(item, index) =>
+                        item?._id ? String(item._id) : `protocol-${index}`
+                    }
                     ListEmptyComponent={
                         <View style={styles.emptyContainer}>
                             <Text style={styles.emptyText}>

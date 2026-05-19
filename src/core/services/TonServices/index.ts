@@ -44,6 +44,7 @@ import {
   TonAccountsType,
   TonEventsDataType,
 } from "./type";
+import { getTonApiBaseUrl } from "src/core/utils/tonNetwork";
 
 // MARK: Ton Services
 class TonServices {
@@ -65,7 +66,7 @@ class TonServices {
   private readonly _tonGetApi = async <T>(params: SendGetParamsType) => {
     const result = await sendGet<T | GetTonTransactionsErrorType>({
       ...params,
-      customBaseUrl: "https://tonapi.io",
+      customBaseUrl: getTonApiBaseUrl(),
       customBearerToken:
         "AHLPTUWXVDR6C7IAAAAMMPI5S5F7NXUEKH6VNHXBRDMHGK5V7KKN73LG3KCULMW5VMMXIXY",
     });
@@ -76,7 +77,7 @@ class TonServices {
   private readonly _tonPostApi = async <T>(params: SendPostParamsType) => {
     const result = await sendPost<T | GetTonTransactionsErrorType>({
       ...params,
-      customBaseUrl: "https://tonapi.io",
+      customBaseUrl: getTonApiBaseUrl(),
       customBearerToken:
         "AHLPTUWXVDR6C7IAAAAMMPI5S5F7NXUEKH6VNHXBRDMHGK5V7KKN73LG3KCULMW5VMMXIXY",
     });

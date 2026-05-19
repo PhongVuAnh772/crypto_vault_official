@@ -29,6 +29,7 @@ import {
   default as Utils,
 } from "src/core/utils/commonUtils";
 import TonUtils from "src/core/utils/tonUtils";
+import { getTonViewerTransactionUrl } from "src/core/utils/tonNetwork";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "src/navigation/stacks/type/HomeStackParamListType";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
@@ -210,7 +211,7 @@ const useTransactionDetails = ({ navigation }: RootNavigationType) => {
     } else {
       const defaultBaseUrl =
         params.transactionData.coinType === CoinType.Ton
-          ? EnvConfig.TON_VIEWER_TRANSACTION_URL
+          ? getTonViewerTransactionUrl()
           : EnvConfig.BLOCK_CYPHER_PUSH_TRANSACTION_DETAIL_ULR;
       Linking.openURL(
         `${transactionData.protocolData?.transactionScanURL ?? defaultBaseUrl}${transactionData?.txHash}`

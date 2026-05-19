@@ -16,10 +16,13 @@ import useNotification from "./core/hooks/useNotification";
 import useRemoveConfig from "./core/hooks/useRemoteConfig";
 import useRequirePinCode from "./core/hooks/useRequirePinCode";
 import useWalletKitEventsManager from "./core/hooks/useWalletKitEventsManager";
+import { useAppSelector } from "./core/redux/hooks";
 import { useTonAddressData } from "./core/redux/slice/account.selector";
+import { getIsTestnet } from "./core/redux/slice/app.selector";
 import TonWalletVersion from "./core/enum/TonWalletVersion";
 import TonConnectTransfer from "./core/services/TonTransactions/tonConnectTransfer";
 import TonServices from "./core/services/TonServices";
+import { setTonIsTestnet } from "./core/utils/tonNetwork";
 import TonConnectLayout from "./features/tonConnect";
 import { registerTonConnectRequest } from "./features/marketplace/services/tonConnectService";
 import WalletConnectModal from "./features/walletConnect/indext";
@@ -29,6 +32,7 @@ const Main = () => {
   const { paperTheme, fonts, barStyle } = useAppThemeHook();
   const { isModalShow, isWebViewShowing, enablePassword } = useRequirePinCode();
   const tonAddressData = useTonAddressData();
+  const isTestnet = useAppSelector(getIsTestnet);
 
   useRemoveConfig();
   useNotification();
@@ -38,6 +42,10 @@ const Main = () => {
   useKeyboard();
   const initialized = useInitializeWalletKit();
   useWalletKitEventsManager(initialized);
+
+  useEffect(() => {
+    setTonIsTestnet(!!isTestnet);
+  }, [isTestnet]);
 
   useEffect(() => {
     registerTonConnectRequest(async (tx) => {
