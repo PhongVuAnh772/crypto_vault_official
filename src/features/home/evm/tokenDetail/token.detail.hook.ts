@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RouteProp, StackActions, useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';

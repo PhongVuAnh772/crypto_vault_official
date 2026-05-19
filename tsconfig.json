@@ -3,11 +3,12 @@
   "compilerOptions": {
     "target": "ES2021",
     "lib": [
-      "es2015",
+      "es2021",
       "dom"
     ],
     "module": "commonjs",
-    "jsx": "react",
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
     "strict": true,
     "types": ["victory"],
     "baseUrl": "./",
@@ -27,7 +28,17 @@
     }
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "type/**/*.ts",
+    "type/**/*.tsx",
+    "App.tsx",
+    "index.ts"
+  ],
+  "exclude": [
+    "admin-dashboard/**",
+    "crypto-vault-server/**",
+    "node_modules/**",
+    "contracts/**"
   ]
 }

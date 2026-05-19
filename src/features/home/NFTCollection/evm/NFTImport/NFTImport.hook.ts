@@ -37,7 +37,7 @@ const useNFTImport = ({ navigation }: RootNavigationType) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [contractAddress, setContractAddress] = useState<string>("");
   const [idNFT, setIdNFT] = useState<string>("");
-  const canvasRef = useRef<Canvas>(null);
+  const canvasRef = useRef<any>(null);
 
   const convertImageByCanvas = async (image: string) => {
     return new Promise<string>((resolve) => {

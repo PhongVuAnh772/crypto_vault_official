@@ -16,11 +16,12 @@ import BackIcon from 'src/assets/icons/arrow_left.svg';
 import ExportIcon from 'src/assets/icons/new_send.svg';
 import HeartIcon from 'src/assets/icons/star.svg';
 import { useNftMarketplace } from '../NFTCollectionDetail/useNftMarketplace';
+import { NftItem } from 'src/types/nft';
 
 const AIDetailScreen = () => {
     const navigation = useNavigation<any>();
     const route = useRoute<any>();
-    const { imageUri, title, price, isOwner, id } = route.params || {};
+    const { imageUri, title, price, isOwner, id, nft } = route.params || {};
     const nftPrice = price || 0;
 
     const owlImage = 'https://i.ibb.co/L6V6v6V/owl.png';
@@ -31,11 +32,19 @@ const AIDetailScreen = () => {
     const [sellPrice, setSellPrice] = useState('1');
 
     const onBuyPress = () => {
-        const dummyNft = { id: id || '1', name: title, price: nftPrice, image: imageUri, network: 'testnet' };
-        if (nftPrice >= HIGH_PRICE_THRESHOLD) {
-            handleBid(dummyNft as any, nftPrice + 0.5);
+        const selectedNft: NftItem = {
+            id: String(nft?.id ?? id ?? ''),
+            name: nft?.name ?? title ?? '',
+            price: Number(nft?.price ?? nftPrice ?? 0),
+            image: nft?.image ?? imageUri ?? '',
+            type: nft?.type,
+            owner: nft?.owner,
+            highestBid: nft?.highestBid,
+        };
+        if (selectedNft.price >= HIGH_PRICE_THRESHOLD) {
+            handleBid(selectedNft, selectedNft.price + 0.5);
         } else {
-            handleBuy(dummyNft as any);
+            handleBuy(selectedNft);
         }
     };
 

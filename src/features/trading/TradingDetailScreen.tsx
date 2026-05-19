@@ -1,6 +1,6 @@
 import { AntDesign, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -16,11 +16,18 @@ import {
 } from 'react-native';
 import { PinchGestureHandler, PinchGestureHandlerStateChangeEvent, State } from 'react-native-gesture-handler';
 import { CandlestickChart, LineChart } from 'react-native-wagmi-charts';
+import { useSelector } from 'react-redux';
 import { CONFIG } from '../../core/constants/config';
 import { usePriceSocket } from '../../core/hooks/usePriceSocket';
+import { useCurrentWallet, useProtocolSelected } from '../../core/redux/slice/account.selector';
+import { RootState } from '../../core/redux/store';
+import { formatVN } from '../../core/utils/formatters';
 
 // Refactored Imports
 import { useChartData } from './hooks/useChartData';
+import { createEmbeddedEvmSigner } from './services/dexSigners';
+import { runDexSwapFlow } from './services/dexTradeFlow';
+import { createWalletConnectSessionSigner, findActiveWalletConnectSession } from './services/walletConnectTradingSigner';
 import { Timeframe } from './types/trading';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -36,15 +43,29 @@ const COLORS = {
   yellow: '#F0B90B',
 };
 
+const normalizePosition = (raw: any) => ({
+  ...raw,
+  leverage: Number(raw.leverage || 1),
+  margin: Number(raw.margin || 0),
+  amount: Number(raw.amount || 0),
+  entryPrice: Number(raw.entryPrice ?? raw.entry_price ?? 0),
+  liqPrice: Number(raw.liqPrice ?? raw.liq_price ?? 0),
+});
+
 const TradingDetailScreen: React.FC = () => {
   const navigation = useNavigation();
   const route = useRoute<any>();
   const symbol = route.params?.symbol || 'BTCUSDT';
   const market = route.params?.market || 'futures';
+  const baseAsset = symbol.replace('USDT', '');
+  const session = useSelector((state: RootState) => state.auth.session);
+  const token = session?.access_token;
+  const currentWallet = useCurrentWallet();
+  const protocolSelected = useProtocolSelected();
   
   const [tradeType, setTradeType] = useState<'CEX' | 'DEX'>(route.params?.tradeType || 'CEX');
 
-  const { price, priceColor } = usePriceSocket(symbol, market);
+  const { price, priceColor } = usePriceSocket(symbol, market, token);
   const [activeTimeframe, setActiveTimeframe] = useState<Timeframe>('15p');
   const [chartType, setChartType] = useState<'line' | 'candle'>('candle');
 
@@ -56,75 +77,162 @@ const TradingDetailScreen: React.FC = () => {
   } = useChartData({ price, activeTimeframe });
 
   const [positions, setPositions] = useState<any[]>([]);
+  const [marketSummary, setMarketSummary] = useState<any | null>(null);
+  const [tradingAccount, setTradingAccount] = useState<any | null>(null);
 
   // Quick Order Bottom Sheet States
   const [showQuickOrder, setShowQuickOrder] = useState(false);
   const [quickOrderSide, setQuickOrderSide] = useState<'LONG' | 'SHORT' | 'DEX' | null>(null);
-  const [amount, setAmount] = useState('0.05');
+  const [amount, setAmount] = useState('');
+  const [leverage, setLeverage] = useState(Number(route.params?.leverage) || 1);
   const [orderConfirming, setOrderConfirming] = useState(false);
+  const accountAvailableMargin = Number(tradingAccount?.availableMargin || 0);
+  const estimatedMargin = useMemo(() => {
+    const size = Number(amount || 0);
+    const currentPrice = Number(price || 0);
+    if (!size || !currentPrice || !leverage) return 0;
+    return (size * currentPrice) / leverage;
+  }, [amount, price, leverage]);
 
   const fetchLocalPositions = async () => {
+    if (!token) return;
     try {
-      const res = await fetch(`${CONFIG.API_BASE_URL}/api/positions`);
+      const res = await fetch(`${CONFIG.API_BASE_URL}/api/positions`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
       const payload = await res.json();
-      if (payload.success) setPositions(payload.data);
+      if (payload.success) setPositions(payload.data.map(normalizePosition));
     } catch (e) {
       console.warn('Failed to fetch positions', e);
+    }
+  };
+
+  const fetchTradingAccount = async () => {
+    if (!token) return;
+    try {
+      const res = await fetch(`${CONFIG.API_BASE_URL}/api/v1/dex/account/trading`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const payload = await res.json();
+      if (!payload.error) setTradingAccount(payload);
+    } catch (e) {
+      console.warn('Failed to fetch trading account', e);
+    }
+  };
+
+  const fetchMarketSummary = async () => {
+    try {
+      const query = new URLSearchParams({ market, symbol });
+      const res = await fetch(`${CONFIG.API_BASE_URL}/api/v1/dex/market/summary?${query.toString()}`);
+      const payload = await res.json();
+      if (!payload.error) {
+        setMarketSummary({
+          priceChangePercent: payload.change24hPct,
+          highPrice: payload.high24h,
+          lowPrice: payload.low24h,
+          quoteVolume: payload.volume24h,
+        });
+      }
+    } catch (e) {
+      console.warn('Failed to fetch market summary', e);
     }
   };
 
   useFocusEffect(
     React.useCallback(() => {
       fetchLocalPositions();
-    }, [])
+      fetchTradingAccount();
+      fetchMarketSummary();
+    }, [token, symbol, market])
   );
 
-  const handleOpenOrderSheet = (side: 'LONG' | 'SHORT') => {
+  const handleOpenOrderSheet = (side: 'LONG' | 'SHORT' | 'DEX') => {
     setQuickOrderSide(side);
     setShowQuickOrder(true);
   };
 
   const submitQuickOrder = async () => {
     if (!quickOrderSide) return;
+    if (!token && quickOrderSide !== 'DEX') {
+      Alert.alert('Lỗi', 'Vui lòng đăng nhập để giao dịch');
+      return;
+    }
     setOrderConfirming(true);
     try {
       if (quickOrderSide === 'DEX') {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/api/dex/swap-data`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            amountIn: amount,
-            tokenIn: '0xfFf9976782d46CC05630D1f6eBaf18945f85f2b8', // Default WETH
-            tokenOut: '0xaA8E23Fb1079EA71e0a56F48a2aA51851D8433D0', // Sepolia USDT
-            slippage: 0.5
-          })
-        });
-        const result = await response.json();
-        if (result.success) {
-          setShowQuickOrder(false);
-          Alert.alert('Uniswap Swap', `Báo giá: ~ ${result.data.estimatedOutput} USDT. Yêu cầu ký đã gửi tới ví.`);
-        } else {
-          Alert.alert('Lỗi DEX', result.error || 'Không thể lấy báo giá');
+        if (!currentWallet?.address) {
+          Alert.alert('Lỗi DEX', 'Không tìm thấy ví hiện tại');
+          return;
         }
+        if (!token) {
+          Alert.alert('Lỗi DEX', 'Vui lòng đăng nhập để giao dịch');
+          return;
+        }
+        if (!currentWallet.privateKey || !protocolSelected?.rpcUrl || !protocolSelected?.chainId) {
+          Alert.alert('Lỗi DEX', 'Thiếu cấu hình signer (privateKey/rpcUrl/chainId)');
+          return;
+        }
+        const dexChainId = Number(protocolSelected.chainId);
+        const hasWalletConnectSession = !!findActiveWalletConnectSession(dexChainId, currentWallet.address);
+        const signTransaction = hasWalletConnectSession
+          ? createWalletConnectSessionSigner({
+              chainId: dexChainId,
+              fromAddress: currentWallet.address,
+            })
+          : createEmbeddedEvmSigner({
+              privateKey: currentWallet.privateKey,
+              rpcUrl: protocolSelected.rpcUrl,
+              chainId: dexChainId,
+              fromAddress: currentWallet.address,
+            });
+        const tokenIn = ['ETH', 'WETH'].includes(baseAsset.toUpperCase()) ? 'ETH' : 'WETH';
+        const dexResult = await runDexSwapFlow({
+          authToken: token,
+          walletAddress: currentWallet.address,
+          chainId: dexChainId,
+          tokenIn,
+          tokenOut: 'USDT',
+          amountIn: amount || '0',
+          slippageBps: 50,
+          deadlineSec: 1200,
+          signTransaction,
+        });
+        setShowQuickOrder(false);
+        Alert.alert(
+          dexResult.finalStatus === 'confirmed' ? 'Swap thành công' : 'Swap đã gửi',
+          `Intent: ${dexResult.intentId}\nTx: ${dexResult.txHash || '--'}\nTrạng thái: ${dexResult.finalStatus}\nƯớc tính nhận: ${dexResult.amountOutMin || dexResult.amountOut || '--'} USDT`
+        );
         return;
       }
 
-      const btcAmount = parseFloat(amount) || 0.05;
-      const currentPrice = parseFloat(price || '69000');
-      const leverage = 20;
+      const btcAmount = parseFloat(amount) || 0;
+      const currentPrice = parseFloat(price || '0');
+      if (!btcAmount || !currentPrice) {
+        Alert.alert('Lỗi', 'Chưa có giá thị trường hoặc số lượng hợp lệ');
+        return;
+      }
       const marginUsdt = (btcAmount * currentPrice) / leverage;
+      if (tradingAccount && marginUsdt > accountAvailableMargin) {
+        Alert.alert('Lỗi', `Số dư ${tradingAccount.marginAsset || 'USDT'} khả dụng không đủ`);
+        return;
+      }
 
       const payload = {
         symbol,
         side: quickOrderSide,
         margin: marginUsdt,
         leverage,
-        amount: btcAmount
+        amount: btcAmount,
+        orderType: 'MARKET',
+        price: currentPrice
       };
 
       const res = await fetch(`${CONFIG.API_BASE_URL}/api/positions/open`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify(payload)
       });
       const data = await res.json();
@@ -132,6 +240,7 @@ const TradingDetailScreen: React.FC = () => {
       if (data.success) {
         setShowQuickOrder(false); // Close Modal
         fetchLocalPositions();    // Refresh positions immediately
+        fetchTradingAccount();
       } else {
         Alert.alert('Lỗi', data.error || 'Opening position failed');
       }
@@ -146,7 +255,10 @@ const TradingDetailScreen: React.FC = () => {
     try {
       const res = await fetch(`${CONFIG.API_BASE_URL}/api/positions/close`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ id })
       });
       const data = await res.json();
@@ -221,24 +333,26 @@ const TradingDetailScreen: React.FC = () => {
         <View style={styles.priceRow}>
           <View style={styles.priceCol}>
             <Text style={styles.priceLabel}>Giá {tradeType === 'DEX' ? 'Swap' : 'gần nhất'} <Feather name="chevron-down" size={12} /></Text>
-            <Text style={[styles.mainPrice, { color: COLORS.green }]}>{parseFloat(price || '68350').toLocaleString('vi-VN')}</Text>
-            <Text style={[styles.subPriceInfo, { color: COLORS.green }]}>{(price || '68350.0').toString().replace('.', ',')}0000$ <Text style={{ fontWeight: '700' }}>+3,39%</Text></Text>
-            <Text style={styles.markPriceSub}>{tradeType === 'CEX' ? 'Giá đánh dấu 69.209,8' : 'Price Impact < 0.01%'}</Text>
+            <Text style={[styles.mainPrice, { color: priceColor }]}>{price ? formatVN(price, 1) : '--'}</Text>
+            <Text style={[styles.subPriceInfo, { color: Number(marketSummary?.priceChangePercent || 0) >= 0 ? COLORS.green : COLORS.red }]}>
+              {price ? `${formatVN(price, 4)}$` : '--'} <Text style={{ fontWeight: '700' }}>{marketSummary?.priceChangePercent ? `${Number(marketSummary.priceChangePercent).toFixed(2)}%` : '--'}</Text>
+            </Text>
+            <Text style={styles.markPriceSub}>{tradeType === 'CEX' ? `Giá đánh dấu ${price ? formatVN(price, 1) : '--'}` : 'Price Impact --'}</Text>
           </View>
           
           {tradeType === 'CEX' ? (
             <View style={styles.statsGrid}>
-              <View style={styles.statLine}><Text style={styles.statLabel}>Giá cao nhất 24h</Text><Text style={styles.statVal}>69.583,0</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>Giá thấp nhất 24h</Text><Text style={styles.statVal}>66.650,0</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>KL 24h(BTC)</Text><Text style={styles.statVal}>134.721,683</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>KL 24h(USDT)</Text><Text style={styles.statVal}>9,19B</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>Giá cao nhất 24h</Text><Text style={styles.statVal}>{formatVN(marketSummary?.highPrice, 1)}</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>Giá thấp nhất 24h</Text><Text style={styles.statVal}>{formatVN(marketSummary?.lowPrice, 1)}</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>KL 24h({baseAsset})</Text><Text style={styles.statVal}>{formatVN(marketSummary?.volume, 3)}</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>KL 24h(USDT)</Text><Text style={styles.statVal}>{formatVN(marketSummary?.quoteVolume, 2)}</Text></View>
             </View>
           ) : (
             <View style={styles.statsGrid}>
-              <View style={styles.statLine}><Text style={styles.statLabel}>TVL (Pool)</Text><Text style={[styles.statVal, { color: COLORS.yellow }]}>$25.84M</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>Khối lượng 24h</Text><Text style={styles.statVal}>$1.11M</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>APR (Phí)</Text><Text style={[styles.statVal, { color: COLORS.green }]}>12.5%</Text></View>
-              <View style={styles.statLine}><Text style={styles.statLabel}>Thanh khoản</Text><Text style={styles.statVal}>Cao</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>TVL (Pool)</Text><Text style={[styles.statVal, { color: COLORS.yellow }]}>--</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>Khối lượng 24h</Text><Text style={styles.statVal}>{formatVN(marketSummary?.quoteVolume, 2)}</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>APR (Phí)</Text><Text style={[styles.statVal, { color: COLORS.green }]}>--</Text></View>
+              <View style={styles.statLine}><Text style={styles.statLabel}>Thanh khoản</Text><Text style={styles.statVal}>--</Text></View>
             </View>
           )}
         </View>
@@ -276,7 +390,7 @@ const TradingDetailScreen: React.FC = () => {
                 <Text style={{ fontSize: 10, fontWeight: '800', color: pos.side === 'LONG' ? COLORS.green : COLORS.red }}>{pos.side} {pos.leverage}x</Text>
               </View>
               <View style={{ flex: 1, marginLeft: 8 }}>
-                <Text style={{ fontSize: 11, color: COLORS.textGray }}>Vào lệnh: <Text style={{ color: COLORS.textBlack, fontWeight: '700' }}>{pos.entryPrice}</Text> • Quy mô: <Text style={{ color: COLORS.textBlack, fontWeight: '700' }}>{pos.amount} BTC</Text></Text>
+                <Text style={{ fontSize: 11, color: COLORS.textGray }}>Vào lệnh: <Text style={{ color: COLORS.textBlack, fontWeight: '700' }}>{formatVN(pos.entryPrice, 1)}</Text> • Quy mô: <Text style={{ color: COLORS.textBlack, fontWeight: '700' }}>{pos.amount} {baseAsset}</Text></Text>
               </View>
               <View style={{ alignItems: 'flex-end' }}>
                 <Text style={{ fontSize: 13, fontWeight: '800', color: isPositive ? COLORS.green : COLORS.red }}>{isPositive ? '+' : ''}{roi}%</Text>
@@ -402,10 +516,21 @@ const TradingDetailScreen: React.FC = () => {
             </View>
 
             <View style={styles.sheetContent}>
-              <Text style={{ color: COLORS.textGray, fontSize: 13, marginBottom: 8 }}>Đòn bẩy: 20x (Tự động)</Text>
+              <View style={styles.leverageRow}>
+                <Text style={{ color: COLORS.textGray, fontSize: 13 }}>Đòn bẩy</Text>
+                <View style={styles.leverageControl}>
+                  <TouchableOpacity onPress={() => setLeverage(current => Math.max(1, current - 1))}>
+                    <AntDesign name="minus" size={14} color={COLORS.textBlack} />
+                  </TouchableOpacity>
+                  <Text style={{ fontWeight: '800', color: COLORS.textBlack }}>{leverage}x</Text>
+                  <TouchableOpacity onPress={() => setLeverage(current => Math.min(125, current + 1))}>
+                    <AntDesign name="plus" size={14} color={COLORS.textBlack} />
+                  </TouchableOpacity>
+                </View>
+              </View>
 
               <View style={styles.inputWrap}>
-                <Text style={{ color: COLORS.textGray }}>Số lượng (BTC)</Text>
+                <Text style={{ color: COLORS.textGray }}>Số lượng ({baseAsset})</Text>
                 <TextInput
                   style={styles.sheetInput}
                   value={amount}
@@ -416,7 +541,12 @@ const TradingDetailScreen: React.FC = () => {
 
               <View style={[styles.inputWrap, { marginTop: 15 }]}>
                 <Text style={{ color: COLORS.textGray }}>Ký quỹ dự kiến</Text>
-                <Text style={{ fontWeight: '700' }}>~ {((parseFloat(amount || '0') * parseFloat(price || '69000')) / 20).toFixed(2)} USDT</Text>
+                <Text style={{ fontWeight: '700' }}>{estimatedMargin ? `~ ${formatVN(estimatedMargin, 2)} USDT` : '--'}</Text>
+              </View>
+
+              <View style={[styles.inputWrap, { marginTop: 10 }]}>
+                <Text style={{ color: COLORS.textGray }}>Khả dụng</Text>
+                <Text style={{ fontWeight: '700' }}>{formatVN(accountAvailableMargin, 2)} {tradingAccount?.marginAsset || 'USDT'}</Text>
               </View>
 
               <TouchableOpacity
@@ -483,6 +613,8 @@ const styles = StyleSheet.create({
   sheetHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
   sheetTitle: { fontSize: 18, fontWeight: '800', color: COLORS.textBlack },
   sheetContent: { paddingBottom: 30 },
+  leverageRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
+  leverageControl: { width: 96, height: 32, borderRadius: 8, backgroundColor: '#F5F5F5', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 10 },
   inputWrap: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 12, backgroundColor: '#F5F5F5', borderRadius: 8, marginTop: 5 },
   sheetInput: { fontSize: 16, fontWeight: '700', color: COLORS.textBlack, textAlign: 'right', minWidth: 100 },
   confirmBtn: { marginTop: 25, height: 48, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },

@@ -690,5 +690,13 @@
     "home_promo_invite_title": "Invite friends, earn €60",
     "home_promo_invite_desc": "Earn €60 for each friend you invite by 26 March. T&C apply",
     "home_promo_learn_earn_title": "Learn and earn",
-    "home_promo_learn_earn_desc": "Complete short lessons and earn internal tokens rewards."
+    "home_promo_learn_earn_desc": "Complete short lessons and earn internal tokens rewards.",
+    "home_insight_portfolio_title": "{{network}} portfolio",
+    "home_insight_portfolio_desc": "{{count}} assets tracked",
+    "home_insight_top_asset_title": "{{network}} top asset",
+    "home_insight_top_asset_desc": "{{token}} holding snapshot",
+    "home_widget_portfolio_label": "Portfolio value",
+    "home_widget_top_asset_label": "Top asset",
+    "home_widget_assets_count": "{{count}} assets",
+    "home_widget_no_data": "No data"
 }

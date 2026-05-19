@@ -36,7 +36,7 @@ const TransactionDefault = ({
                 appStyles.justifyContentBetween,
             ]}>
             <View style={styles.documentContainer}>
-                <DocumentSvgIcon style={styles.documentIcon} />
+                <DocumentSvgIcon color={styles.documentIcon.color} />
             </View>
             <View
                 style={[

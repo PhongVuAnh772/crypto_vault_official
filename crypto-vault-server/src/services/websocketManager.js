@@ -8,8 +8,8 @@ class BinanceWSManager extends EventEmitter {
     this.spotConfig = options.spot || {};
     this.futuresConfig = options.futures || {};
 
-    this.spotStreams = this.spotConfig.streams || ['btcusdt@ticker', 'ethusdt@ticker'];
-    this.futuresStreams = this.futuresConfig.streams || ['btcusdt@markPrice', 'ethusdt@markPrice'];
+    this.spotStreams = this.spotConfig.streams || ['btcusdt@ticker', 'ethusdt@ticker', 'btcusdt@depth20'];
+    this.futuresStreams = this.futuresConfig.streams || ['btcusdt@markPrice', 'ethusdt@markPrice', 'btcusdt@depth20'];
 
     this.priceCache = new Map();
 
@@ -117,6 +117,18 @@ class BinanceWSManager extends EventEmitter {
       const cacheKey = `${market}:${symbol}`;
       this.priceCache.set(cacheKey, { market, symbol, price, time });
       this.emit('priceUpdate', { market, symbol, price, time });
+    }
+
+    // Handle Depth (Order Book) Data
+    if (data.b && data.a) { // bids and asks
+      const depthData = {
+        market,
+        symbol: data.s || symbol,
+        bids: data.b.slice(0, 10), // Take top 10 for performance
+        asks: data.a.slice(0, 10),
+        time: data.E || Date.now()
+      };
+      this.emit('depthUpdate', depthData);
     }
   }
 

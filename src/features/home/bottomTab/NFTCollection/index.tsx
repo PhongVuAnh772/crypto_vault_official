@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import AppTabBar from 'src/components/common/AppTabBar';

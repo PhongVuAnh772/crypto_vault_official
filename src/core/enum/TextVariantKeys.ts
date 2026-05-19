@@ -9,6 +9,7 @@ enum TextVariantKeys {
     bodyLarge = 'bodyLarge',
     bodyMedium = 'bodyMedium',
     bodySmall = 'bodySmall',
+    bodyBSmall = 'bodySmall',
     bodyMLarge = 'bodyMLarge',
     bodyMMedium = 'bodyMMedium',
     bodyMSmall = 'bodyMSmall',

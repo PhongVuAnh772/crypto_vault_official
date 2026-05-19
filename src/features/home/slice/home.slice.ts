@@ -93,6 +93,9 @@ export const getBalanceNativeEVM = createAsyncThunk(
 
         return rejectWithValue(response.data);
       }
+      if (!("balance" in response.data)) {
+        return rejectWithValue(response.data);
+      }
       console.log(`response.data.balance ${response.data.balance}`);
       return {
         balance: response.data.balance, // string

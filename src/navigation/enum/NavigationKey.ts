@@ -13,6 +13,9 @@ enum AuthStackScreenKey {
   ShowPassPhrase = "ShowPassPhrase",
   ValidatePassPhrase = "ValidatePassPhrase",
   SocialAuthScreen = "SocialAuthScreen",
+  CreateNewWallet = "CreateNewWallet",
+  RePinCode = "RePinCode",
+  CongratulationCreateWallet = "CongratulationCreateWallet",
 }
 
 enum HomeStackScreenKey {
@@ -95,6 +98,14 @@ enum HomeStackScreenKey {
   SocialProfileScreen = "SocialProfileScreen",
   CreatePostScreen = "CreatePostScreen",
   PostDetailScreen = "PostDetailScreen",
+  MarketplaceHomeScreen = "MarketplaceHomeScreen",
+  ConnectWalletScreen = "ConnectWalletScreen",
+  CreateNFTScreen = "CreateNFTScreen",
+  MyNFTsScreen = "MyNFTsScreen",
+  NFTDetailScreen = "NFTDetailScreen",
+  CreateAuctionScreen = "CreateAuctionScreen",
+  AuctionDetailScreen = "AuctionDetailScreen",
+  BidHistoryScreen = "BidHistoryScreen",
 }
 
 enum CreateWalletStackScreenKey {

@@ -37,6 +37,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         setIsShowModalRequestCameraPermission,
     ] = useState(false);
     const [uri, setUri] = useState<string | undefined>();
+    const [isSimulator, setIsSimulator] = useState(false);
     const isActive = useIsFocused();
     const requestCameraPermission = async () => {
         const permission = Utils.isIos
@@ -100,6 +101,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [uri]);
     useEffect(() => {
+        Promise.resolve(Utils.checkingEmulator()).then(setIsSimulator);
         dispatch(setEnablePassword(false));
         checkCameraPermission();
         return () => {
@@ -173,6 +175,6 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         openSettingsAction,
         isShowModalRequestCameraPermission,
         onPasteURI,
-        isSimulator: Utils.checkingEmulator(),
+        isSimulator,
     };
 };

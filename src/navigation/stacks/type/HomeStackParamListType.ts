@@ -23,6 +23,7 @@ import { TransactionDetailsProps } from "./HomeParamListType";
 import { JettonParamListType } from "./JettonParamListType";
 import { NFTUnAddedDetailParamListType } from "./NFTUnAddedDetailPropsType";
 import { TransferParamListType } from "./TransferParamListType";
+import { MarketplaceNft } from "src/features/marketplace/services/nftService";
 
 export type HomeStackParamListType = {
   [HomeStackScreenKey.BottomTab]: undefined;
@@ -138,4 +139,12 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.SocialProfileScreen]: { userId: string } | undefined;
   [HomeStackScreenKey.CreatePostScreen]: undefined;
   [HomeStackScreenKey.PostDetailScreen]: { post: any };
+  [HomeStackScreenKey.MarketplaceHomeScreen]: undefined;
+  [HomeStackScreenKey.ConnectWalletScreen]: undefined;
+  [HomeStackScreenKey.CreateNFTScreen]: undefined;
+  [HomeStackScreenKey.MyNFTsScreen]: undefined;
+  [HomeStackScreenKey.NFTDetailScreen]: { nft: MarketplaceNft };
+  [HomeStackScreenKey.CreateAuctionScreen]: { nft: MarketplaceNft };
+  [HomeStackScreenKey.AuctionDetailScreen]: { auctionId?: string } | undefined;
+  [HomeStackScreenKey.BidHistoryScreen]: { auctionId: string };
 };

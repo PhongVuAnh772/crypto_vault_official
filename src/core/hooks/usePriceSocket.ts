@@ -3,10 +3,12 @@ import { CONFIG } from '../constants/config';
 
 const SOCKET_URL = CONFIG.WS_BASE_URL;
 
-export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot' | 'futures' = 'futures') => {
+export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot' | 'futures' = 'futures', token?: string) => {
   const [price, setPrice] = useState<string | null>(null);
   const [prevPrice, setPrevPrice] = useState<string | null>(null);
+  const [orderBook, setOrderBook] = useState<{ bids: string[][], asks: string[][] }>({ bids: [], asks: [] });
   const [isConnected, setIsConnected] = useState(false);
+  const [lastMessage, setLastMessage] = useState<any | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -27,13 +29,15 @@ export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot'
       ws.current?.send(JSON.stringify({
         type: 'subscribe',
         symbol: defaultSymbol,
-        market: market
+        market: market,
+        token,
       }));
     };
 
     ws.current.onmessage = (event) => {
       try {
         const message = JSON.parse(event.data);
+        setLastMessage(message);
         // Log mọi thứ cho tới khi chúng ta biết lỗi ở đâu
         console.log(`[Socket Raw] Received: ${message.event || message.type || 'unknown'} for ${message.symbol || 'none'}`);
         
@@ -56,6 +60,15 @@ export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot'
             });
           }
         }
+
+        if (message.event === 'depthUpdate') {
+          if (message.symbol.toUpperCase() === defaultSymbol.toUpperCase()) {
+            setOrderBook({
+              bids: message.bids,
+              asks: message.asks
+            });
+          }
+        }
       } catch (e) {
         console.error('[Socket Error]', e);
       }
@@ -70,7 +83,7 @@ export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot'
       if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
       reconnectTimeout.current = setTimeout(connect, 3000);
     };
-  }, [defaultSymbol, market]);
+  }, [defaultSymbol, market, token]);
 
   useEffect(() => {
     connect();
@@ -85,9 +98,9 @@ export const usePriceSocket = (defaultSymbol: string = 'BTCUSDT', market: 'spot'
   }, [connect]);
 
   const priceColor = useMemo(() => {
-    if (!price || !prevPrice) return '#FFFFFF';
+    if (!price || !prevPrice) return '#1E2329';
     return parseFloat(price) >= parseFloat(prevPrice) ? '#2EBD63' : '#F64646';
   }, [price, prevPrice]);
 
-  return { price, priceColor, isConnected };
+  return { price, priceColor, isConnected, orderBook, lastMessage };
 };

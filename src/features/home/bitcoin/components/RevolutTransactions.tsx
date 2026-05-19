@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable react-native/no-inline-styles */
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';

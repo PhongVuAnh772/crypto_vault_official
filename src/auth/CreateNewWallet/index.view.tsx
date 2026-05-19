@@ -11,7 +11,7 @@ import {
   AuthStackScreenKey,
   PinCodeStackScreenKey,
 } from "src/navigation/enum/NavigationKey";
-import NativeWalletCoreModule from "../../../../src/modules/WalletCoreModules/NativeWalletCoreModule";
+import NativeWalletCoreModule from "src/modules/WalletCoreModules/NativeWalletCoreModule";
 
 export type PinCodeStackParamListType = {
   [PinCodeStackScreenKey.CreatePin]: undefined;

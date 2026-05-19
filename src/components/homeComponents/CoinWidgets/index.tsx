@@ -123,9 +123,7 @@ const CoinWidgets: React.FC<CoinWidgetsType> = props => {
                 <View style={[appStyles.flex1, appStyles.alignItemsEnd]}>
                     {hideAction ? null : (
                         <ArrowCircleRightSvgIcon
-                            style={{
-                                color: theme.colors.text_on_surface_text_high,
-                            }}
+                            color={theme.colors.text_on_surface_text_high}
                         />
                     )}
                 </View>

@@ -84,7 +84,7 @@ export interface CollectionDetailNFTProps {
     isExistingInCollection: boolean;
     handleGetImage: () => Promise<void>;
     image: string | undefined;
-    canvasRef: React.MutableRefObject<Canvas>;
+    canvasRef: React.MutableRefObject<any>;
     actionHideStatus: () => void;
 }
 

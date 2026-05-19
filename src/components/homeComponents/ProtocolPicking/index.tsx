@@ -44,7 +44,7 @@ const ProtocolPicking: React.FC<CryptoButtonType> = ({
                 <SelectAllProtocolSvgIcon
                     width={32}
                     height={32}
-                    style={styles.iconSellecAll}
+                    color={styles.iconSellecAll.color}
                 />
             ),
             title: LanguageKey.all_protocols_title,

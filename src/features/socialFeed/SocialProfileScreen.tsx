@@ -12,146 +12,157 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { BASE_URL } from '../../../env.config';
 import FeedItem, { FeedItemData } from './components/FeedItem';
 
-const MOCK_PROFILE = {
-  name: 'Swapnil Ghosh',
-  avatar: 'https://i.pravatar.cc/150?u=swapnil',
-  followers: '1M',
-  following: '100',
-  bio: 'Former Email Marketing Specialist at GAOTEK 2024- 2025',
-  education: 'S.S.C in Commerce, Narinda Govt. High. School Expected 2026',
-  views: '655 content views 352 this month',
-  joined: 'Joined July 2025'
-};
-
-const MOCK_POSTS: FeedItemData[] = [
-  {
-    id: 'post-1',
-    user: {
-      id: 'swapnil',
-      name: 'Swapnil Ghosh',
-      avatar: 'https://i.pravatar.cc/150?u=swapnil',
-    },
-    type: 'image',
-    content: 'Become observant, notice surroundings, learn from examples, wisdom, mistakes, and everyday...',
-    images: ['https://images.unsplash.com/photo-1513001900722-3705c136b99e?q=80&w=1000'],
-    createdAt: Date.now() - 3600000,
-    likes: 1250,
-    comments: 85,
-    views: 45000,
-    isLiked: false,
-  }
-];
+// Removed mock data as we will use real API data
 
 const SocialProfileScreen = () => {
   const navigation = useNavigation<any>();
   const route = useRoute<any>();
+  const { userId = 'usr-master' } = route.params || {};
 
-  const renderHeader = () => (
-    <View style={styles.profileHeader}>
-      {/* Top Banner Area / Avatar */}
-      <View style={styles.avatarSection}>
-        <View style={styles.avatarWrapper}>
-           <Image source={{ uri: MOCK_PROFILE.avatar }} style={styles.mainAvatar} />
+  const [profile, setProfile] = React.useState<any>(null);
+  const [posts, setPosts] = React.useState<FeedItemData[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const fetchData = React.useCallback(async () => {
+    try {
+      setLoading(true);
+      // 1. Fetch Profile
+      const profileRes = await fetch(`${BASE_URL}feed/profile/${userId}`);
+      const profileData = await profileRes.json();
+      setProfile(profileData);
+
+      // 2. Fetch User Posts
+      const postsRes = await fetch(`${BASE_URL}feed?user_id=${userId}&limit=20`);
+      const postsData = await postsRes.json();
+      setPosts(postsData);
+    } catch (error) {
+      console.error('Error fetching profile data:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [userId]);
+
+  React.useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+  };
+
+  const renderHeader = () => {
+    if (!profile) return null;
+
+    return (
+      <View style={styles.profileHeader}>
+        {/* Top Banner Area / Avatar */}
+        <View style={styles.avatarSection}>
+          <View style={styles.avatarWrapper}>
+             <Image source={{ uri: profile.avatar }} style={styles.mainAvatar} />
+          </View>
+          <View style={styles.nameSection}>
+              <View style={styles.rowCenter}>
+                 <Text style={styles.profileName}>{profile.name}</Text>
+                 {profile.isVerified && (
+                   <MaterialCommunityIcons name="check-decagram" size={20} color="#3897f0" style={{ marginLeft: 6 }} />
+                 )}
+              </View>
+              <View style={styles.statsPillRow}>
+                  <View style={styles.statsPill}>
+                      <Text style={styles.statsPillText}>{profile.followers} followers</Text>
+                  </View>
+                  <View style={styles.statsPill}>
+                      <Text style={styles.statsPillText}>{profile.following} following</Text>
+                  </View>
+              </View>
+          </View>
         </View>
-        <View style={styles.nameSection}>
-            <View style={styles.rowCenter}>
-               <Text style={styles.profileName}>{MOCK_PROFILE.name}</Text>
-               <MaterialCommunityIcons name="check-decagram" size={20} color="#3897f0" style={{ marginLeft: 6 }} />
+
+        {/* Primary Action Buttons */}
+        <View style={styles.primaryActions}>
+            <TouchableOpacity style={styles.actionCard}>
+                <MaterialCommunityIcons name="account-plus" size={26} color="#121212" />
+                <Text style={styles.actionCardText}>Follow</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard}>
+                <MaterialCommunityIcons name="bell-outline" size={26} color="#121212" />
+                <Text style={styles.actionCardText}>Notify me</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.actionCard}>
+                <MaterialCommunityIcons name="help-circle-outline" size={26} color="#121212" />
+                <Text style={styles.actionCardText}>Ask</Text>
+            </TouchableOpacity>
+        </View>
+
+        {/* Tabs */}
+        <View style={styles.tabRow}>
+            <TouchableOpacity style={[styles.tabItem, styles.tabActive]}>
+                <Text style={styles.tabText}>About</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tabItem}>
+                <Text style={[styles.tabText, { color: '#848E9C' }]}>Photos</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.tabItem}>
+                <Text style={[styles.tabText, { color: '#848E9C' }]}>Questions</Text>
+            </TouchableOpacity>
+        </View>
+
+        {/* About Section */}
+        <View style={styles.aboutCard}>
+            <View style={styles.aboutItem}>
+                <View style={styles.aboutIconBg}>
+                    <MaterialCommunityIcons name="briefcase" size={18} color="#121212" />
+                </View>
+                <Text style={styles.aboutText}>{profile.bio}</Text>
             </View>
-            <View style={styles.statsPillRow}>
-                <View style={styles.statsPill}>
-                    <Text style={styles.statsPillText}>{MOCK_PROFILE.followers} followers</Text>
+            <View style={styles.aboutItem}>
+                <View style={styles.aboutIconBg}>
+                    <MaterialCommunityIcons name="school" size={18} color="#121212" />
                 </View>
-                <View style={styles.statsPill}>
-                    <Text style={styles.statsPillText}>{MOCK_PROFILE.following} following</Text>
+                <Text style={styles.aboutText}>{profile.education}</Text>
+            </View>
+            <View style={styles.aboutItem}>
+                <View style={styles.aboutIconBg}>
+                    <MaterialCommunityIcons name="eye" size={18} color="#121212" />
                 </View>
+                <Text style={styles.aboutText}>{profile.views}</Text>
+            </View>
+            <View style={styles.aboutItem}>
+                <View style={styles.aboutIconBg}>
+                    <MaterialCommunityIcons name="calendar" size={18} color="#121212" />
+                </View>
+                <Text style={styles.aboutText}>{profile.joined}</Text>
             </View>
         </View>
-      </View>
 
-      {/* Primary Action Buttons */}
-      <View style={styles.primaryActions}>
-          <TouchableOpacity style={styles.actionCard}>
-              <MaterialCommunityIcons name="account-plus-outline" size={24} color="#121212" />
-              <Text style={styles.actionCardText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionCard}>
-              <MaterialCommunityIcons name="bell-outline" size={24} color="#121212" />
-              <Text style={styles.actionCardText}>Notify me</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.actionCard}>
-              <MaterialCommunityIcons name="help-circle-outline" size={24} color="#121212" />
-              <Text style={styles.actionCardText}>Ask</Text>
-          </TouchableOpacity>
+        {/* Filters */}
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={{ paddingRight: 32 }}>
+            <TouchableOpacity style={[styles.filterChip, styles.filterActive]}>
+                <Text style={styles.filterActiveText}>Profile</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterChip}>
+                <Text style={styles.filterText}>1 Answer</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterChip}>
+                <Text style={styles.filterText}>2 Questions</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.filterChip}>
+                <Text style={styles.filterText}>{profile.postCount || 0} posts</Text>
+            </TouchableOpacity>
+        </ScrollView>
       </View>
-
-      {/* Tabs */}
-      <View style={styles.tabRow}>
-          <TouchableOpacity style={[styles.tabItem, styles.tabActive]}>
-              <MaterialCommunityIcons name="information-outline" size={20} color="#121212" />
-              <Text style={styles.tabText}>About</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-              <MaterialCommunityIcons name="image-outline" size={20} color="#848E9C" />
-              <Text style={[styles.tabText, { color: '#848E9C' }]}>Photos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-              <MaterialCommunityIcons name="comment-question-outline" size={20} color="#848E9C" />
-              <Text style={[styles.tabText, { color: '#848E9C' }]}>Questions</Text>
-          </TouchableOpacity>
-      </View>
-
-      {/* About Section */}
-      <View style={styles.aboutCard}>
-          <View style={styles.aboutItem}>
-              <View style={styles.aboutIconBg}>
-                  <MaterialCommunityIcons name="briefcase-outline" size={18} color="#121212" />
-              </View>
-              <Text style={styles.aboutText}>{MOCK_PROFILE.bio}</Text>
-          </View>
-          <View style={styles.aboutItem}>
-              <View style={styles.aboutIconBg}>
-                  <MaterialCommunityIcons name="school-outline" size={18} color="#121212" />
-              </View>
-              <Text style={styles.aboutText}>{MOCK_PROFILE.education}</Text>
-          </View>
-          <View style={styles.aboutItem}>
-              <View style={styles.aboutIconBg}>
-                  <MaterialCommunityIcons name="eye-outline" size={18} color="#121212" />
-              </View>
-              <Text style={styles.aboutText}>{MOCK_PROFILE.views}</Text>
-          </View>
-          <View style={styles.aboutItem}>
-              <View style={styles.aboutIconBg}>
-                  <MaterialCommunityIcons name="calendar-month-outline" size={18} color="#121212" />
-              </View>
-              <Text style={styles.aboutText}>{MOCK_PROFILE.joined}</Text>
-          </View>
-      </View>
-
-      {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={{ paddingRight: 32 }}>
-          <TouchableOpacity style={[styles.filterChip, styles.filterActive]}>
-              <Text style={styles.filterActiveText}>Profile</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterChip}>
-              <Text style={styles.filterText}>1 Answer</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterChip}>
-              <Text style={styles.filterText}>2 Questions</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.filterChip}>
-              <Text style={styles.filterText}>5 posts</Text>
-          </TouchableOpacity>
-      </ScrollView>
-    </View>
-  );
+    );
+  };
 
   return (
     <LinearGradient
-      colors={['#E0EAFC', '#CFDEF3', '#E0EAFC']}
+      colors={['#DBE9F9', '#DBE9F9']}
       style={styles.container}
     >
       <SafeAreaView style={styles.safeArea}>
@@ -161,8 +172,10 @@ const SocialProfileScreen = () => {
                 <MaterialCommunityIcons name="chevron-left" size={28} color="#121212" />
             </TouchableOpacity>
             <View style={styles.navTitleRow}>
-                <Text style={styles.navTitle}>{MOCK_PROFILE.name}</Text>
-                <MaterialCommunityIcons name="check-decagram" size={16} color="#3897f0" style={{ marginLeft: 4 }} />
+                <Text style={styles.navTitle}>{profile?.name || 'Loading...'}</Text>
+                {profile?.isVerified && (
+                  <MaterialCommunityIcons name="check-decagram" size={16} color="#3897f0" style={{ marginLeft: 4 }} />
+                )}
             </View>
             <TouchableOpacity style={styles.circleBtn}>
                 <MaterialCommunityIcons name="dots-horizontal" size={24} color="#121212" />
@@ -170,12 +183,14 @@ const SocialProfileScreen = () => {
         </View>
 
         <FlatList
-          data={MOCK_POSTS}
+          data={posts}
           keyExtractor={item => item.id}
           renderItem={({ item }) => <FeedItem item={item} />}
           ListHeaderComponent={renderHeader}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 40 }}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
         />
       </SafeAreaView>
     </LinearGradient>
@@ -199,14 +214,17 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
   },
   circleBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F8FAFD',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 2,
   },
   navTitleRow: {
     flexDirection: 'row',
@@ -224,20 +242,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 25,
   },
   avatarWrapper: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    borderWidth: 3,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 2,
     borderColor: '#FFFFFF',
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
   },
   mainAvatar: {
     width: '100%',
@@ -262,15 +275,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   statsPill: {
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: '#F0F5FA',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
   },
   statsPillText: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#848E9C',
     fontWeight: '500',
   },
@@ -282,99 +293,94 @@ const styles = StyleSheet.create({
   },
   actionCard: {
     flex: 1,
-    height: 80,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    borderRadius: 24,
+    height: 90,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
+    shadowOpacity: 0.04,
+    shadowRadius: 12,
+    elevation: 3,
   },
   actionCardText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#121212',
-    marginTop: 4,
+    marginTop: 8,
   },
   tabRow: {
     flexDirection: 'row',
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0,0,0,0.05)',
+    paddingHorizontal: 24,
+    marginBottom: 20,
   },
   tabItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingBottom: 12,
-    marginRight: 24,
+    paddingBottom: 10,
+    marginRight: 32,
   },
   tabActive: {
-    borderBottomWidth: 2,
+    borderBottomWidth: 3,
     borderBottomColor: '#121212',
   },
   tabText: {
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 17,
+    fontWeight: 'bold',
     color: '#121212',
-    marginLeft: 6,
   },
   aboutCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
+    backgroundColor: '#F0F5FA',
     marginHorizontal: 16,
-    padding: 16,
+    padding: 20,
     borderRadius: 24,
-    marginBottom: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    marginBottom: 24,
   },
   aboutItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 18,
   },
   aboutIconBg: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   aboutText: {
     flex: 1,
-    fontSize: 14,
+    fontSize: 15,
     color: '#121212',
-    lineHeight: 20,
+    lineHeight: 22,
+    fontWeight: '500',
   },
   filterScroll: {
     paddingLeft: 16,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   filterChip: {
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.4)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
+    backgroundColor: '#FFFFFF',
+    marginRight: 10,
   },
   filterActive: {
-    backgroundColor: '#CFDEF3',
+    backgroundColor: '#D1E3F8',
+    borderWidth: 1.5,
     borderColor: '#3897f0',
   },
   filterActiveText: {
-    fontSize: 13,
-    fontWeight: '600',
+    fontSize: 14,
+    fontWeight: 'bold',
     color: '#121212',
   },
   filterText: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '600',
     color: '#848E9C',
   },

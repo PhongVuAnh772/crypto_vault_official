@@ -82,7 +82,7 @@ const RenderTokenItem = ({
                         <MarkSvgIcon
                             width="16"
                             height="16"
-                            style={styles.markIcon}
+                            color={styles.markIcon.color}
                         />
                     )}
                 </View>

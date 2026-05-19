@@ -1,0 +1,301 @@
+openapi: 3.0.3
+info:
+  title: CryptoVault DEX API
+  version: 1.0.0
+servers:
+  - url: https://api.cryptovault.example
+paths:
+  /v1/quotes:
+    get:
+      summary: Get best executable quote
+      parameters:
+        - in: query
+          name: chainId
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: tokenIn
+          required: true
+          schema: { type: string }
+        - in: query
+          name: tokenOut
+          required: true
+          schema: { type: string }
+        - in: query
+          name: amountIn
+          required: true
+          schema: { type: string }
+        - in: query
+          name: slippageBps
+          required: true
+          schema: { type: integer, minimum: 1, maximum: 5000 }
+      responses:
+        "200":
+          description: Quote
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuoteResponse"
+  /v1/routes/compute:
+    post:
+      summary: Compute route candidates
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RouteRequest"
+      responses:
+        "200":
+          description: Route result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RouteResponse"
+  /v1/simulations:
+    post:
+      summary: Simulate route execution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SimulationRequest"
+      responses:
+        "200":
+          description: Simulation result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SimulationResponse"
+  /v1/transactions/build:
+    post:
+      summary: Build unsigned transaction
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BuildTxRequest"
+      responses:
+        "200":
+          description: Unsigned transaction
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BuildTxResponse"
+  /v1/transactions/relay:
+    post:
+      summary: Relay signed transaction (optional)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RelayTxRequest"
+      responses:
+        "200":
+          description: Relay accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RelayTxResponse"
+  /v1/intents/{intentId}:
+    get:
+      summary: Get intent status
+      parameters:
+        - in: path
+          name: intentId
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Intent status
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntentStatusResponse"
+  /v1/account/trading:
+    get:
+      summary: Trading account balances and margin
+      responses:
+        "200":
+          description: Account data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TradingAccountResponse"
+  /v1/market/summary:
+    get:
+      summary: Market summary
+      parameters:
+        - in: query
+          name: chainId
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: symbol
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Market summary
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MarketSummaryResponse"
+  /v1/realtime/replay:
+    get:
+      summary: Replay missing realtime events by cursor
+      parameters:
+        - in: query
+          name: channel
+          required: true
+          schema: { type: string }
+        - in: query
+          name: fromCursor
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Replay events
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReplayResponse"
+components:
+  schemas:
+    QuoteResponse:
+      type: object
+      properties:
+        quoteId: { type: string }
+        routeId: { type: string }
+        amountOut: { type: string }
+        amountOutMin: { type: string }
+        priceImpactBps: { type: integer }
+        gasEstimate: { type: string }
+    RouteRequest:
+      type: object
+      required: [chainId, tokenIn, tokenOut, amountIn]
+      properties:
+        chainId: { type: integer }
+        tokenIn: { type: string }
+        tokenOut: { type: string }
+        amountIn: { type: string }
+    RouteResponse:
+      type: object
+      properties:
+        routeId: { type: string }
+        candidates:
+          type: array
+          items:
+            type: object
+            properties:
+              path: { type: array, items: { type: string } }
+              amountOut: { type: string }
+              gasEstimate: { type: string }
+    SimulationRequest:
+      type: object
+      required: [chainId, walletAddress, routeId]
+      properties:
+        chainId: { type: integer }
+        walletAddress: { type: string }
+        routeId: { type: string }
+    SimulationResponse:
+      type: object
+      properties:
+        success: { type: boolean }
+        gasUsed: { type: string }
+        warnings:
+          type: array
+          items: { type: string }
+        errorCode: { type: string, nullable: true }
+    BuildTxRequest:
+      type: object
+      required: [chainId, walletAddress, routeId, slippageBps, deadlineSec]
+      properties:
+        chainId: { type: integer }
+        walletAddress: { type: string }
+        routeId: { type: string }
+        slippageBps: { type: integer }
+        deadlineSec: { type: integer }
+    BuildTxResponse:
+      type: object
+      properties:
+        intentId: { type: string, format: uuid }
+        unsignedTx:
+          type: object
+          properties:
+            to: { type: string }
+            data: { type: string }
+            value: { type: string }
+            gasLimit: { type: string }
+            maxFeePerGas: { type: string }
+            maxPriorityFeePerGas: { type: string }
+            nonce: { type: integer }
+    RelayTxRequest:
+      type: object
+      required: [intentId, signedTx]
+      properties:
+        intentId: { type: string, format: uuid }
+        signedTx: { type: string }
+        privateRelay: { type: boolean, default: false }
+    RelayTxResponse:
+      type: object
+      properties:
+        txHash: { type: string }
+        status: { type: string, enum: [submitted, failed] }
+    IntentStatusResponse:
+      type: object
+      properties:
+        intentId: { type: string, format: uuid }
+        txHash: { type: string, nullable: true }
+        status:
+          type: string
+          enum: [queued, awaiting_signature, submitted, pending, confirmed, failed, reorged]
+        errorCode: { type: string, nullable: true }
+    TradingAccountResponse:
+      type: object
+      properties:
+        userId: { type: string, format: uuid }
+        availableMargin: { type: string }
+        walletBalance: { type: string }
+        marginAsset: { type: string }
+        balances:
+          type: array
+          items:
+            type: object
+            properties:
+              symbol: { type: string }
+              available: { type: string }
+              locked: { type: string }
+    MarketSummaryResponse:
+      type: object
+      properties:
+        symbol: { type: string }
+        lastPrice: { type: string }
+        change24hPct: { type: string }
+        high24h: { type: string }
+        low24h: { type: string }
+        volume24h: { type: string }
+    ReplayResponse:
+      type: object
+      properties:
+        channel: { type: string }
+        fromCursor: { type: string }
+        toCursor: { type: string }
+        events:
+          type: array
+          items:
+            type: object
+            properties:
+              eventId: { type: string }
+              seq: { type: integer }
+              type: { type: string }
+              payload: { type: object, additionalProperties: true }
+

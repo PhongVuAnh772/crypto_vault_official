@@ -940,9 +940,10 @@ export const selectorFilteredProtocolListsWithSupportedTokens = createSelector(
   [selectorProtocolListsWithSupportedTokensFromBE, getIsTestnet],
   (protocols, isTestnet) => {
     if (!protocols) return [];
-    // Nếu bật Testnet: hiện tất cả. Nếu không: chỉ hiện mạng Mainnet (isTestnet = false/null)
+    // Nếu bật Testnet: ưu tiên chỉ mạng testnet để toàn bộ flow dùng đúng account/protocol testnet.
     if (isTestnet) {
-      return protocols;
+      const testnetProtocols = protocols.filter(p => !!p.isTestnet);
+      return testnetProtocols.length > 0 ? testnetProtocols : protocols;
     }
     return protocols.filter(p => !p.isTestnet);
   }

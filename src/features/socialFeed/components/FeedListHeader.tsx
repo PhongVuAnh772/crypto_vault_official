@@ -5,9 +5,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 interface FeedListHeaderProps {
   onPost: () => void;
   onLiveBroadcast: () => void;
+  activeTab: string;
+  onTabChange: (tab: string) => void;
 }
 
-const FeedListHeader: React.FC<FeedListHeaderProps> = ({ onPost, onLiveBroadcast }) => {
+const TABS = ['Khám phá', 'Live', 'Đang theo dõi', 'Chiến dịch', 'Answer'];
+
+const FeedListHeader: React.FC<FeedListHeaderProps> = ({ 
+  onPost, 
+  onLiveBroadcast,
+  activeTab,
+  onTabChange
+}) => {
   return (
     <View style={styles.headerContainer}>
       <TouchableOpacity style={styles.searchBar} onPress={onPost}>
@@ -34,21 +43,20 @@ const FeedListHeader: React.FC<FeedListHeaderProps> = ({ onPost, onLiveBroadcast
 
       <View style={styles.tabsContainer}>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsScroll}>
-          <TouchableOpacity style={[styles.tabItem, styles.tabActive]}>
-            <Text style={[styles.tabText, styles.tabTextActive]}>Khám phá</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Text style={styles.tabText}>Live</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Text style={styles.tabText}>Đang theo dõi</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Text style={styles.tabText}>Chiến dịch</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Text style={styles.tabText}>Answer</Text>
-          </TouchableOpacity>
+          {TABS.map((tab) => {
+            const isActive = activeTab === tab;
+            return (
+              <TouchableOpacity 
+                key={tab}
+                style={[styles.tabItem, isActive && styles.tabActive]}
+                onPress={() => onTabChange(tab)}
+              >
+                <Text style={[styles.tabText, isActive && styles.tabTextActive]}>
+                  {tab}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
         </ScrollView>
       </View>
     </View>

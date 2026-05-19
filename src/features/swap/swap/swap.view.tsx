@@ -72,6 +72,8 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
         onCloseSendMaximumBottomSheet,
         onShowSendMaximumBottomSheet,
     } = useSwap({ navigation });
+    const activeBenefit = null;
+    const handleAdFinished = () => undefined;
 
     return (
         <>

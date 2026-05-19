@@ -56,3 +56,8 @@ export const TON_API_KEY = 'your-ton-api-key-here';
 export const WALLET_CONNECT_PROJECT_ID = 'defce3a32e3413b628acdf43e351afed';
 export const ANDROID_APP_ID = 'com.phongvuanh772.CryptoVault';
 export const IOS_APP_ID = 'com.phongvuanh772.CryptoVault';
+export const SUPABASE_URL = 'https://zmsgkyiqikhtwwsjhoxn.supabase.co';
+export const SUPABASE_ANON_KEY =
+    'sb_publishable_oWKTV0ViCo_8TTsBITbJiA_VfXziOtN';
+export const NFT_COLLECTION_ADDRESS = '';
+export const NFT_COLLECTION_ADDRESS_TESTNET = '';

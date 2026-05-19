@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import {
   BottomTabDescriptorMap,
   BottomTabNavigationEventMap,
@@ -11,16 +12,15 @@ import {
 import React from "react";
 import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
+import AppText from "src/components/common/AppText";
+import BottomSheetModalGorhom from "src/components/specific/BottomSheetModalGorhom/BottomSheetModalGorhom.view";
+import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { AppThemeType } from "src/core/type/ThemeType";
-import CurvedTabBarBackground from "./CurvedTabBarBackground";
-import { bottomTabIcon } from "./TabIcon";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
-import BottomSheetModalGorhom from "src/components/specific/BottomSheetModalGorhom/BottomSheetModalGorhom.view";
-import AppText from "src/components/common/AppText";
-import TextVariantKeys from "src/core/enum/TextVariantKeys";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { rootNavigate } from "src/navigation/stacks/type/RootParamListType";
+import CurvedTabBarBackground from "./CurvedTabBarBackground";
+import { bottomTabIcon } from "./TabIcon";
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -134,11 +134,11 @@ const AppTabBar = ({
               styles={styles.sheetTitle}
             />
           </View>
-          
+
           <ScrollView showsVerticalScrollIndicator={false}>
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.7}
-              style={styles.actionItem} 
+              style={styles.actionItem}
               onPress={() => handleActionPress(HomeStackScreenKey.Trading)}
             >
               <View style={[styles.actionIcon, { backgroundColor: 'rgba(124, 58, 237, 0.15)' }]}>
@@ -151,9 +151,9 @@ const AppTabBar = ({
               <Feather name="chevron-right" size={20} color="#3A3A3C" />
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.7}
-              style={styles.actionItem} 
+              style={styles.actionItem}
               onPress={() => handleActionPress(HomeStackScreenKey.Swap)}
             >
               <View style={[styles.actionIcon, { backgroundColor: 'rgba(16, 185, 129, 0.15)' }]}>
@@ -166,9 +166,9 @@ const AppTabBar = ({
               <Feather name="chevron-right" size={20} color="#3A3A3C" />
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.7}
-              style={styles.actionItem} 
+              style={styles.actionItem}
               onPress={() => handleActionPress(HomeStackScreenKey.LiveBroadcastScreen)}
             >
               <View style={[styles.actionIcon, { backgroundColor: 'rgba(239, 68, 68, 0.15)' }]}>
@@ -181,9 +181,9 @@ const AppTabBar = ({
               <Feather name="chevron-right" size={20} color="#3A3A3C" />
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               activeOpacity={0.7}
-              style={styles.actionItem} 
+              style={styles.actionItem}
               onPress={() => handleActionPress(HomeStackScreenKey.Transfer)}
             >
               <View style={[styles.actionIcon, { backgroundColor: 'rgba(59, 130, 246, 0.15)' }]}>

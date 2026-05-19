@@ -138,7 +138,7 @@ class MoralisService {
 
     await this.handleError(result);
 
-    if ("balance" in result.data) {
+    if (result.data && "balance" in result.data) {
       console.log("getNativeBalance:", result.data.balance);
     }
 

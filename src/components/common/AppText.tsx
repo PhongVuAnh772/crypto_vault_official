@@ -8,6 +8,7 @@ import appStyles from 'src/core/styles';
 
 type AppTextProps = {
     title?: string;
+    text?: string;
     titleWithI18n?: string;
     i18nParam?: object;
     variant?: TextVariantKeys;
@@ -30,6 +31,7 @@ const Text = customText<AppVariant>();
 const AppText: React.FC<AppTextProps> = props => {
     const {
         title,
+        text,
         titleWithI18n,
         variant,
         textColor,
@@ -68,7 +70,7 @@ const AppText: React.FC<AppTextProps> = props => {
                     ? t(titleWithI18n, {
                           ...i18nParam,
                       })
-                    : title}
+                    : (title ?? text)}
                 {children}
             </Text>
             {buttonInline}

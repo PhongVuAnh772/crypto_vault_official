@@ -690,5 +690,13 @@
     "home_promo_invite_title": "Mời bạn bè, nhận ngay €60",
     "home_promo_invite_desc": "Nhận €60 cho mỗi người bạn mời trước ngày 26 tháng 3. Áp dụng điều kiện.",
     "home_promo_learn_earn_title": "Học và kiếm tiền",
-    "home_promo_learn_earn_desc": "Hoàn thành các bài học ngắn và nhận phần thưởng token nội bộ."
+    "home_promo_learn_earn_desc": "Hoàn thành các bài học ngắn và nhận phần thưởng token nội bộ.",
+    "home_insight_portfolio_title": "Danh mục {{network}}",
+    "home_insight_portfolio_desc": "Đang theo dõi {{count}} tài sản",
+    "home_insight_top_asset_title": "Tài sản nổi bật {{network}}",
+    "home_insight_top_asset_desc": "Tóm tắt nắm giữ {{token}}",
+    "home_widget_portfolio_label": "Giá trị danh mục",
+    "home_widget_top_asset_label": "Tài sản nổi bật",
+    "home_widget_assets_count": "{{count}} tài sản",
+    "home_widget_no_data": "Chưa có dữ liệu"
 }

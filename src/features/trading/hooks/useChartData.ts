@@ -9,39 +9,20 @@ interface UseChartDataProps {
 export const useChartData = ({ price, activeTimeframe }: UseChartDataProps) => {
   const [viewableCount, setViewableCount] = useState(40);
   
-  // Lịch sử đồ thị dạng đường (Line)
-  const [lineHistory, setLineHistory] = useState<PricePoint[]>(() =>
-    Array.from({ length: 120 }, (_, i) => ({
-      timestamp: Date.now() - (120 - i) * 5000,
-      value: 68150 + Math.random() * 100,
-    }))
-  );
-
-  // Lịch sử đồ thị nến (Candlestick)
-  const [candleHistory, setCandleHistory] = useState<Candle[]>(() =>
-    Array.from({ length: 100 }, (_, i) => {
-      const base = 68150 + Math.random() * 100;
-      return {
-        timestamp: Math.floor(Date.now() / 60000) * 60000 - (100 - i) * 60000,
-        open: base, high: base + 20, low: base - 20, close: base + (Math.random() > 0.5 ? 10 : -10)
-      };
-    })
-  );
+  const [lineHistory, setLineHistory] = useState<PricePoint[]>([]);
+  const [candleHistory, setCandleHistory] = useState<Candle[]>([]);
 
   // Khởi tạo nến khi đổi khung giờ
   const reinitializeCandles = useCallback((tf: string, currentPrice: string | null) => {
+    if (!currentPrice) {
+      setCandleHistory([]);
+      return;
+    }
     const interval = TIMEFRAME_MAP[tf] || 60000;
-    const base = parseFloat(currentPrice || '68150');
-    setCandleHistory(Array.from({ length: 100 }, (_, i) => {
-      const startOfTime = Math.floor(Date.now() / interval) * interval;
-      return {
-        timestamp: startOfTime - (100 - i) * interval,
-        open: base, high: base, low: base, close: base
-      };
-    }));
+    const base = parseFloat(currentPrice);
+    const bucket = Math.floor(Date.now() / interval) * interval;
+    setCandleHistory([{ timestamp: bucket, open: base, high: base, low: base, close: base }]);
   }, []);
-
-  const [isInitialized, setIsInitialized] = useState(false);
 
   // Logic cập nhật thời gian thực (Aggregation)
   useEffect(() => {
@@ -50,48 +31,7 @@ export const useChartData = ({ price, activeTimeframe }: UseChartDataProps) => {
     const now = Date.now();
     const interval = TIMEFRAME_MAP[activeTimeframe] || 60000;
 
-    // Normalization logic: Once we get real price, re-seed the history with a realistic Random Walk!
-    if (!isInitialized && Math.abs(newPrice - lineHistory[lineHistory.length-1].value) > 20) {
-      let runPrice = newPrice;
-      const walkedItems = Array.from({ length: 120 }).map((_, i) => {
-        const volatility = newPrice * 0.001; // 0.1% biến động
-        runPrice = runPrice + (Math.random() * volatility - volatility/2);
-        return runPrice;
-      }).reverse(); // Tạo lùi về quá khứ nhưng mảng lưu theo thứ tự tăng dần thời gian
-
-      setLineHistory(Array.from({ length: 120 }, (_, i) => ({
-        timestamp: now - (120 - i) * 5000,
-        value: walkedItems[i],
-      })));
-
-      let candleRun = newPrice;
-      const candleWalks = Array.from({ length: 100 }).map(() => {
-         const volatility = newPrice * 0.002;
-         candleRun = candleRun + (Math.random() * volatility - volatility/2);
-         return candleRun;
-      }).reverse();
-
-      setCandleHistory(Array.from({ length: 100 }, (_, i) => {
-        const startOfTime = Math.floor(now / interval) * interval;
-        const base = candleWalks[i];
-        const v = newPrice * 0.0015;
-        const sign = Math.random() > 0.5 ? 1 : -1;
-        const open = base;
-        const close = base + (Math.random() * v * sign);
-        return {
-          timestamp: startOfTime - (100 - i) * interval,
-          open: open, 
-          close: close,
-          high: Math.max(open, close) + Math.random() * (v * 0.5), 
-          low: Math.min(open, close) - Math.random() * (v * 0.5)
-        };
-      }));
-      setIsInitialized(true);
-      return;
-    }
-
-    // 1. Cập nhật Line Chart (Dịch chuyển lịch sử)
-    setLineHistory(prev => [...prev.slice(1), { timestamp: now, value: newPrice }]);
+    setLineHistory(prev => [...prev.slice(-119), { timestamp: now, value: newPrice }]);
 
     // 2. Cập nhật Candle Chart (Gộp hoặc thêm mới)
     setCandleHistory(prev => {
@@ -107,12 +47,12 @@ export const useChartData = ({ price, activeTimeframe }: UseChartDataProps) => {
             low: Math.min(lastCandle.low, newPrice),
           };
         } else {
-          newData.shift();
+          if (newData.length >= 120) newData.shift();
           newData.push({ timestamp: bucket, open: lastCandle?.close || newPrice, high: newPrice, low: newPrice, close: newPrice });
         }
         return newData;
     });
-  }, [price, activeTimeframe, isInitialized]);
+  }, [price, activeTimeframe]);
 
   // Cắt bớt mảng tùy theo mức Zoon (viewableCount)
   const visibleLineData = useMemo(() => lineHistory.slice(-viewableCount), [lineHistory, viewableCount]);

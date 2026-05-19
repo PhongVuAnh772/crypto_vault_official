@@ -34,6 +34,7 @@ type AppButtonProps = {
     disabledTextColor?: string;
     isLoading?: boolean;
     onlyDisabled?: boolean;
+    type?: string;
 };
 
 const AppButton: React.FC<AppButtonProps> = props => {

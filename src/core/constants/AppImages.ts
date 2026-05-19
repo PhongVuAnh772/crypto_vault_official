@@ -1,4 +1,4 @@
-export const appImages = {
+export const appImages: Record<string, any> = {
   logo: require("../../assets/images/logo.png"),
   newLogo: require("../../assets/images/new_logo.png"),
   logoF: require("../../assets/images/logo_f.png"),

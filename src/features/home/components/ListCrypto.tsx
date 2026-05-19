@@ -6,6 +6,7 @@ import { ListCryptoDataType } from "../home.type";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { t } from "i18next";
 import Utils from "src/core/utils/commonUtils";
+import { useCurrencyRateConversion, useSelectedCurrencySetting } from "src/core/redux/slice/account.selector";
 
 type ListCryptoType = {
   data: ListCryptoDataType[];
@@ -20,6 +21,42 @@ const ListCryptoComponent: React.FC<ListCryptoType> = ({
 }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
+  const selectedCurrencySetting = useSelectedCurrencySetting();
+  const currencyRateConversion = useCurrencyRateConversion();
+
+  const getTokenAmount = (item: ListCryptoDataType) => {
+    if (typeof item.balanceToken === "number") {
+      return item.balanceToken;
+    }
+    const balanceRaw = Number(item.balance ?? 0);
+    if (!item.decimal || !Number.isFinite(balanceRaw)) {
+      return balanceRaw;
+    }
+    if (Math.abs(balanceRaw) < 1e9) {
+      return balanceRaw;
+    }
+    try {
+      const converted = Utils.convertBigIntFollowDecimals(
+        String(Math.trunc(balanceRaw)),
+        item.decimal
+      );
+      return Number(converted);
+    } catch {
+      return balanceRaw;
+    }
+  };
+
+  const getTokenValueInCurrency = (item: ListCryptoDataType) => {
+    const amount = getTokenAmount(item);
+    const tokenRate = Number(item.tokenRateCurrency ?? item.rateCurrency ?? 0);
+    if (!Number.isFinite(amount) || !Number.isFinite(tokenRate)) return 0;
+    return (
+      amount *
+      tokenRate *
+      Number(selectedCurrencySetting?.rate ?? 1) *
+      Number(currencyRateConversion ?? 1)
+    );
+  };
 
   const renderItem = React.useCallback(
     ({ item }: { item: ListCryptoDataType }) => (
@@ -45,12 +82,14 @@ const ListCryptoComponent: React.FC<ListCryptoType> = ({
           </View>
         </View>
         <View style={styles.amountInfo}>
-          <Text style={styles.tokenAmount}>{item.balance}</Text>
-          <Text style={styles.tokenValue}>{item.balanceToCurrency}</Text>
+          <Text style={styles.tokenAmount}>{Utils.formattedBalanceCurrency(getTokenAmount(item))}</Text>
+          <Text style={styles.tokenValue}>
+            {(selectedCurrencySetting?.sign ?? "$") + " " + Utils.formattedCurrency(getTokenValueInCurrency(item))}
+          </Text>
         </View>
       </TouchableOpacity>
     ),
-    [handlePressItem, styles]
+    [handlePressItem, styles, selectedCurrencySetting?.sign, selectedCurrencySetting?.rate, currencyRateConversion]
   );
 
   return (

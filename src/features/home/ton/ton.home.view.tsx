@@ -1,15 +1,17 @@
-import { t } from "i18next";
 import React from "react";
-import { Image, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Swiper from 'react-native-swiper';
+import { Feather } from '@expo/vector-icons';
+import { useTranslation } from "react-i18next";
 import { ScreenWrapper } from "src/components";
 import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import appStyles from "src/core/styles";
+import Utils from "src/core/utils/commonUtils";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import RootNavigationType from "src/navigation/stacks/type/NavigationType";
 import { rootNavigate } from "src/navigation/stacks/type/RootParamListType";
-import DraggableWidgets from '../components/DraggableWidgets';
+import DraggableWidgets, { HomeWidgetData } from '../components/DraggableWidgets';
 import HomeHeader from "../components/HomeHeader";
 import HomeSkeletonLoading from "../components/HomeSkeletonLoading";
 import ListCrypto from "../components/ListCrypto";
@@ -22,6 +24,7 @@ import useTonHome from "./ton.home.hook";
 
 const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
   const theme = useAppTheme();
+  const { t } = useTranslation();
   const styles = useStyles(theme);
   const {
     goToSendScreen,
@@ -59,6 +62,37 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
   } = useTonHome({
     navigation,
   });
+
+  const topAsset = listCryptoData[0];
+  const networkLabel = protocolBaseData?.symbol?.toUpperCase?.() || "NETWORK";
+  const widgets: HomeWidgetData[] = [
+    {
+      id: 'portfolio',
+      label: t(LanguageKey.home_widget_portfolio_label),
+      amount: `${selectedCurrencySetting?.sign ?? '$'} ${Utils.formattedCurrency(walletBalanceCurrency || 0)}`,
+      trend: t(LanguageKey.home_widget_assets_count, { count: listCryptoData.length }),
+      trendUp: true,
+    },
+    {
+      id: 'top-asset',
+      label: t(LanguageKey.home_widget_top_asset_label),
+      amount: topAsset ? `${Utils.formattedCurrency(Number(topAsset.balance ?? 0))} ${topAsset.symbol ?? ''}` : '-',
+      trend: topAsset?.name || t(LanguageKey.home_widget_no_data),
+      trendUp: Number(topAsset?.balance ?? 0) >= 0,
+    },
+  ];
+  const promoCards = [
+    {
+      title: t(LanguageKey.home_insight_portfolio_title, { network: networkLabel }),
+      desc: t(LanguageKey.home_insight_portfolio_desc, { count: listCryptoData.length }),
+    },
+    {
+      title: t(LanguageKey.home_insight_top_asset_title, { network: networkLabel }),
+      desc: topAsset
+        ? t(LanguageKey.home_insight_top_asset_desc, { token: `${topAsset.name} (${topAsset.symbol})` })
+        : t(LanguageKey.home_widget_no_data),
+    },
+  ];
 
   const handlePressItem = (item: ListCryptoDataType) => {
     dispatch(setSelectedCryptoDataId(item.id));
@@ -138,25 +172,19 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
               {/* Slide 1 - Invite Friends */}
               <TouchableOpacity activeOpacity={0.9} style={styles.promoCardInside}>
                 <View style={styles.promoTextContainer}>
-                  <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_invite_title)}</Text>
-                  <Text style={styles.promoSub}>{t(LanguageKey.home_promo_invite_desc)}</Text>
+                  <Text style={styles.promoTitle}>{promoCards[0].title}</Text>
+                  <Text style={styles.promoSub}>{promoCards[0].desc}</Text>
                 </View>
-                <Image
-                  source={{ uri: 'https://i.ibb.co/V9hV9V9/gift.png' }}
-                  style={styles.promoImage}
-                />
+                <Feather name="bar-chart-2" size={32} color={theme.colors.onPrimaryContainer} />
               </TouchableOpacity>
 
               {/* Slide 2 - Learn & Earn */}
               <TouchableOpacity activeOpacity={0.9} style={styles.promoCardInside}>
                 <View style={styles.promoTextContainer}>
-                  <Text style={styles.promoTitle}>{t(LanguageKey.home_promo_learn_earn_title)}</Text>
-                  <Text style={styles.promoSub}>{t(LanguageKey.home_promo_learn_earn_desc)}</Text>
+                  <Text style={styles.promoTitle}>{promoCards[1].title}</Text>
+                  <Text style={styles.promoSub}>{promoCards[1].desc}</Text>
                 </View>
-                <Image
-                  source={{ uri: 'https://i.ibb.co/XzVzVzV/avatar.png' }}
-                  style={styles.promoImage}
-                />
+                <Feather name="activity" size={32} color={theme.colors.onPrimaryContainer} />
               </TouchableOpacity>
             </Swiper>
           </View>
@@ -167,7 +195,7 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
             handlePressItem={handlePressItem}
           />
 
-          <DraggableWidgets />
+          <DraggableWidgets widgets={widgets} />
           
           <SocialFeedSection limit={3} />
         </HomeSkeletonLoading>
@@ -209,11 +237,6 @@ const useStyles = (theme: any) => StyleSheet.create({
     fontSize: 12,
     color: '#8E8E93',
     lineHeight: 16,
-  },
-  promoImage: {
-    width: 80,
-    height: 60,
-    resizeMode: 'contain',
   },
   promoClose: {
     position: 'absolute',

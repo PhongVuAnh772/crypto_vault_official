@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { apiClient } from '../../api/client';
+import { apiClient } from '../../../api/client';
 
 export interface WalletBalance {
   token_id: string;

@@ -1,12 +1,17 @@
 import { useEffect } from 'react';
 import { useAppDispatch } from 'src/core/redux/hooks';
 import { setSession, setLoading } from 'src/core/redux/slice/auth.slice';
-import { supabase } from 'src/core/services/supabase/supabaseClient';
+import { isSupabaseConfigured, supabase } from 'src/core/services/supabase/supabaseClient';
 
 export const useSupabaseAuth = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      dispatch(setLoading(false));
+      return;
+    }
+
     // Initial session check
     const checkSession = async () => {
       dispatch(setLoading(true));
@@ -50,6 +55,9 @@ export const useSupabaseAuth = () => {
   }, [dispatch]);
 
   const signOut = async () => {
+    if (!isSupabaseConfigured) {
+      return;
+    }
     await supabase.auth.signOut();
   };
 

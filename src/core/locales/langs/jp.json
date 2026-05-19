@@ -667,5 +667,13 @@
     "wallet_connect_text_warning_sign": "While sign this request to interact with dApp, you allow this dApp to manipulate your balance",
     "common_text_data": "Data",
     "common_text_message": "Message",
-    "create_new_wallet_warning": "シークレットリカバリーフレーズを忘れるとウォレットは二度と復元することができません。シークレットリカバリーフレーズは第3者と共有せず、安全な場所に記録・保管してください。"
+    "create_new_wallet_warning": "シークレットリカバリーフレーズを忘れるとウォレットは二度と復元することができません。シークレットリカバリーフレーズは第3者と共有せず、安全な場所に記録・保管してください。",
+    "home_insight_portfolio_title": "{{network}} portfolio",
+    "home_insight_portfolio_desc": "{{count}} assets tracked",
+    "home_insight_top_asset_title": "{{network}} top asset",
+    "home_insight_top_asset_desc": "{{token}} holding snapshot",
+    "home_widget_portfolio_label": "Portfolio value",
+    "home_widget_top_asset_label": "Top asset",
+    "home_widget_assets_count": "{{count}} assets",
+    "home_widget_no_data": "No data"
 }

@@ -60,9 +60,7 @@ const BottomSheetProtocolView: React.FC<BottomSheetProtocolViewType> = ({
                 style={styles.closeIconStyle}
                 onPress={onCloseModalProtocol}>
                 <Close2SvgIcon
-                    style={{
-                        color: theme.colors.text_on_surface_text_high,
-                    }}
+                    color={theme.colors.text_on_surface_text_high}
                 />
             </TouchableOpacity>
             <View style={styles.protocolList}>

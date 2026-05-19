@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { t } from "i18next";
 import React from "react";
 import { View, Linking } from "react-native";

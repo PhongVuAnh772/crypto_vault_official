@@ -42,7 +42,7 @@ const WalletItem = ({
     const handleCopy = async () => {
         await Clipboard.setStringAsync(item.address);
         Utils.showToast({
-            msg: AppI18Next.t(LanguageKey.common_copy_success),
+            msg: AppI18Next.t(LanguageKey.common_copied),
             type: 'success',
         });
     };

@@ -10,7 +10,7 @@ function convertIpfsUrl(ipfsUrl: string) {
 
 const convertImageByCanvas = async (
     image: string,
-    canvasRef: MutableRefObject<Canvas>,
+    canvasRef: MutableRefObject<any>,
 ) => {
     return new Promise<string>(resolve => {
         const canvas = canvasRef.current;

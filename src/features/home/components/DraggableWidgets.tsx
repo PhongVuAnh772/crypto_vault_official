@@ -14,7 +14,33 @@ const MARGIN = 10;
 const CONTAINER_MARGIN = 20;
 const WIDGET_WIDTH = (SCREEN_WIDTH - CONTAINER_MARGIN * 2 - MARGIN) / 2;
 
-const DraggableWidgets: React.FC = () => {
+export type HomeWidgetData = {
+    id: string;
+    label: string;
+    amount: string;
+    trend: string;
+    trendUp: boolean;
+};
+
+const defaultWidgets: HomeWidgetData[] = [
+    {
+        id: 'portfolio',
+        label: 'Portfolio value',
+        amount: '$0.00',
+        trend: '0.00%',
+        trendUp: true,
+    },
+    {
+        id: 'top-asset',
+        label: 'Top asset',
+        amount: '-',
+        trend: 'No data',
+        trendUp: true,
+    },
+];
+
+const DraggableWidgets: React.FC<{ widgets?: HomeWidgetData[] }> = ({ widgets }) => {
+    const sourceWidgets = widgets && widgets.length >= 2 ? widgets.slice(0, 2) : defaultWidgets;
     const order = useSharedValue([0, 1]);
 
     return (
@@ -24,20 +50,20 @@ const DraggableWidgets: React.FC = () => {
             </View>
             <View style={styles.row}>
                 <Widget
-                    id="spend"
-                    label="Spend this month"
-                    amount="€ 128.02"
-                    trend="▲ €5"
-                    trendUp={false}
+                    id={sourceWidgets[0].id}
+                    label={sourceWidgets[0].label}
+                    amount={sourceWidgets[0].amount}
+                    trend={sourceWidgets[0].trend}
+                    trendUp={sourceWidgets[0].trendUp}
                     order={order}
                     myOriginalIndex={0}
                 />
                 <Widget
-                    id="wealth"
-                    label="Total wealth"
-                    amount="€ 139"
-                    trend="▲ €5"
-                    trendUp={true}
+                    id={sourceWidgets[1].id}
+                    label={sourceWidgets[1].label}
+                    amount={sourceWidgets[1].amount}
+                    trend={sourceWidgets[1].trend}
+                    trendUp={sourceWidgets[1].trendUp}
                     order={order}
                     myOriginalIndex={1}
                 />

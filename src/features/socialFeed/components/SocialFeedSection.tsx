@@ -12,7 +12,6 @@ import FeedItem, { FeedItemData } from './FeedItem';
 import { useAppSelector } from 'src/core/redux/hooks';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { NavigationStackKey, AuthStackScreenKey } from 'src/navigation/enum/NavigationKey';
-import { mockFeedData } from '../mockData';
 
 interface SocialFeedSectionProps {
   limit?: number;
@@ -32,7 +31,10 @@ const SocialFeedSection: React.FC<SocialFeedSectionProps> = ({ limit = 5, title 
       if (!response.ok) {
         return [];
       }
-      return await response.json();
+      const payload = await response.json();
+      if (Array.isArray(payload)) return payload;
+      if (Array.isArray(payload?.data)) return payload.data;
+      return [];
     } catch (error) {
       console.log('Feed API Error:', error);
       return [];
@@ -106,6 +108,11 @@ const SocialFeedSection: React.FC<SocialFeedSectionProps> = ({ limit = 5, title 
           onLivePress={handleLivePress}
         />
       ))}
+      {feedData.length === 0 && (
+        <View style={styles.emptyWrap}>
+          <Text style={styles.bottomBtnText}>Chưa có bài viết nào</Text>
+        </View>
+      )}
 
       <TouchableOpacity
         style={styles.bottomBtn}
@@ -200,5 +207,9 @@ const styles = StyleSheet.create({
   bottomBtnText: {
     color: '#848E9C',
     fontSize: 14,
-  }
+  },
+  emptyWrap: {
+    paddingHorizontal: 16,
+    paddingBottom: 12,
+  },
 });

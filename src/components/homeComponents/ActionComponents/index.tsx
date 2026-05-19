@@ -66,14 +66,14 @@ const ActionComponent: React.FC<ActionComponentType> = ({
     <View style={[styles.actionContainer, style]}>
       <View style={[appStyles.flex1]}>
         <HomeButtonWithTitle
-          icon={<SendSvgIcon style={styles.colorIcon} />}
+          icon={<SendSvgIcon color={styles.colorIcon.color} />}
           onPress={sendAction}
           titleWithI18n={"Deposit"}
         />
       </View>
       <View style={[appStyles.flex1]}>
         <HomeButtonWithTitle
-          icon={<ReceiveSvgIcon style={styles.colorIcon} />}
+          icon={<ReceiveSvgIcon color={styles.colorIcon.color} />}
           onPress={receiveAction}
           titleWithI18n={LanguageKey.home_receive_title}
         />
@@ -83,7 +83,7 @@ const ActionComponent: React.FC<ActionComponentType> = ({
       {isHome && moreAction && (
         <View style={[appStyles.flex1]}>
           <HomeButtonWithTitle
-            icon={<LinkSvgIcon style={styles.colorIcon} />}
+            icon={<LinkSvgIcon color={styles.colorIcon.color} />}
             onPress={moreAction}
             titleWithI18n={"More"}
           />

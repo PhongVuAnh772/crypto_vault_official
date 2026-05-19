@@ -35,7 +35,7 @@ const useNFTImport = ({ navigation }: RootNavigationType) => {
   const [contractAddress, setContractAddress] = useState<string>("");
   const [idNFT, setIdNFT] = useState<string>("");
   const [burntNFTModal, setBurntNFTModal] = useState<boolean>(false);
-  const canvasRef = useRef<Canvas>(null);
+  const canvasRef = useRef<any>(null);
   const [showScanQRCamera, setShowScanQRCamera] = useState(false);
   const insets = useAppSafeAreaInsets();
   const handleCopyToClipboard = async () => {

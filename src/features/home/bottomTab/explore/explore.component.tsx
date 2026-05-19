@@ -283,7 +283,7 @@ export const NotFoundProject = () => {
   const styles = useStyles(theme);
   return (
     <View style={styles.notFoundContainer}>
-      <EmptyClaimListSvgIcon style={styles.noAssetFoundIcon} />
+      <EmptyClaimListSvgIcon color={styles.noAssetFoundIcon.color} />
       <AppText
         titleWithI18n={LanguageKey.claim_list_empty_title}
         variant={TextVariantKeys.titleLarge}

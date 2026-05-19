@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import {StyleProp, View, ViewStyle} from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';

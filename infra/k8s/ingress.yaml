@@ -1,0 +1,33 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dex-edge
+  namespace: dex
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+    - hosts: [api.cryptovault.example, ws.cryptovault.example]
+      secretName: dex-tls
+  rules:
+    - host: api.cryptovault.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dex-gateway
+                port:
+                  number: 80
+    - host: ws.cryptovault.example
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dex-ws-gateway
+                port:
+                  number: 80
+

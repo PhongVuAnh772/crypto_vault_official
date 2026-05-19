@@ -4,7 +4,7 @@ import fontsConfigure from "./FontConfig";
 
 export const AppLightTheme: AppThemeType = {
   ...MD3LightTheme,
-  fonts: fontsConfigure,
+  fonts: fontsConfigure as any,
   colors: {
     ...MD3LightTheme.colors, // sử dụng base light theme
     // BUTTONS
@@ -60,7 +60,7 @@ export const AppLightTheme: AppThemeType = {
 
 export const AppDarkTheme: AppThemeType = {
   ...MD3DarkTheme,
-  fonts: fontsConfigure,
+  fonts: fontsConfigure as any,
   colors: {
     ...MD3LightTheme.colors, // sử dụng base light theme
     // BUTTONS

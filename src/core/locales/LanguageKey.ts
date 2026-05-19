@@ -742,5 +742,13 @@ const LanguageKey = {
   home_promo_invite_desc: "home_promo_invite_desc",
   home_promo_learn_earn_title: "home_promo_learn_earn_title",
   home_promo_learn_earn_desc: "home_promo_learn_earn_desc",
+  home_insight_portfolio_title: "home_insight_portfolio_title",
+  home_insight_portfolio_desc: "home_insight_portfolio_desc",
+  home_insight_top_asset_title: "home_insight_top_asset_title",
+  home_insight_top_asset_desc: "home_insight_top_asset_desc",
+  home_widget_portfolio_label: "home_widget_portfolio_label",
+  home_widget_top_asset_label: "home_widget_top_asset_label",
+  home_widget_assets_count: "home_widget_assets_count",
+  home_widget_no_data: "home_widget_no_data",
 };
 export default LanguageKey;

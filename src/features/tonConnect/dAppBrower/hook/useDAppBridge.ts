@@ -211,6 +211,11 @@ export const useDAppBridge = () => {
         onCloseModalTonConnect();
     };
     const confirmTransaction = async () => {
+        if (!requestTransaction) {
+            setVisibleLoading(false);
+            onCloseModalTransaction();
+            return;
+        }
         setRequirePinCode(false);
         setVisibleLoading(true);
         try {

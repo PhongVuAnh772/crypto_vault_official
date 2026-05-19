@@ -70,7 +70,7 @@ const ContactSuccess: React.FC<RootNavigationType> = ({ navigation }) => {
                       variant={TextVariantKeys.titleSmall}
                       styles={faqStyle.buttonText}
                     />
-                    <ArrowRightSvgIcon style={faqStyle.iconArrow} />
+                    <ArrowRightSvgIcon color={faqStyle.iconArrow.color} />
                   </View>
                 </TouchableHighlight>
               );

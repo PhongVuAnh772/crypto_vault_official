@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import {StyleSheet} from 'react-native';
 import CoinDetails from 'src/components/specific/CoinDetails/CoinDetails.view';

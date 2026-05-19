@@ -52,7 +52,7 @@ export const TransactionModalHeader: React.FC<any> = ({
                     <TouchableOpacity
                         onPress={closeModal}
                         style={styles.closeButton}>
-                        <Close2SvgIcon style={styles.icon_color} />
+                        <Close2SvgIcon color={styles.icon_color.color} />
                     </TouchableOpacity>
                 </View>
             </View>

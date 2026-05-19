@@ -85,6 +85,14 @@ import LiveViewerScreen from "src/features/socialFeed/LiveViewerScreen";
 import SocialProfileScreen from "src/features/socialFeed/SocialProfileScreen";
 import CreatePostScreen from "src/features/socialFeed/CreatePostScreen";
 import PostDetailScreen from "src/features/socialFeed/PostDetailScreen";
+import AuctionDetailScreen from "src/features/marketplace/AuctionDetailScreen";
+import BidHistoryScreen from "src/features/marketplace/BidHistoryScreen";
+import ConnectWalletScreen from "src/features/marketplace/ConnectWalletScreen";
+import CreateAuctionScreen from "src/features/marketplace/CreateAuctionScreen";
+import CreateNFTScreen from "src/features/marketplace/CreateNFTScreen";
+import MarketplaceHomeScreen from "src/features/marketplace/HomeScreen";
+import MyNFTsScreen from "src/features/marketplace/MyNFTsScreen";
+import NFTDetailScreen from "src/features/marketplace/NFTDetailScreen";
 import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 import { HomeStackParamListType } from "../type/HomeStackParamListType";
 import { rootNavigate } from "../type/RootParamListType";
@@ -420,6 +428,38 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.PostDetailScreen}
           component={PostDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.MarketplaceHomeScreen}
+          component={MarketplaceHomeScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.ConnectWalletScreen}
+          component={ConnectWalletScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.CreateNFTScreen}
+          component={CreateNFTScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.MyNFTsScreen}
+          component={MyNFTsScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.NFTDetailScreen}
+          component={NFTDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.CreateAuctionScreen}
+          component={CreateAuctionScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.AuctionDetailScreen}
+          component={AuctionDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.BidHistoryScreen}
+          component={BidHistoryScreen}
         />
       </HideHeaderStack>
       <AccountListener />

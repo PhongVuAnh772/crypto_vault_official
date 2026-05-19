@@ -6,7 +6,7 @@ import {
 } from '@gorhom/bottom-sheet';
 import { BottomSheetModalMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import React, { useCallback, useMemo } from 'react';
-import { ViewStyle } from 'react-native';
+import { StyleProp, ViewStyle } from 'react-native';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import appStyles from 'src/core/styles';
 import useStyle from './BottomSheetModalGorhom.style';
@@ -21,7 +21,9 @@ type BottomSheetModalGorhomType = {
     enablePanDownToClose?: boolean;
     enableContentPanningGesture?: boolean;
     scrollEnable?: boolean;
-    enableDismissOnClose?:boolean
+    enableDismissOnClose?: boolean;
+    backgroundStyle?: StyleProp<ViewStyle>;
+    handleIndicatorStyle?: StyleProp<ViewStyle>;
 };
 const BottomSheetModalGorhom: React.FC<BottomSheetModalGorhomType> = ({
     refModal,
@@ -33,7 +35,9 @@ const BottomSheetModalGorhom: React.FC<BottomSheetModalGorhomType> = ({
     enablePanDownToClose,
     enableContentPanningGesture,
     scrollEnable,
-    enableDismissOnClose
+    enableDismissOnClose,
+    backgroundStyle,
+    handleIndicatorStyle
 }) => {
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
@@ -56,10 +60,11 @@ const BottomSheetModalGorhom: React.FC<BottomSheetModalGorhomType> = ({
             index={0}
             snapPoints={snapPointsMemo}
             enablePanDownToClose={enablePanDownToClose}
-            handleIndicatorStyle={bottomSheetModalGorhomStyle.indicator}
+            handleIndicatorStyle={[bottomSheetModalGorhomStyle.indicator, handleIndicatorStyle]}
             backgroundStyle={[
                 bottomSheetModalGorhomStyle.backgroundStyle,
                 containerStyles,
+                backgroundStyle
             ]}
             enableContentPanningGesture={enableContentPanningGesture}
             enableDismissOnClose={enableDismissOnClose}

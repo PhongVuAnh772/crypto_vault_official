@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex-quote
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.quote.replicas }}
+  selector:
+    matchLabels: { app: dex-quote }
+  template:
+    metadata:
+      labels: { app: dex-quote }
+    spec:
+      containers:
+        - name: quote
+          image: {{ .Values.quote.image }}
+          ports: [{ containerPort: {{ .Values.quote.port }} }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex-routing
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.routing.replicas }}
+  selector:
+    matchLabels: { app: dex-routing }
+  template:
+    metadata:
+      labels: { app: dex-routing }
+    spec:
+      containers:
+        - name: routing
+          image: {{ .Values.routing.image }}
+          ports: [{ containerPort: {{ .Values.routing.port }} }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex-simulation
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.simulation.replicas }}
+  selector:
+    matchLabels: { app: dex-simulation }
+  template:
+    metadata:
+      labels: { app: dex-simulation }
+    spec:
+      containers:
+        - name: simulation
+          image: {{ .Values.simulation.image }}
+          ports: [{ containerPort: {{ .Values.simulation.port }} }]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex-indexer
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.indexer.replicas }}
+  selector:
+    matchLabels: { app: dex-indexer }
+  template:
+    metadata:
+      labels: { app: dex-indexer }
+    spec:
+      containers:
+        - name: indexer
+          image: {{ .Values.indexer.image }}
+          ports: [{ containerPort: {{ .Values.indexer.port }} }]
+

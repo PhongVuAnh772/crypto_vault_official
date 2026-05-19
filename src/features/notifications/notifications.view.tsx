@@ -93,7 +93,7 @@ const NotificationList: React.FC<RootNavigationType> = ({navigation}) => {
                                     data={NotificationTypeArray}
                                     renderItem={item =>
                                         renderItemNotificationType(
-                                            item,
+                                            item as any,
                                             setTypeNotificationSelect,
                                             setShowTypeNotificationView,
                                             typeNotificationSelect,
@@ -114,7 +114,7 @@ const NotificationList: React.FC<RootNavigationType> = ({navigation}) => {
                         ref={flatListRef}
                         renderItem={item =>
                             renderItemNotification(
-                                item,
+                                item as any,
                                 handleDeleteNotificationWithId,
                                 theme,
                                 navigation,

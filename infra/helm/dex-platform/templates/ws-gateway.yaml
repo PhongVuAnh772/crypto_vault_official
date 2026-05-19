@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dex-ws-gateway
+  namespace: {{ .Values.global.namespace }}
+spec:
+  replicas: {{ .Values.wsGateway.replicas }}
+  selector:
+    matchLabels:
+      app: dex-ws-gateway
+  template:
+    metadata:
+      labels:
+        app: dex-ws-gateway
+    spec:
+      containers:
+        - name: ws-gateway
+          image: {{ .Values.wsGateway.image }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          ports:
+            - containerPort: {{ .Values.wsGateway.port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dex-ws-gateway
+  namespace: {{ .Values.global.namespace }}
+spec:
+  selector:
+    app: dex-ws-gateway
+  ports:
+    - name: websocket
+      port: 80
+      targetPort: {{ .Values.wsGateway.port }}
+

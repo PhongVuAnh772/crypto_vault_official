@@ -514,7 +514,7 @@ export const LoadingListNFTOwnView: React.FC<LoadingListNFTOwnViewProps> = ({
     if (!isLoading) {
       return (
         <View style={styles.viewContainer}>
-          <NotFoundSvgIcon style={NFTImportStyle.noAssetFoundIcon} />
+          <NotFoundSvgIcon color={NFTImportStyle.noAssetFoundIcon.color} />
           <AppText
             titleWithI18n={LanguageKey.nft_you_own_empty_list}
             variant={TextVariantKeys.bodyRMedium}

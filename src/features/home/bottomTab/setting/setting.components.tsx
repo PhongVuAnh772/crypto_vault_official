@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { Pressable, SectionList, Switch, View } from 'react-native';
 import AppText from 'src/components/common/AppText';

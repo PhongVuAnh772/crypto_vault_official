@@ -2,6 +2,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  Alert,
   Animated,
   Dimensions,
   FlatList,
@@ -15,6 +16,8 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/core/redux/store';
 import { BASE_URL } from '../../../env.config';
 
 const { width, height } = Dimensions.get('window');
@@ -36,6 +39,7 @@ const FloatingHeart = ({ onComplete }: { onComplete: () => void }) => {
       useNativeDriver: true,
     }).start(() => onComplete());
   }, []);
+
 
   const translateY = animatedValue.interpolate({
     inputRange: [0, 1],
@@ -77,21 +81,62 @@ const FloatingHeart = ({ onComplete }: { onComplete: () => void }) => {
 };
 
 const LiveViewerScreen = ({ route, navigation }: any) => {
-  const { hostName = 'Lord Busuz', roomId, hostAvatar = 'https://i.pravatar.cc/150?u=host' } = route.params || {};
+  const { hostName = 'Lord Busuz', roomId, hostAvatar = 'https://i.pravatar.cc/150?u=host', viewers = 0 } = route.params || {};
   const [chatMessage, setChatMessage] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [viewerCount, setViewerCount] = useState(1280);
+  const [viewerCount, setViewerCount] = useState(viewers);
   const [hearts, setHearts] = useState<{ id: number }[]>([]);
   const wsRef = useRef<WebSocket | null>(null);
 
-  useEffect(() => {
+  // [FRONTEND DEVELOPER] Get Auth Token from Redux
+  const session = useSelector((state: RootState) => state.auth.session);
+  const token = session?.access_token;
+
+  const handleSwitchToNextLive = useCallback(async () => {
+    try {
+      const response = await fetch(`${BASE_URL}feed?type=live&limit=5`);
+      const activeLives = await response.json();
+
+      const nextLive = activeLives.find((l: any) => l.id !== roomId);
+
+      if (nextLive) {
+        navigation.replace('LiveViewerScreen', {
+          roomId: nextLive.id,
+          hostName: nextLive.user.name,
+          viewers: nextLive.views,
+          hostAvatar: nextLive.user.avatar,
+          likes: nextLive.likes,
+          title: nextLive.content
+        });
+      } else {
+        navigation.goBack();
+      }
+    } catch (error) {
+      navigation.goBack();
+    }
+  }, [roomId, navigation]);
+  const handleAddHeart = useCallback(() => {
+    setHearts(prev => [...prev, { id: Date.now() + Math.random() }]);
+  }, []);
+
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isEnded, setIsEnded] = useState(false);
+
+  const connectWS = useCallback(() => {
+    if (isEnded) return;
+
     const WS_URL = BASE_URL.replace('http', 'ws').replace('/api/v1/feed', '').replace('/api/v1/', '/');
+    console.log(`[WS] Connecting to ${WS_URL}...`);
     const ws = new WebSocket(WS_URL);
     wsRef.current = ws;
 
     ws.onopen = () => {
-      ws.send(JSON.stringify({ type: 'join_live', roomId: roomId || 'global' }));
-      console.log('Joined real livestream room:', roomId);
+      console.log('[WS] Connected');
+      ws.send(JSON.stringify({
+        type: 'join_live',
+        roomId: roomId || 'global',
+        token: token
+      }));
     };
 
     ws.onmessage = (event) => {
@@ -103,23 +148,73 @@ const LiveViewerScreen = ({ route, navigation }: any) => {
           setViewerCount(data.count);
         } else if (data.type === 'send_reaction') {
           handleAddHeart();
+        } else if (data.type === 'stream_ended') {
+          setIsEnded(true);
+          Alert.alert("Livestream", "Phiên live này đã kết thúc.", [
+            { text: "Xem live khác", onPress: () => handleSwitchToNextLive() }
+          ]);
         }
       } catch (e) {
-        console.error('WS Message Error:', e);
+        console.error('[WS] Data error:', e);
       }
     };
 
+    ws.onclose = (e) => {
+      console.log('[WS] Closed:', e.code, e.reason);
+      // [FRONTEND DEVELOPER] Auto-reconnect after 3 seconds if not explicitly ended
+      if (!isEnded) {
+        reconnectTimeoutRef.current = setTimeout(() => {
+          connectWS();
+        }, 3000);
+      }
+    };
+
+    ws.onerror = (e) => {
+      console.error('[WS] Error:', e);
+    };
+  }, [roomId, token, isEnded, handleAddHeart, handleSwitchToNextLive]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      if (!roomId) return;
+      try {
+        const response = await fetch(`${BASE_URL}feed/${roomId}/comments`);
+        if (response.status === 404) {
+          setIsEnded(true);
+          Alert.alert("Thông báo", "Phiên live này đã kết thúc.", [
+            { text: "OK", onPress: () => handleSwitchToNextLive() }
+          ]);
+          return;
+        }
+        if (response.ok) {
+          const history = await response.json();
+          const formattedHistory = history.map((c: any) => ({
+            id: c.id,
+            user: c.user.name,
+            text: c.content,
+            avatar: c.user.avatar,
+            createdAt: c.createdAt
+          })).reverse();
+          setMessages(formattedHistory);
+        }
+      } catch (e) {
+        console.error('[DEBUG] Fetch error:', e);
+      }
+    };
+
+    fetchHistory();
+    connectWS();
+
     return () => {
+      if (reconnectTimeoutRef.current) clearTimeout(reconnectTimeoutRef.current);
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(JSON.stringify({ type: 'leave_live', roomId: roomId || 'global' }));
       }
-      ws.close();
+      wsRef.current?.close();
     };
-  }, [roomId]);
+  }, [roomId, connectWS]);
 
-  const handleAddHeart = useCallback(() => {
-    setHearts(prev => [...prev, { id: Date.now() + Math.random() }]);
-  }, []);
+
 
   const handleSendMessage = () => {
     if (chatMessage.trim()) {
@@ -134,7 +229,8 @@ const LiveViewerScreen = ({ route, navigation }: any) => {
         wsRef.current.send(JSON.stringify({
           type: 'live_chat',
           roomId: roomId || 'global',
-          message: msg
+          message: msg,
+          token: token // [SECURITY] Send token for identity verification
         }));
       }
       setChatMessage('');
@@ -145,7 +241,8 @@ const LiveViewerScreen = ({ route, navigation }: any) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       wsRef.current.send(JSON.stringify({
         type: 'send_reaction',
-        roomId: roomId || 'global'
+        roomId: roomId || 'global',
+        token: token // [SECURITY] Send token for auth
       }));
     }
     handleAddHeart();
@@ -155,7 +252,7 @@ const LiveViewerScreen = ({ route, navigation }: any) => {
     <View style={styles.chatRow}>
       <Image source={{ uri: item.avatar || 'https://i.pravatar.cc/150?u=' + item.user }} style={styles.chatAvatar} />
       <View style={styles.chatContent}>
-        <Text style={styles.chatUser}>{item.user}</Text>
+        <Text style={[styles.chatUser, { color: item.user === 'Host' || item.user === 'Lord Busuz' ? '#FCD535' : '#4dff88' }]}>{item.user}</Text>
         <Text style={styles.chatText}>{item.text}</Text>
       </View>
     </View>
@@ -214,17 +311,20 @@ const LiveViewerScreen = ({ route, navigation }: any) => {
         {/* Chat List Overlay */}
         <View style={styles.chatContainer}>
           <FlatList
-            data={messages}
+            data={[...messages].reverse()}
             keyExtractor={item => item.id}
             renderItem={renderChatItem}
+            inverted
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.chatList}
-            inverted={false}
           />
         </View>
 
         {/* Footer Actions */}
-        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        >
           <View style={styles.footer}>
             <View style={styles.inputBar}>
               <TextInput
@@ -356,11 +456,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 8,
     alignItems: 'flex-start',
-    backgroundColor: 'rgba(0,0,0,0.25)',
-    padding: 8,
-    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+    padding: 10,
+    borderRadius: 16,
     alignSelf: 'flex-start',
     maxWidth: '85%',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.1)',
   },
   chatAvatar: {
     width: 28,

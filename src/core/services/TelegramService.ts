@@ -10,10 +10,13 @@ export type TelegramUser = {
 class TelegramService {
   async verifyLogin(authData: any, walletAddress: string): Promise<{ success: boolean; user: TelegramUser }> {
     const response = await sendPost<{ success: boolean; data: { user: TelegramUser } }>({
-      endpoint: '/api/v1/telegram/verify',
+      endPoint: '/api/v1/telegram/verify',
       body: { authData, walletAddress },
     });
-    return response.data;
+    return {
+      success: Boolean(response.data?.success),
+      user: response.data?.data?.user as TelegramUser,
+    };
   }
 }
 

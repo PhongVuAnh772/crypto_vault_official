@@ -1,0 +1,34 @@
+global:
+  imagePullPolicy: IfNotPresent
+  namespace: dex
+
+gateway:
+  image: cryptovault/gateway:latest
+  replicas: 3
+  port: 8080
+
+wsGateway:
+  image: cryptovault/ws-gateway:latest
+  replicas: 3
+  port: 8090
+
+quote:
+  image: cryptovault/quote:latest
+  replicas: 3
+  port: 8101
+
+routing:
+  image: cryptovault/routing:latest
+  replicas: 3
+  port: 8102
+
+simulation:
+  image: cryptovault/simulation:latest
+  replicas: 3
+  port: 8103
+
+indexer:
+  image: cryptovault/indexer:latest
+  replicas: 2
+  port: 8104
+

@@ -72,7 +72,7 @@ export class Auth0AuthService implements IAuth0AuthService {
                 prompt: AUTH0_CONFIG.PROMPT,
                 scope: AUTH0_PERMISSIONS.join(' '),
                 audience: EnvConfig.AUTH0_AUDIENCE,
-            });
+            } as any);
 
             return { url: resultUrl, stateCode };
         } catch (error) {

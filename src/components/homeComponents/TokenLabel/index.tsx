@@ -55,9 +55,7 @@ const TokenLabel = ({
                 {!disable && (
                     <View>
                         <ArrowCircleRightSvgIcon
-                            style={{
-                                color: theme.colors.text_on_surface_text_high,
-                            }}
+                            color={theme.colors.text_on_surface_text_high}
                         />
                     </View>
                 )}

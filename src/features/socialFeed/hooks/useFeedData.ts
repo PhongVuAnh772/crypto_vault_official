@@ -5,16 +5,17 @@ import { FeedItemData } from '../components/FeedItem';
 
 const CACHE_KEY = '@feed_cache';
 
-export const useFeedData = () => {
+export const useFeedData = (selectedTab: string = 'Khám phá') => {
   const [feedData, setFeedData] = useState<FeedItemData[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchFeed = async (pageNum: number, isRefresh: boolean = false) => {
+  const fetchFeed = useCallback(async (pageNum: number, isRefresh: boolean = false) => {
     try {
-      const response = await fetch(`${BASE_URL}feed?page=${pageNum}&limit=20`);
+      const typeParam = selectedTab !== 'Khám phá' ? `&type=${selectedTab}` : '';
+      const response = await fetch(`${BASE_URL}feed?page=${pageNum}&limit=20${typeParam}`);
       if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
       const newData = await response.json();
 
@@ -41,7 +42,7 @@ export const useFeedData = () => {
       if (isRefresh) setRefreshing(false);
       setLoading(false);
     }
-  };
+  }, [selectedTab]);
 
   useEffect(() => {
     fetchFeed(1, true);
@@ -51,7 +52,7 @@ export const useFeedData = () => {
     setRefreshing(true);
     setPage(1);
     fetchFeed(1, true);
-  }, []);
+  }, [fetchFeed]);
 
   const loadMore = useCallback(() => {
     if (!loading && hasMore && !refreshing) {
@@ -59,7 +60,7 @@ export const useFeedData = () => {
       setPage(nextPage);
       fetchFeed(nextPage, false);
     }
-  }, [loading, hasMore, refreshing, page]);
+  }, [loading, hasMore, refreshing, page, fetchFeed]);
 
   const handleLike = useCallback((id: string) => {
     setFeedData(prev => prev.map(item =>

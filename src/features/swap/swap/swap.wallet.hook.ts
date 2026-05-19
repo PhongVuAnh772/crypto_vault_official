@@ -320,14 +320,15 @@ const useWallet = () => {
         } else {
             const networkPerKb = await dispatch(getNetworkFee()).unwrap();
 
+            const btcData: any = getBitcoinDataRes.data as any;
             const maxAmount =
                 await BitcoinUtils.getMaxBalanceCompareWithUTXOandNetworkFee(
-                    getBitcoinDataRes.data?.txrefs ?? [],
+                    btcData?.txrefs ?? [],
                     networkPerKb.high_fee_per_kb,
                 );
             updateBitcoinTransactionInformation({
                 feePerKb: networkPerKb.high_fee_per_kb,
-                itxRefs: getBitcoinDataRes.data?.txrefs,
+                itxRefs: btcData?.txrefs,
             });
             return maxAmount;
         }
@@ -368,7 +369,10 @@ const useWallet = () => {
             };
         }
 
-        const balance = await getBalanceCoinEVM(protocol, wallet.address);
+        const balance = (await getBalanceCoinEVM(
+            protocol,
+            wallet.address,
+        )) as any;
 
         if (!balance) {
             throw new Error('Failed to get balance');
@@ -555,10 +559,11 @@ const useWallet = () => {
             if (!result) {
                 return defaultResult;
             }
-            defaultResult.balance = result.balance;
-            defaultResult.balanceFormatted = result.balance_formatted;
-            defaultResult.decimals = +result.decimals;
-            defaultResult.price = result.usd_price;
+            const evmResult: any = result as any;
+            defaultResult.balance = evmResult.balance;
+            defaultResult.balanceFormatted = evmResult.balance_formatted;
+            defaultResult.decimals = +evmResult.decimals;
+            defaultResult.price = evmResult.usd_price;
         } else if (protocol.VM === VMType.Ton) {
             const result = await processCheckBalanceTon(
                 protocol,

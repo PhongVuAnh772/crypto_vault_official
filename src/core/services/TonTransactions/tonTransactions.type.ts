@@ -205,7 +205,7 @@ export type CreateTransferForSwapParams = {
 export type CreateSwapTransferParamType = {
     valueNano: BigInt;
     recipientAddress: string;
-    secretKey: Buffer<ArrayBufferLike>;
+    secretKey: Buffer;
     estimateFee?: boolean;
     fromAccountData?: TonAccountsType;
     version?: TonWalletVersion;

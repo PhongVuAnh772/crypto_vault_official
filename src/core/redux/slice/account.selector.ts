@@ -14,6 +14,7 @@ import {
     selectorSettingCurrency,
 } from './app.slice';
 import { getThemeMode } from './app.selector';
+import { getIsTestnet } from './app.selector';
 
 export const useSelectedCurrencySetting = () => {
     const selectedCurrencySetting = useAppSelector(
@@ -77,19 +78,21 @@ export const useWalletData = (id: string, address: string) => {
 export const useProtocolSelected = () => {
     const protocolDataLists = useAppSelector(getProtocolDataLists);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    const isTestnet = useAppSelector(getIsTestnet);
     return protocolDataLists?.find(e => {
         if (selectedProtocolId) {
             return e?._id === selectedProtocolId;
         } else {
-            return e.slip0044 === Slip0044.Polygon;
+            return e.slip0044 === Slip0044.Polygon && (!!e.isTestnet === !!isTestnet);
         }
-    });
+    }) || protocolDataLists?.find(e => e.slip0044 === Slip0044.Polygon);
 };
 
 export const useCurrentWallet = (): AddressListItemType | undefined => {
     const accountLists = useAppSelector(getAllAccount);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
     const selectAccountId = useAppSelector(getAccountId);
+    const protocolDataLists = useAppSelector(getProtocolDataLists);
 
     return useMemo(() => {
         if (accountLists !== undefined) {
@@ -101,9 +104,12 @@ export const useCurrentWallet = (): AddressListItemType | undefined => {
             }
 
             const { protocolData } = accountWallet;
-            const currentProtocol = protocolData?.find(
-                e => e?._id === selectedProtocolId,
-            );
+            const currentProtocol =
+                protocolData?.find(e => e?._id === selectedProtocolId) ||
+                protocolData?.find(e =>
+                    (protocolDataLists || []).some(p => p._id === e._id),
+                ) ||
+                protocolData?.[0];
 
             if (!currentProtocol) {
                 return undefined;
@@ -117,7 +123,7 @@ export const useCurrentWallet = (): AddressListItemType | undefined => {
             return addRessData;
         }
         return undefined;
-    }, [accountLists, selectedProtocolId, selectAccountId]);
+    }, [accountLists, selectedProtocolId, selectAccountId, protocolDataLists]);
 };
 
 export const useAccount = () => {
@@ -142,11 +148,15 @@ export const useMnemonic = () => {
 const useAddressDataWithSlip0044 = (slip0044: Slip0044) => {
     const protocolListData = useAppSelector(getProtocolDataLists);
     const currentAccount = useAccount();
+    const isTestnet = useAppSelector(getIsTestnet);
 
     return useMemo(() => {
-        const coinProtocolData = protocolListData?.find(
+        const protocolsBySlip = (protocolListData || []).filter(
             e => e.slip0044 === slip0044,
         );
+        const coinProtocolData =
+            protocolsBySlip.find(e => !!e.isTestnet === !!isTestnet) ||
+            protocolsBySlip[0];
 
         const accountProtocolListData = currentAccount?.protocolData;
 
@@ -160,7 +170,7 @@ const useAddressDataWithSlip0044 = (slip0044: Slip0044) => {
         );
 
         return currentCoinAddressData;
-    }, [protocolListData, currentAccount, slip0044]);
+    }, [protocolListData, currentAccount, slip0044, isTestnet]);
 };
 
 export const usePolAddressData = () => {

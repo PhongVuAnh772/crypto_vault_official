@@ -75,7 +75,7 @@ export const useNFTYouOwn = ({ navigation }: RootNavigationType) => {
   const tonServices = new TonServices();
   const collection = useAppSelector(getCollectionById);
   const [isExistingInCollection, setIsExistingInCollection] = useState(false);
-  const canvasRef = useRef<Canvas>(null);
+  const canvasRef = useRef<any>(null);
   const [image, setImage] = useState<string>();
   const [totalClaim, setTotalClaim] = useState(0);
 

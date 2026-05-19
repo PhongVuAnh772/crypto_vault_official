@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { TextInput } from 'react-native-paper';

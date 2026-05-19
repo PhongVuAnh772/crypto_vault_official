@@ -46,7 +46,7 @@ const ProtocolItem = ({
             <>
                 <View style={[appStyles.flexRow, appStyles.alignItemsCenter]}>
                     <ProtocolImage
-                        protocolData={item}
+                        slip0044={item.slip0044}
                         size={28}
                         bonusId={item._id}
                         isLoadingImage={
@@ -74,7 +74,7 @@ const ProtocolItem = ({
                         <MarkSvgIcon
                             width="16"
                             height="16"
-                            style={protocolItemStyle.markIconProtocol}
+                            color={protocolItemStyle.markIconProtocol.color}
                         />
                     )}
                 </View>
