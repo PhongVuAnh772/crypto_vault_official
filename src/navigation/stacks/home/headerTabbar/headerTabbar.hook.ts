@@ -57,6 +57,8 @@ import {
   setTonEvents,
 } from "src/features/coinDetails/ton/ton.coinDetails.slice";
 import { MenuActionType } from "src/features/home/components/WalletBottomSheet/WalletBottomSheet.type";
+import { setHomeSearchKeyword } from "src/features/home/slice/home.slice";
+import { filterTokenAvailable } from "src/core/redux/slice/customToken/addCustomToken.slice";
 import {
   getAppConnection,
   getDAppBrowse,
@@ -72,6 +74,21 @@ const useHeaderTabBar = (
   navigation: BottomTabNavigationProp<ParamListBase>
 ) => {
   const { t } = useTranslation();
+  const [searchValue, setSearchValue] = useState("");
+  const tokenSuggestions = useAppSelector(filterTokenAvailable) || [];
+  const actionSuggestions = [
+    { key: "swap", label: "Swap", keywords: ["swap", "exchange"], screen: HomeStackScreenKey.Swap },
+    { key: "trading", label: "Trading", keywords: ["trade", "trading", "market"], screen: HomeStackScreenKey.Trading },
+    { key: "send", label: "Send", keywords: ["send", "transfer"], screen: HomeStackScreenKey.Transfer },
+    { key: "scan", label: "Scan", keywords: ["scan", "qr"], screen: HomeStackScreenKey.ScanEvm },
+    { key: "nft-market", label: "NFT Marketplace", keywords: ["nft", "marketplace"], screen: HomeStackScreenKey.MarketplaceHomeScreen },
+    { key: "mint", label: "Mint NFT", keywords: ["mint", "create nft"], screen: HomeStackScreenKey.MintNftScreen },
+    { key: "offerwall", label: "Offerwall", keywords: ["offer", "reward"], screen: HomeStackScreenKey.Offerwall },
+    { key: "social", label: "Social Feed", keywords: ["feed", "social", "post"], screen: HomeStackScreenKey.FeedScreen },
+    { key: "live", label: "Live Broadcast", keywords: ["live", "stream"], screen: HomeStackScreenKey.LiveBroadcastScreen },
+    { key: "connect", label: "DApp Connections", keywords: ["dapp", "connect", "walletconnect"], screen: HomeStackScreenKey.ConnectionScreen },
+    { key: "chat", label: "AI Chat", keywords: ["chat", "ai"], screen: HomeStackScreenKey.ChatScreen },
+  ];
   const [quantityConnect, setQuantityConnect] = useState(0);
   const [quantityBrowse, setQuantityBrowse] = useState(0);
   const listDAppBrowse = useAppSelector(getDAppBrowse);
@@ -447,6 +464,74 @@ const useHeaderTabBar = (
     setQuantityBrowse(listDAppBrowse.length);
   }, [listDAppBrowse]);
 
+  useEffect(() => {
+    if (title !== LanguageKey.home_tab_crypto_title && searchValue) {
+      setSearchValue("");
+      dispatch(setHomeSearchKeyword(""));
+    }
+  }, [title, searchValue, dispatch]);
+
+  const onChangeSearchValue = (value: string) => {
+    setSearchValue(value);
+    dispatch(setHomeSearchKeyword(value));
+  };
+
+  const suggestionList = searchValue.trim()
+    ? (() => {
+        const keyword = searchValue.trim().toLowerCase();
+        const tokenMatches = tokenSuggestions
+          .filter((token: any) => {
+            const name = String(token?.name ?? "").toLowerCase();
+            const symbol = String(token?.symbol ?? "").toLowerCase();
+            const contractAddress = String(token?.contractAddress ?? "").toLowerCase();
+            return (
+              name.includes(keyword) ||
+              symbol.includes(keyword) ||
+              contractAddress.includes(keyword)
+            );
+          })
+          .slice(0, 5)
+          .map((token: any) => ({
+            type: "token" as const,
+            key: `token-${String(token?.symbol ?? token?.name ?? "")}-${String(token?.contractAddress ?? "")}`,
+            symbol: String(token?.symbol ?? ""),
+            name: String(token?.name ?? ""),
+            onPress: () => {
+              const value = String(token?.symbol ?? token?.name ?? "");
+              setSearchValue(value);
+              dispatch(setHomeSearchKeyword(value));
+            },
+          }));
+
+        const actionMatches = actionSuggestions
+          .filter((action) => {
+            const label = action.label.toLowerCase();
+            return (
+              label.includes(keyword) ||
+              action.keywords.some((k) => k.includes(keyword) || keyword.includes(k))
+            );
+          })
+          .slice(0, 5)
+          .map((action) => ({
+            type: "action" as const,
+            key: `action-${action.key}`,
+            symbol: "Action",
+            name: action.label,
+            onPress: () => {
+              setSearchValue("");
+              dispatch(setHomeSearchKeyword(""));
+              navigation.navigate(action.screen as never);
+            },
+          }));
+
+        return [...actionMatches, ...tokenMatches].slice(0, 6);
+      })()
+    : [];
+
+  const onPressSuggestion = (item: { onPress: () => void }) => {
+    item.onPress();
+  };
+
   return {
     isVisibleWarningCreateWalletModal,
     protocolListSort,
@@ -494,6 +579,10 @@ const useHeaderTabBar = (
     onScanPress,
     onProtocolListRefresh,
     onDismissModalProtocol,
+    searchValue,
+    onChangeSearchValue,
+    suggestionList,
+    onPressSuggestion,
   };
 };
 

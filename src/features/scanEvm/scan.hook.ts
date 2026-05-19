@@ -2,6 +2,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { Alert } from 'react-native';
+import * as Linking from 'expo-linking';
 import {
     Code,
     useCameraDevice,
@@ -20,9 +21,18 @@ export const useScan = ({ navigation }: RootNavigationType) => {
     const [showCamera] = useState(true);
 
     const [wcuri, setWcuri] = useState<string>();
-    const [manualUri, setManualUri] = useState<string>("wc:b40a0795e65f203fd1137be9b689a0f2dc223cdd3c23db0d5391fe1b1e85d666@2?expiryTimestamp=1775974490&relay-protocol=irn&symKey=f89da6c552128192fea85ebbc3e33c6cc54a3a9bd06c19e450cfaa0f32594d33");
+    const [manualUri, setManualUri] = useState<string>('');
     const [isSimulator, setIsSimulator] = useState<boolean>(false);
     const isActive = useIsFocused();
+
+    const extractWalletConnectUri = (raw: string) => {
+        if (!raw) return null;
+        const cleaned = raw.trim();
+        const decoded = cleaned.includes('%') ? decodeURIComponent(cleaned) : cleaned;
+        const wcRegex = /wc:[a-zA-Z0-9-]+@[0-9]+(?:\?[^ ]*)?/;
+        const match = decoded.match(wcRegex);
+        return match?.[0] ?? null;
+    };
 
     const onCodeScanned = (codes: Code[]) => {
         const uri = codes[0].value;
@@ -37,8 +47,16 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         const checkSimulator = async () => {
             const result = await Utils.checkingEmulator();
             setIsSimulator(result);
+            if (result) {
+                const clip = await Clipboard.getStringAsync();
+                const wcUri = extractWalletConnectUri(clip ?? '');
+                if (wcUri) {
+                    setManualUri(wcUri);
+                }
+            }
         };
         checkSimulator();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -48,18 +66,20 @@ export const useScan = ({ navigation }: RootNavigationType) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [wcuri]);
 
+    useEffect(() => {
+        const sub = Linking.addEventListener('url', ({ url }) => {
+            const wcUri = extractWalletConnectUri(url);
+            if (wcUri) {
+                setManualUri(wcUri);
+                pair(wcUri);
+            }
+        });
+        return () => sub.remove();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     const pair = async (uri: string) => {
         try {
-            // Check if we are already paired with this URI
-            const existingPairings = walletKit.core.pairing.getPairings();
-            const alreadyPaired = existingPairings.find(p => p.topic === uri);
-
-            if (alreadyPaired && alreadyPaired.active) {
-                console.log("Already paired with this URI, skipping...");
-                navigation.goBack();
-                return;
-            }
-
             await walletKit.pair({
                 uri: uri,
             });
@@ -85,9 +105,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
 
     const onPasteURI = async () => {
         const text = await Clipboard.getStringAsync();
-        const cleanedText = text?.trim();
-
-        if (!cleanedText) {
+        if (!text?.trim()) {
             Utils.showToast({
                 msg: "Clipboard is empty",
                 type: AppToastType.error,
@@ -95,12 +113,11 @@ export const useScan = ({ navigation }: RootNavigationType) => {
             return;
         }
 
-        // Use regex to find the first wc: URI in case of concatenation or extra text
-        const wcRegex = /wc:[a-zA-Z0-9-]+@[0-9]+(?:\?[^ ]*)?/;
-        const match = cleanedText.match(wcRegex);
+        const wcUri = extractWalletConnectUri(text);
 
-        if (match) {
-            pair(match[0]);
+        if (wcUri) {
+            setManualUri(wcUri);
+            pair(wcUri);
         } else {
             Utils.showToast({
                 msg: "No valid WalletConnect URI found",
@@ -110,8 +127,7 @@ export const useScan = ({ navigation }: RootNavigationType) => {
     };
 
     const onConnectManual = () => {
-        const cleanedText = manualUri?.trim();
-        if (!cleanedText) {
+        if (!manualUri?.trim()) {
             Utils.showToast({
                 msg: "Please enter a WalletConnect URI",
                 type: AppToastType.error,
@@ -119,11 +135,10 @@ export const useScan = ({ navigation }: RootNavigationType) => {
             return;
         }
 
-        const wcRegex = /wc:[a-zA-Z0-9-]+@[0-9]+(?:\?[^ ]*)?/;
-        const match = cleanedText.match(wcRegex);
+        const wcUri = extractWalletConnectUri(manualUri);
 
-        if (match) {
-            pair(match[0]);
+        if (wcUri) {
+            pair(wcUri);
         } else {
             Utils.showToast({
                 msg: "No valid WalletConnect URI found",

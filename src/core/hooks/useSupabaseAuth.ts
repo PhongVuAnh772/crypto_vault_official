@@ -1,64 +1,45 @@
 import { useEffect } from 'react';
 import { useAppDispatch } from 'src/core/redux/hooks';
 import { setSession, setLoading } from 'src/core/redux/slice/auth.slice';
-import { isSupabaseConfigured, supabase } from 'src/core/services/supabase/supabaseClient';
+import { getSupabaseClient, requireSupabaseClient, SupabaseAuthSession } from 'src/core/services/supabase/supabaseClient';
 
 export const useSupabaseAuth = () => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    const supabase = getSupabaseClient();
+    if (!supabase) {
       dispatch(setLoading(false));
+      dispatch(setSession(null));
       return;
     }
 
-    // Initial session check
-    const checkSession = async () => {
-      dispatch(setLoading(true));
-      const { data: { session } } = await supabase.auth.getSession();
-      dispatch(setSession(session));
-      if (session?.user) {
-        syncUserProfile(session.user);
-      }
-      dispatch(setLoading(false));
-    };
+    let mounted = true;
+    dispatch(setLoading(true));
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!mounted) return;
+        dispatch(setSession((data.session as SupabaseAuthSession) ?? null));
+      })
+      .finally(() => {
+        if (mounted) dispatch(setLoading(false));
+      });
 
-    checkSession();
-
-    // Listen for auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      dispatch(setSession(session));
-      if (session?.user) {
-        syncUserProfile(session.user);
-      }
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      dispatch(setSession((session as SupabaseAuthSession) ?? null));
     });
 
-    const syncUserProfile = async (user: any) => {
-      try {
-        await supabase
-          .from('profiles')
-          .upsert({
-            id: user.id,
-            email: user.email,
-            name: user.user_metadata?.full_name || user.email?.split('@')[0],
-            avatar: user.user_metadata?.avatar_url || '',
-            updated_at: new Date().toISOString(),
-          });
-      } catch (err) {
-        console.log('Failed to sync profile');
-      }
-    };
-
     return () => {
-      subscription.unsubscribe();
+      mounted = false;
+      authListener.subscription.unsubscribe();
     };
   }, [dispatch]);
 
   const signOut = async () => {
-    if (!isSupabaseConfigured) {
-      return;
-    }
+    const supabase = requireSupabaseClient();
     await supabase.auth.signOut();
+    dispatch(setSession(null));
   };
 
   return { signOut };

@@ -1,29 +1,43 @@
-import { createClient } from '@supabase/supabase-js';
-import EnvConfig from 'src/core/constants/EnvConfig';
+import { createClient, type Session, type SupabaseClient } from '@supabase/supabase-js';
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '../../../../env.config';
 
-const RAW_SUPABASE_URL = process.env.SUPABASE_URL || EnvConfig.SUPABASE_URL || '';
-const RAW_SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || EnvConfig.SUPABASE_ANON_KEY || '';
+let client: SupabaseClient | null = null;
 
-export const isSupabaseConfigured = Boolean(
-  RAW_SUPABASE_URL?.trim() && RAW_SUPABASE_ANON_KEY?.trim(),
-);
+const resolvedUrl =
+  process.env.EXPO_PUBLIC_SUPABASE_URL ||
+  process.env.NEXT_PUBLIC_SUPABASE_URL ||
+  SUPABASE_URL ||
+  '';
 
-const SUPABASE_URL = isSupabaseConfigured
-  ? RAW_SUPABASE_URL
-  : 'https://placeholder.supabase.co';
-const SUPABASE_ANON_KEY = isSupabaseConfigured
-  ? RAW_SUPABASE_ANON_KEY
-  : 'placeholder-anon-key';
+const resolvedAnonKey =
+  process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
+  SUPABASE_ANON_KEY ||
+  '';
 
-if (!isSupabaseConfigured) {
-  console.warn(
-    '[Supabase] Missing SUPABASE_URL or SUPABASE_ANON_KEY. Running with placeholder config; auth/data sync is disabled.',
-  );
-}
+export const getSupabaseClient = () => {
+  if (client) return client;
+  if (!resolvedUrl || !resolvedAnonKey) return null;
+  client = createClient(resolvedUrl, resolvedAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+    },
+  });
+  return client;
+};
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-});
+export const requireSupabaseClient = () => {
+  const c = getSupabaseClient();
+  if (!c) {
+    throw new Error(
+      'Supabase is not configured on mobile. Set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY (or NEXT_PUBLIC_* equivalents).',
+    );
+  }
+  return c;
+};
+
+export type SupabaseAuthSession = Session | null;

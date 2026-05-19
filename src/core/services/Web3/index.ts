@@ -77,8 +77,7 @@ class Web3Service {
     try {
       await web3.eth.getBlockNumber();
       return true;
-    } catch (error) {
-      console.log("🚀 ~ Web3Service ~ checkRPCs ~ error:", error);
+    } catch {
       return false;
     }
   }

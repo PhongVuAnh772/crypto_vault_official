@@ -9,6 +9,7 @@ export type HomeSliceType = {
     selectTokenAction?: SelectTokenAction;
     listCryptoData: ListCryptoDataType[];
     selectedCryptoDataId?: string;
+    searchKeyword?: string;
 };
 
 export type ErrorResponse = {

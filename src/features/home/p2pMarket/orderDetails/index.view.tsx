@@ -27,6 +27,7 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
 
   const [timeLeft, setTimeLeft] = useState("");
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
+  const [orderStatus, setOrderStatus] = useState<"PENDING_PAYMENT" | "PAID" | "EXPIRED">("PENDING_PAYMENT");
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -35,6 +36,7 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
 
       if (diff <= 0) {
         setTimeLeft("Expired");
+        setOrderStatus((prev) => (prev === "PENDING_PAYMENT" ? "EXPIRED" : prev));
         clearInterval(timer);
       } else {
         const mins = Math.floor(diff / 60000);
@@ -52,6 +54,10 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
   };
 
   const handlePaid = () => {
+    if (orderStatus !== "PENDING_PAYMENT") {
+      Alert.alert("Info", orderStatus === "PAID" ? "Order đã được đánh dấu đã thanh toán." : "Order đã hết hạn.");
+      return;
+    }
     Alert.alert(
       "Confirm Payment",
       "Have you already made the payment to the merchant? CryptoVault will verify this soon.",
@@ -60,9 +66,8 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
         { 
           text: "Yes, I have paid", 
           onPress: () => {
-            Alert.alert("Success", "Merchant has been notified. Crypto will be released after confirmation.", [
-                { text: "OK", onPress: () => navigation.navigate(HomeStackScreenKey.BottomTab as any) }
-            ]);
+            setOrderStatus("PAID");
+            Alert.alert("Success", "Merchant has been notified. Please wait for seller to release crypto.");
           }
         }
       ]
@@ -89,11 +94,15 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
           <View style={styles.statusSection}>
             <View>
               <Text style={styles.statusTitle}>Pending Payment</Text>
-              <Text style={styles.statusDesc}>Please pay the merchant within {timeLeft}</Text>
+              <Text style={styles.statusDesc}>
+                {orderStatus === "PENDING_PAYMENT" && `Please pay the merchant within ${timeLeft}`}
+                {orderStatus === "PAID" && "Payment marked. Waiting for seller release."}
+                {orderStatus === "EXPIRED" && "Order expired. Please create a new order."}
+              </Text>
             </View>
             <View style={styles.timerCircle}>
                <MaterialIcons name="timer" size={20} color="#00C076" />
-               <Text style={styles.timerText}>{timeLeft}</Text>
+              <Text style={styles.timerText}>{orderStatus === "PAID" ? "PAID" : timeLeft}</Text>
             </View>
           </View>
 
@@ -172,8 +181,14 @@ const P2POrderDetailsScreen: React.FC<RootNavigationType> = ({ navigation }) => 
            <TouchableOpacity style={styles.cancelButton} onPress={() => navigation.goBack()}>
               <Text style={styles.cancelButtonText}>Cancel Order</Text>
            </TouchableOpacity>
-           <TouchableOpacity style={styles.paidButton} onPress={handlePaid}>
-              <Text style={styles.paidButtonText}>Transferred, notify seller</Text>
+           <TouchableOpacity
+              style={[styles.paidButton, orderStatus !== "PENDING_PAYMENT" && { opacity: 0.5 }]}
+              onPress={handlePaid}
+              disabled={orderStatus !== "PENDING_PAYMENT"}
+           >
+              <Text style={styles.paidButtonText}>
+                {orderStatus === "PAID" ? "Waiting seller release" : "Transferred, notify seller"}
+              </Text>
            </TouchableOpacity>
         </View>
       </SafeAreaView>

@@ -3,6 +3,7 @@ import {
     FlatList,
     RefreshControl,
     StyleSheet,
+    Text,
     TouchableOpacity,
     View,
 } from 'react-native';
@@ -68,6 +69,13 @@ const BottomSheetProtocolView: React.FC<BottomSheetProtocolViewType> = ({
                     data={protocolDataLists}
                     showsVerticalScrollIndicator={false}
                     keyExtractor={item => item?._id.toString()}
+                    ListEmptyComponent={
+                        <View style={styles.emptyContainer}>
+                            <Text style={styles.emptyText}>
+                                No protocol available for current network.
+                            </Text>
+                        </View>
+                    }
                     refreshControl={
                         refreshList && onRefresh ? (
                             <RefreshControl
@@ -119,6 +127,14 @@ const useStyle = (theme: AppThemeType) =>
             ...appStyles.pH25,
             ...appStyles.mt10,
             ...appStyles.flex1,
+        },
+        emptyContainer: {
+            paddingVertical: 28,
+            alignItems: 'center',
+        },
+        emptyText: {
+            color: theme.colors.text_on_surface_text_medium_high,
+            fontSize: 13,
         },
     });
 

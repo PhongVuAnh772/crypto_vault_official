@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { Feather } from "@expo/vector-icons";
 import {
   Bubble,
   GiftedChat,
@@ -16,14 +17,20 @@ import {
   Send,
 } from "react-native-gifted-chat";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { HomeStackScreenKey } from "src/navigation/enum/NavigationKey";
 
 const API_URL =
   "https://c0eb-2405-4803-f179-fb40-887e-9932-18c7-6c3c.ngrok-free.app";
 
 const USER_ID = 1;
 const AI_ID = 2;
+const AI_USER = {
+  _id: AI_ID,
+  name: "CryptoVault AI",
+  avatar: "https://i.imgur.com/8Km9tLL.png",
+};
 
-export default function ChatScreen() {
+export default function ChatScreen({ navigation }: any) {
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [text, setText] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -59,7 +66,7 @@ export default function ChatScreen() {
       _id: Date.now(),
       text,
       createdAt: new Date(),
-      user: { _id: AI_ID, name: "AI" },
+      user: AI_USER,
     };
 
     setTimeout(() => {
@@ -93,7 +100,9 @@ export default function ChatScreen() {
       }
     } catch (e) {
       console.log(e);
-      pushAIMessage("⚠️ AI error");
+      pushAIMessage(
+        "Xin lỗi, AI đang tạm thời gián đoạn. Vui lòng thử lại sau ít phút.",
+      );
     }
 
     setIsTyping(false);
@@ -121,7 +130,9 @@ export default function ChatScreen() {
       pushAIMessage(data.result || "Action completed");
     } catch (e) {
       console.error("Action error:", e);
-      pushAIMessage("⚠️ Action failed ");
+      pushAIMessage(
+        "Không thể thực hiện yêu cầu lúc này. Vui lòng kiểm tra lại và thử lại.",
+      );
     }
 
     setActionData(null);
@@ -150,18 +161,20 @@ export default function ChatScreen() {
 
     return (
       <View style={styles.emptyWrap}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {suggestions.map((s) => (
-            <TouchableOpacity
-              key={s.id}
-              style={styles.suggestionCard}
-              onPress={() => setText(s.title + " " + s.subtitle)}
-            >
-              <Text style={styles.suggestionTitle}>{s.title}</Text>
-              <Text style={styles.suggestionSub}>{s.subtitle}</Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={styles.emptyWrapFixInverted}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {suggestions.map((s) => (
+              <TouchableOpacity
+                key={s.id}
+                style={styles.suggestionCard}
+                onPress={() => setText(s.title + " " + s.subtitle)}
+              >
+                <Text style={styles.suggestionTitle}>{s.title}</Text>
+                <Text style={styles.suggestionSub}>{s.subtitle}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
       </View>
     );
   };
@@ -198,11 +211,23 @@ export default function ChatScreen() {
     />
   );
 
+  const openMenu = () => {
+    if (navigation?.openDrawer) {
+      navigation.openDrawer();
+      return;
+    }
+    navigation?.navigate?.(HomeStackScreenKey.MoreActionScreen);
+  };
+
   const Header = () => (
     <View style={styles.header}>
-      <Text style={styles.headerIcon}>☰</Text>
+      <TouchableOpacity style={styles.headerIconBtn} onPress={() => navigation?.goBack?.()}>
+        <Feather name="arrow-left" size={20} color="#111" />
+      </TouchableOpacity>
       <Text style={styles.headerTitle}>AI Assistant ▾</Text>
-      <Text style={styles.headerIcon}>✎</Text>
+      <TouchableOpacity style={styles.headerIconBtn} onPress={openMenu}>
+        <Feather name="menu" size={20} color="#111" />
+      </TouchableOpacity>
     </View>
   );
 
@@ -247,13 +272,26 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
     padding: 14,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: "#E5E7EB",
   },
 
   headerTitle: { fontWeight: "600", fontSize: 16 },
-  headerIcon: { fontSize: 18 },
+  headerIconBtn: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#F3F4F6",
+  },
 
   emptyWrap: { flex: 1, justifyContent: "center" },
+  emptyWrapFixInverted: {
+    transform: [{ scaleY: -1 }],
+  },
 
   suggestionCard: {
     backgroundColor: "#f2f2f2",
@@ -261,10 +299,22 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     width: 200,
     marginHorizontal: 6,
+    writingDirection: "ltr",
   },
 
-  suggestionTitle: { fontWeight: "600" },
-  suggestionSub: { fontSize: 12, color: "#666" },
+  suggestionTitle: {
+    fontWeight: "600",
+    writingDirection: "ltr",
+    textAlign: "left",
+    includeFontPadding: false,
+  },
+  suggestionSub: {
+    fontSize: 12,
+    color: "#666",
+    writingDirection: "ltr",
+    textAlign: "left",
+    includeFontPadding: false,
+  },
 
   inputToolbar: {
     borderTopWidth: 0,

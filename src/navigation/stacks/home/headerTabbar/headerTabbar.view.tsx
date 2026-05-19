@@ -10,7 +10,7 @@ import {
   StackActions,
 } from "@react-navigation/native";
 import React from "react";
-import { Image, TextInput, TouchableOpacity, View } from "react-native";
+import { Image, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { EdgeInsets } from "react-native-safe-area-context";
 import AppButton from "src/components/common/AppButton";
 import AppText from "src/components/common/AppText";
@@ -98,6 +98,10 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
     quantityConnect,
     onProtocolListRefresh,
     onDismissModalProtocol,
+    searchValue,
+    onChangeSearchValue,
+    suggestionList,
+    onPressSuggestion,
   } = useHeaderTabBar(titleI18N, navigation);
 
   const theme: AppThemeType = useAppTheme();
@@ -153,17 +157,41 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
               />
             </TouchableOpacity>
 
-            <View style={styles.searchBar}>
-              <Feather
-                name="search"
-                size={18}
-                color={'white'}
-              />
-              <TextInput
-                placeholder="Search"
-                placeholderTextColor={theme.colors.text_on_surface_text_medium}
-                style={styles.searchInput}
-              />
+            <View style={styles.searchArea}>
+              <View style={styles.searchBar}>
+                <Feather
+                  name="search"
+                  size={18}
+                  color={'white'}
+                />
+                <TextInput
+                  placeholder="Trade"
+                  placeholderTextColor={theme.colors.text_on_surface_text_medium}
+                  style={styles.searchInput}
+                  value={searchValue}
+                  onChangeText={onChangeSearchValue}
+                />
+              </View>
+              {suggestionList.length > 0 && (
+                <View style={styles.suggestionContainer}>
+                  {suggestionList.map((item: any, index: number) => (
+                    <TouchableOpacity
+                      key={`${item?.symbol ?? item?.name ?? "token"}-${index}`}
+                      style={styles.suggestionItem}
+                      onPress={() => onPressSuggestion(item)}
+                    >
+                      <Text style={styles.suggestionSymbol}>
+                        {item?.type === "action"
+                          ? "GO"
+                          : String(item?.symbol ?? "").toUpperCase()}
+                      </Text>
+                      <Text style={styles.suggestionName} numberOfLines={1}>
+                        {String(item?.name ?? "")}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              )}
             </View>
 
             <TouchableOpacity

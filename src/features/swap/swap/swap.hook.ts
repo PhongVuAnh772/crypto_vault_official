@@ -128,14 +128,17 @@ const useSwap = ({ navigation }: RootNavigationType) => {
     const debouncedAmountSend = useDebounce<string>(from.amountYouSend, 500);
     const debouncedSearchCrypto = useDebounce<string>(from.searchCrypto, 300);
 
-    const protocolList = useMemo(
-        () => getSupportedProtocols(protocolData),
-        [protocolData],
-    );
+    const protocolList = useMemo(() => {
+        const filtered = getSupportedProtocols(protocolData);
+        if (filtered.length > 0) return filtered;
+        return protocolData ?? [];
+    }, [protocolData]);
 
     const onShowModalProtocol = (type: SwapSelector) => {
         setCurrentTypeProtocolSelected(type);
-        refModal.current?.present();
+        requestAnimationFrame(() => {
+            refModal.current?.present();
+        });
     };
 
     const onCloseModalProtocol = () => {
@@ -619,7 +622,7 @@ const useSwap = ({ navigation }: RootNavigationType) => {
         [changeNowService, t],
     );
 
-    const { activeBenefit, refreshBenefit } = useAds();
+    const { activeBenefit, refreshBenefit, claimRewardedBenefit } = useAds();
 
     const getEstimateExchangeAmount = useCallback(
         async (
@@ -668,12 +671,16 @@ const useSwap = ({ navigation }: RootNavigationType) => {
     );
 
     const handleAdFinished = useCallback(async () => {
+        const claimed = await claimRewardedBenefit();
+        if (!claimed) {
+            return;
+        }
         await refreshBenefit();
         // Sau khi có benefit mới, fetch lại quote nếu đã nhập amount
         if (from.amountYouSend && currencies.youGetCurrency && currencies.youSendCurrency) {
             getEstimateExchangeAmount(currencies.youGetCurrency, currencies.youSendCurrency, from.amountYouSend);
         }
-    }, [refreshBenefit, from.amountYouSend, currencies.youGetCurrency, currencies.youSendCurrency, getEstimateExchangeAmount]);
+    }, [claimRewardedBenefit, refreshBenefit, from.amountYouSend, currencies.youGetCurrency, currencies.youSendCurrency, getEstimateExchangeAmount]);
 
 
     const handleGetBalanceYouSend = useCallback(

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { KeyboardAvoidingView, ScrollView, View } from 'react-native';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 import AppButtonSVG from 'src/components/common/AppButtonSvg';
 import AppText from 'src/components/common/AppText';
@@ -71,9 +71,9 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
         refSendMaximum,
         onCloseSendMaximumBottomSheet,
         onShowSendMaximumBottomSheet,
+        activeBenefit,
+        handleAdFinished,
     } = useSwap({ navigation });
-    const activeBenefit = null;
-    const handleAdFinished = () => undefined;
 
     return (
         <>
@@ -150,7 +150,7 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
                                 <SwapDynamicSvgIcon
                                     width={38}
                                     height={38}
-                                    color={appColors.neutral.white}
+                                    color={appColors.neutral.n700}
                                 />
                             </View>
                             <SwapBox
@@ -195,10 +195,12 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
                                     )
                                 }
                             />
-                            <RewardedAdButton 
-                                onAdFinished={handleAdFinished} 
-                                hasBenefit={!!activeBenefit}
-                            />
+                            <View style={styles.rewardCard}>
+                                <RewardedAdButton
+                                    onAdFinished={handleAdFinished}
+                                    hasBenefit={!!activeBenefit}
+                                />
+                            </View>
                             <RatePreview rate={from.rate} />
 
                             {showMinimalExchangeAmount && (
@@ -214,7 +216,7 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
                                 <AppText
                                     titleWithI18n={from.errorMessage}
                                     variant={TextVariantKeys.bodyMMedium}
-                                    textColor={appColors.neutral.white}
+                                    textColor={appColors.main.tokyoRed}
                                     styles={[
                                         appStyles.mt10,
                                         appStyles.textAlignCenter,
@@ -310,3 +312,11 @@ const SwapView: React.FC<RootNavigationType> = ({ navigation }) => {
 };
 
 export default SwapView;
+
+const styles = StyleSheet.create({
+    rewardCard: {
+        marginTop: 12,
+        borderRadius: 12,
+        overflow: 'hidden',
+    },
+});

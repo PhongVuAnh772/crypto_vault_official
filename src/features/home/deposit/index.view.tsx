@@ -2,7 +2,6 @@ import { Feather } from "@expo/vector-icons";
 import React from "react";
 import {
   Linking,
-  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -67,7 +66,8 @@ const DepositOptionsScreen: React.FC<RootNavigationType> = ({ navigation }) => {
   ];
 
   return (
-    <ScreenWrapper
+   <SafeAreaView style={{flex: 1}}>
+     <ScreenWrapper
       headerTitle="Add Money"
       enableHeader
       backgroundColor="#F2F2F7"
@@ -112,6 +112,7 @@ const DepositOptionsScreen: React.FC<RootNavigationType> = ({ navigation }) => {
         </View>
       </ScrollView>
     </ScreenWrapper>
+   </SafeAreaView>
   );
 };
 

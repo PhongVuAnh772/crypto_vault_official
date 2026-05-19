@@ -20,12 +20,12 @@ import { AppleSvgIcon, ArrowLeftSvgIcon, GoogleSvgIcon, LogoAppSvgIcon } from 's
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { RootState } from 'src/core/redux/store';
-import { supabase } from 'src/core/services/supabase/supabaseClient';
 
 const { width } = Dimensions.get('window');
 
 import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
+import { requireSupabaseClient } from 'src/core/services/supabase/supabaseClient';
 
 // Cấu hình Google Sign-In
 GoogleSignin.configure({
@@ -59,7 +59,6 @@ const SocialAuthScreen: React.FC = () => {
       const currentAccount = accountLists[0];
 
       // Tìm chính xác protocol EVM bằng cách đối chiếu _id với danh sách protocolLists
-      let protocolInfo: any = null;
       const evmProtocolData = currentAccount.protocolData?.find(p => {
         const info = protocolLists.find(pl => pl._id === p._id);
         if (!info) return false;
@@ -67,77 +66,41 @@ const SocialAuthScreen: React.FC = () => {
         const slip0044 = info.slip0044;
         const isEVM = p.addressList && p.addressList.length > 0 &&
           (['ETH', 'POL', 'BNB', 'MATIC', 'AVAX'].includes(symbol) || [60, 966, 2000].includes(slip0044));
-        if (isEVM) protocolInfo = info;
         return isEVM;
       });
 
       const walletData = evmProtocolData?.addressList?.[0];
 
-      if (!walletData || !walletData.privateKey || !protocolInfo) {
+      if (!walletData || !walletData.privateKey) {
         Alert.alert('No EVM Wallet', 'Please create an Ethereum or Polygon wallet to use this feature.');
         return;
       }
 
-      // Hầu hết dự án Supabase mới mặc định Site URL là http://localhost:3000
-      // BẠN CẦN KIỂM TRA TRONG Dashboard -> Authentication -> URL Configuration -> Site URL
-      const REDIRECT_URL = 'http://localhost:3000';
+      const evmAddress = new ethers.Wallet(
+        walletData.privateKey!.startsWith('0x') || walletData.privateKey!.length === 64
+          ? (walletData.privateKey!.startsWith('0x') ? walletData.privateKey! : '0x' + walletData.privateKey!)
+          : '0x' + Buffer.from(walletData.privateKey!, 'base64').toString('hex')
+      ).address;
 
-      // 2. Gọi Supabase Auth Web3
-      const { data, error } = await supabase.auth.signInWithWeb3({
-        chain: 'ethereum',
-        statement: 'Log in to CryptoVault with your secure wallet.',
-        options: {
-          url: REDIRECT_URL,
-        },
-        wallet: {
-          address: new ethers.Wallet(
-            walletData.privateKey!.startsWith('0x') || walletData.privateKey!.length === 64
-              ? (walletData.privateKey!.startsWith('0x') ? walletData.privateKey! : '0x' + walletData.privateKey!)
-              : '0x' + Buffer.from(walletData.privateKey!, 'base64').toString('hex')
-          ).address,
-          request: async ({ method, params }: any) => {
-            // Chuẩn hóa Private Key cho mọi request cần dùng wallet
-            let pk = walletData.privateKey!;
-            if (!pk.startsWith('0x') && pk.length !== 64) {
-              const buf = Buffer.from(pk, 'base64');
-              pk = '0x' + buf.toString('hex');
-            } else if (!pk.startsWith('0x')) {
-              pk = '0x' + pk;
-            }
-            const wallet = new ethers.Wallet(pk);
-
-            if (method === 'eth_requestAccounts' || method === 'eth_accounts') {
-              return [wallet.address];
-            }
-            if (method === 'eth_chainId') {
-              const chainId = protocolInfo.chainId || 1;
-              return `0x${chainId.toString(16)}`;
-            }
-            if (method === 'personal_sign') {
-              let message = params[0];
-              if (message.startsWith('0x')) {
-                try {
-                  const decoded = ethers.toUtf8String(message);
-                  if (decoded) message = decoded;
-                } catch (e) { }
-              }
-
-              console.log('======= SIWE MESSAGE DEBUG =======');
-              console.log(message);
-              console.log('==================================');
-
-              return await wallet.signMessage(message);
-            }
-            throw new Error(`Method ${method} not supported`);
-          },
-          on: () => { },
-          removeListener: () => { }
-        }
+      const supabase = requireSupabaseClient();
+      const normalizedAddress = evmAddress.toLowerCase().replace(/^0x/, '');
+      const pseudoEmail = `wallet_${normalizedAddress}@cryptovault.app`;
+      const pseudoPassword = `WALLET_${evmAddress.slice(2)}_2026!`;
+      const signInRes = await supabase.auth.signInWithPassword({
+        email: pseudoEmail,
+        password: pseudoPassword,
       });
-
-      if (error) throw error;
-
-      console.log('Web3 Login Success:', data);
+      if (signInRes.error) {
+        const signUpRes = await supabase.auth.signUp({
+          email: pseudoEmail,
+          password: pseudoPassword,
+          options: {
+            data: { wallet_address: evmAddress },
+          },
+        });
+        if (signUpRes.error) throw signUpRes.error;
+      }
+      Alert.alert('Success', 'Wallet login successful');
       navigation.goBack();
 
     } catch (error: any) {
@@ -152,15 +115,16 @@ const SocialAuthScreen: React.FC = () => {
     try {
       setLoading(true);
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      if (userInfo.data?.idToken) {
-        const { error } = await supabase.auth.signInWithIdToken({
-          provider: 'google',
-          token: userInfo.data.idToken,
-        });
-        if (error) throw error;
-        navigation.goBack();
-      }
+      const userInfo: any = await GoogleSignin.signIn();
+      const idToken: string | undefined = userInfo?.data?.idToken || userInfo?.idToken;
+      if (!idToken) throw new Error('Google idToken not found');
+      const supabase = requireSupabaseClient();
+      const { error } = await supabase.auth.signInWithIdToken({
+        provider: 'google',
+        token: idToken,
+      });
+      if (error) throw error;
+      navigation.goBack();
     } catch (error: any) {
       if (error.code !== statusCodes.SIGN_IN_CANCELLED) {
         Alert.alert('Google Auth Error', error.message);
@@ -181,6 +145,7 @@ const SocialAuthScreen: React.FC = () => {
       });
 
       if (credential.identityToken) {
+        const supabase = requireSupabaseClient();
         const { error } = await supabase.auth.signInWithIdToken({
           provider: 'apple',
           token: credential.identityToken,
@@ -205,12 +170,20 @@ const SocialAuthScreen: React.FC = () => {
 
     setLoading(true);
     try {
+      const supabase = requireSupabaseClient();
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+        });
         if (error) throw error;
-        Alert.alert('Success', 'Verification email sent!');
+        Alert.alert('Success', 'Account created. Check email if confirmation is enabled.');
+        setIsSignUp(false);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
         if (error) throw error;
         navigation.goBack();
       }

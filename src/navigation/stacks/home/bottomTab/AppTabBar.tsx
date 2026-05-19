@@ -44,15 +44,54 @@ const AppTabBar = ({
   const BAR_WIDTH = SCREEN_WIDTH * 0.92;
   const BAR_HEIGHT = 70;
   const refModalActions = React.useRef<BottomSheetModal>(null);
+  const [pendingScreen, setPendingScreen] = React.useState<string | null>(null);
+  const fallbackTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const navigatingRef = React.useRef(false);
 
   const onOpenActions = () => {
     refModalActions.current?.present();
   };
 
   const handleActionPress = (screen: string) => {
+    if (navigatingRef.current) return;
+    setPendingScreen(screen);
     refModalActions.current?.dismiss();
-    rootNavigate(screen);
+    if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    fallbackTimerRef.current = setTimeout(() => {
+      if (!navigatingRef.current) {
+        navigatingRef.current = true;
+        rootNavigate(screen);
+        setPendingScreen(null);
+        setTimeout(() => {
+          navigatingRef.current = false;
+        }, 250);
+      }
+    }, 380);
   };
+
+  const handleActionsSheetDismiss = () => {
+    if (fallbackTimerRef.current) {
+      clearTimeout(fallbackTimerRef.current);
+      fallbackTimerRef.current = null;
+    }
+    if (!pendingScreen) return;
+    if (navigatingRef.current) return;
+    navigatingRef.current = true;
+    const screen = pendingScreen;
+    setPendingScreen(null);
+    requestAnimationFrame(() => {
+      rootNavigate(screen);
+      setTimeout(() => {
+        navigatingRef.current = false;
+      }, 250);
+    });
+  };
+
+  React.useEffect(() => {
+    return () => {
+      if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
+    };
+  }, []);
 
   return (
     <View
@@ -120,14 +159,14 @@ const AppTabBar = ({
 
       <BottomSheetModalGorhom
         refModal={refModalActions}
-        snapPoints={["40%"]}
+        snapPoints={["55%"]}
         enablePanDownToClose
         backgroundStyle={{ backgroundColor: '#1C1C1E' }}
         handleIndicatorStyle={{ backgroundColor: '#3A3A3C' }}
+        onDismiss={handleActionsSheetDismiss}
       >
         <View style={styles.sheetContent}>
           <View style={styles.sheetHeader}>
-            <View style={styles.headerLine} />
             <AppText
               title={"Quick Actions"}
               variant={TextVariantKeys.titleLarge}
@@ -257,6 +296,7 @@ const styles = StyleSheet.create({
   sheetHeader: {
     alignItems: 'center',
     marginBottom: 20,
+    paddingTop: 15
   },
   headerLine: {
     width: 40,

@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Session, User } from '@supabase/supabase-js';
+
+type AuthUser = any;
+type AuthSession = any;
 
 interface AuthState {
-  user: User | null;
-  session: Session | null;
+  user: AuthUser;
+  session: AuthSession;
   isLoading: boolean;
   isLoggedIn: boolean;
 }
@@ -19,7 +21,7 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setSession: (state, action: PayloadAction<Session | null>) => {
+    setSession: (state, action: PayloadAction<AuthSession>) => {
       state.session = action.payload;
       state.user = action.payload?.user ?? null;
       state.isLoggedIn = !!action.payload;

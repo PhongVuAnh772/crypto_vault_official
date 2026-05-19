@@ -7,6 +7,8 @@ import LanguageKey from "src/core/locales/LanguageKey";
 import { t } from "i18next";
 import Utils from "src/core/utils/commonUtils";
 import { useCurrencyRateConversion, useSelectedCurrencySetting } from "src/core/redux/slice/account.selector";
+import { useAppSelector } from "src/core/redux/hooks";
+import { selectorHomeSearchKeyword } from "../slice/home.slice";
 
 type ListCryptoType = {
   data: ListCryptoDataType[];
@@ -23,6 +25,21 @@ const ListCryptoComponent: React.FC<ListCryptoType> = ({
   const styles = useStyles(theme);
   const selectedCurrencySetting = useSelectedCurrencySetting();
   const currencyRateConversion = useCurrencyRateConversion();
+  const searchKeyword = useAppSelector(selectorHomeSearchKeyword);
+  const filteredData = React.useMemo(() => {
+    const keyword = String(searchKeyword ?? "").trim().toLowerCase();
+    if (!keyword) return data;
+    return data.filter((item) => {
+      const name = String(item.name ?? "").toLowerCase();
+      const symbol = String(item.symbol ?? "").toLowerCase();
+      const contractAddress = String(item.contractAddress ?? "").toLowerCase();
+      return (
+        name.includes(keyword) ||
+        symbol.includes(keyword) ||
+        contractAddress.includes(keyword)
+      );
+    });
+  }, [data, searchKeyword]);
 
   const getTokenAmount = (item: ListCryptoDataType) => {
     if (typeof item.balanceToken === "number") {
@@ -101,7 +118,7 @@ const ListCryptoComponent: React.FC<ListCryptoType> = ({
         </Text>
       </View>
       <FlatList
-        data={data}
+        data={filteredData}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         scrollEnabled={false}

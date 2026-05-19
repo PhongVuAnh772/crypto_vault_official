@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, TextInput, View } from 'react-native';
 import TextVariantKeys from 'src/core/enum/TextVariantKeys';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
-import { supabase } from 'src/core/services/supabase/supabaseClient';
 import AppButton from './AppButton';
 import AppModal from './AppModal';
 import AppText from './AppText';
+import { requireSupabaseClient } from 'src/core/services/supabase/supabaseClient';
 
 interface SupabaseAuthModalProps {
   visible: boolean;
@@ -28,12 +28,20 @@ const SupabaseAuthModal: React.FC<SupabaseAuthModalProps> = ({ visible, onClose,
 
     setLoading(true);
     try {
+      const supabase = requireSupabaseClient();
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({ email, password });
+        const { error } = await supabase.auth.signUp({
+          email: email.trim(),
+          password,
+        });
         if (error) throw error;
-        Alert.alert('Success', 'Check your email for confirmation!');
+        Alert.alert('Success', 'Account created. Check your email if confirmation is enabled.');
+        setIsSignUp(false);
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
         if (error) throw error;
         onSuccess();
         onClose();

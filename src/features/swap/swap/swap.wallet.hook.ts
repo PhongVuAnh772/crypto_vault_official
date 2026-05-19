@@ -77,6 +77,25 @@ const useWallet = () => {
         fromWallet: null,
         toWallet: null,
     });
+    const lastRpcBusyToastAtRef = useRef(0);
+
+    const delay = (ms: number) =>
+        new Promise(resolve => setTimeout(resolve, ms));
+
+    const checkRPCWithRetry = async (
+        web3Service: Web3Service,
+        retries = 2,
+        initialDelayMs = 350,
+    ) => {
+        for (let attempt = 0; attempt <= retries; attempt++) {
+            const ok = await web3Service.checkRPC();
+            if (ok) return true;
+            if (attempt < retries) {
+                await delay(initialDelayMs * (attempt + 1));
+            }
+        }
+        return false;
+    };
 
     /**
      * Updates the TON transaction information
@@ -353,13 +372,17 @@ const useWallet = () => {
             urpUrl: protocol.rpcUrl,
         });
 
-        const isRPCWorking = await web3Service.checkRPC();
+        const isRPCWorking = await checkRPCWithRetry(web3Service, 2, 400);
 
         if (!isRPCWorking) {
-            Utils.showToast({
-                msg: t(LanguageKey.web3_rpc_busy),
-                type: AppToastType.error,
-            });
+            const now = Date.now();
+            if (now - lastRpcBusyToastAtRef.current > 7000) {
+                lastRpcBusyToastAtRef.current = now;
+                Utils.showToast({
+                    msg: t(LanguageKey.web3_rpc_busy),
+                    type: AppToastType.error,
+                });
+            }
 
             return {
                 balance: '0',

@@ -400,6 +400,7 @@ app.use('/api/v1', adminRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
 app.use('/api/ads', adsRoutes);
+app.use('/api/v1/ads', adsRoutes);
 app.use('/api/v1/feed', feedRoutes);
 app.use('/api/v1', marketplaceRoutes);
 

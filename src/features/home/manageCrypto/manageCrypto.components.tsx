@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, Switch, View } from 'react-native';
 import AppImage from 'src/components/common/AppImage';
 import AppText from 'src/components/common/AppText';
@@ -23,11 +23,20 @@ const ManageCrypto: React.FC<ManageListCryptoType> = ({
     const theme: AppThemeType = useAppTheme();
     const styles = useStyles(theme);
 
-    const filteredData = tokenData.filter(item => {
-        return searching
-            ? item?.name?.toLowerCase().includes(searching.toLowerCase())
-            : true;
-    });
+    const filteredData = useMemo(() => {
+        const keyword = searching.trim().toLowerCase();
+        if (!keyword) return tokenData;
+        return tokenData.filter((item) => {
+            const name = String(item?.name ?? '').toLowerCase();
+            const symbol = String(item?.symbol ?? '').toLowerCase();
+            const contractAddress = String(item?.contractAddress ?? '').toLowerCase();
+            return (
+                name.includes(keyword) ||
+                symbol.includes(keyword) ||
+                contractAddress.includes(keyword)
+            );
+        });
+    }, [tokenData, searching]);
 
     const renderItem = ({ item }: { item: TokenType }) => {
         return (

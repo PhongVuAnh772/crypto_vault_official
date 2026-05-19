@@ -30,6 +30,16 @@ interface Message {
   avatar?: string;
 }
 
+type OptionName =
+  | 'Enhance'
+  | 'Effects'
+  | 'Settings'
+  | 'Share'
+  | 'LIVE Center'
+  | 'Get leads'
+  | 'Promote'
+  | 'Poll';
+
 const FloatingHeart = ({ onComplete }: { onComplete: () => void }) => {
   const animatedValue = useRef(new Animated.Value(0)).current;
 
@@ -92,15 +102,33 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
   const [sourceType, setSourceType] = useState<'device' | 'gaming'>('device');
   const [activeTab, setActiveTab] = useState('LIVE');
   const [showOptionsModal, setShowOptionsModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showTopicModal, setShowTopicModal] = useState(false);
   
   // States for features
   const [isEnhanced, setIsEnhanced] = useState(false);
   const [activeEffect, setActiveEffect] = useState(false);
+  const [isMicMuted, setIsMicMuted] = useState(false);
+  const [isFlashOn, setIsFlashOn] = useState(false);
+  const [topic, setTopic] = useState('45 minutes out from LaterCon!');
+  const [liveGoal, setLiveGoal] = useState('Reach 100 viewers');
   
   const wsRef = useRef<WebSocket | null>(null);
   const isEndingRef = useRef(false);
 
-  const handleOptionPress = async (optionName: string) => {
+  const pushSystemMessage = useCallback((text: string) => {
+    setMessages(prev => [
+      ...prev.slice(-20),
+      {
+        id: `${Date.now()}-${Math.random()}`,
+        user: 'System',
+        text,
+        avatar: 'https://i.pravatar.cc/150?u=system',
+      },
+    ]);
+  }, []);
+
+  const handleOptionPress = async (optionName: OptionName) => {
     if (optionName === 'Share') {
       setShowOptionsModal(false);
       try {
@@ -116,16 +144,47 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
 
     if (optionName === 'Enhance') {
       setIsEnhanced(!isEnhanced);
+      pushSystemMessage(!isEnhanced ? 'Enhance mode enabled' : 'Enhance mode disabled');
       return; // Keep modal open or close it? Let's keep it open to allow multiple toggles, or close it. 
     }
 
     if (optionName === 'Effects') {
       setActiveEffect(!activeEffect);
+      pushSystemMessage(!activeEffect ? 'Effects enabled' : 'Effects disabled');
       return;
     }
 
-    setShowOptionsModal(false);
-    Alert.alert('Notice', `${optionName} feature will be available in the next update.`);
+    if (optionName === 'Settings') {
+      setShowOptionsModal(false);
+      setShowSettingsModal(true);
+      return;
+    }
+
+    if (optionName === 'LIVE Center') {
+      setActiveTab('LIVE');
+      setShowOptionsModal(false);
+      pushSystemMessage('Switched to LIVE Center');
+      return;
+    }
+
+    if (optionName === 'Get leads') {
+      setShowOptionsModal(false);
+      pushSystemMessage('Lead form link copied for viewers');
+      return;
+    }
+
+    if (optionName === 'Promote') {
+      setViewerCount((v) => v + 25);
+      setShowOptionsModal(false);
+      pushSystemMessage('Promotion boost applied (+25 viewers)');
+      return;
+    }
+
+    if (optionName === 'Poll') {
+      setShowOptionsModal(false);
+      pushSystemMessage('Poll: Which token should we analyze next?');
+      return;
+    }
   };
 
   // Prevent going back without ending the live
@@ -306,6 +365,15 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
     }
   };
 
+  const handleTopicSubmit = () => {
+    if (!topic.trim()) {
+      Alert.alert('Invalid topic', 'Topic cannot be empty.');
+      return;
+    }
+    setShowTopicModal(false);
+    pushSystemMessage(`Topic updated: ${topic.trim()}`);
+  };
+
   if (!permission) return <View style={styles.container} />;
   if (!permission.granted) return (
     <View style={styles.container}>
@@ -320,7 +388,9 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={facing}>
+      <CameraView style={styles.camera} facing={facing} flash={isFlashOn ? 'on' : 'off'}>
+        {isEnhanced && <View style={styles.enhanceOverlay} pointerEvents="none" />}
+        {activeEffect && <View style={styles.effectsOverlay} pointerEvents="none" />}
         <LinearGradient
           colors={['rgba(0,0,0,0.5)', 'transparent', 'rgba(0,0,0,0.6)']}
           style={StyleSheet.absoluteFillObject}
@@ -360,8 +430,8 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                 <View style={styles.bannerContent}>
                   <Image source={{ uri: 'https://i.pravatar.cc/100?u=latercon' }} style={styles.bannerImage} />
                   <View style={styles.bannerTextContainer}>
-                    <Text style={styles.bannerTitle}>45 minutes out from LaterCon!</Text>
-                    <TouchableOpacity style={styles.changeBtn}>
+                    <Text style={styles.bannerTitle}>{topic}</Text>
+                    <TouchableOpacity style={styles.changeBtn} onPress={() => setShowTopicModal(true)}>
                       <Text style={styles.changeBtnText}>Change</Text>
                     </TouchableOpacity>
                   </View>
@@ -381,11 +451,17 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
           {!isLive && (
             <View style={styles.preLiveActions}>
               <View style={styles.actionRow}>
-                <TouchableOpacity style={styles.actionItem}>
+                <TouchableOpacity style={styles.actionItem} onPress={() => setShowTopicModal(true)}>
                   <MaterialCommunityIcons name="pound" size={18} color="#FCD535" />
                   <Text style={styles.actionItemText}>Add topic</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.actionItem, { marginLeft: 10 }]}>
+                <TouchableOpacity
+                  style={[styles.actionItem, { marginLeft: 10 }]}
+                  onPress={() => {
+                    setLiveGoal('Reach 200 viewers');
+                    pushSystemMessage('LIVE goal updated: Reach 200 viewers');
+                  }}
+                >
                   <MaterialCommunityIcons name="target" size={18} color="#A020F0" />
                   <Text style={styles.actionItemText}>Add a LIVE goal</Text>
                 </TouchableOpacity>
@@ -406,7 +482,7 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
               onPress={() => setShowOptionsModal(false)}
             >
               <View style={styles.optionsGrid}>
-                {[
+                {([
                   { name: 'Enhance', icon: 'auto-fix', active: isEnhanced },
                   { name: 'Effects', icon: 'face-recognition', active: activeEffect },
                   { name: 'Settings', icon: 'cog' },
@@ -415,7 +491,7 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                   { name: 'Get leads', icon: 'clipboard-text-outline' },
                   { name: 'Promote', icon: 'fire' },
                   { name: 'Poll', icon: 'chart-bar' }
-                ].map((item, index) => (
+                ] as Array<{ name: OptionName; icon: string; active?: boolean }>).map((item, index) => (
                   <TouchableOpacity 
                     key={index} 
                     style={[styles.gridItem, item.active && { opacity: 1 }]} 
@@ -429,6 +505,63 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                     <Text style={[styles.gridItemText, item.active && { color: "#FCD535" }]}>{item.name}</Text>
                   </TouchableOpacity>
                 ))}
+              </View>
+            </TouchableOpacity>
+          </Modal>
+
+          <Modal
+            visible={showSettingsModal}
+            transparent
+            animationType="slide"
+            onRequestClose={() => setShowSettingsModal(false)}
+          >
+            <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowSettingsModal(false)}>
+              <View style={styles.settingsCard}>
+                <Text style={styles.settingsTitle}>Live Settings</Text>
+                <TouchableOpacity
+                  style={styles.settingsRow}
+                  onPress={() => setIsMicMuted((v) => !v)}
+                >
+                  <Text style={styles.settingsLabel}>Microphone</Text>
+                  <Text style={styles.settingsValue}>{isMicMuted ? 'Muted' : 'On'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.settingsRow}
+                  onPress={() => setIsFlashOn((v) => !v)}
+                >
+                  <Text style={styles.settingsLabel}>Flash</Text>
+                  <Text style={styles.settingsValue}>{isFlashOn ? 'On' : 'Off'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.settingsRow}
+                  onPress={() => setFacing((v) => (v === 'front' ? 'back' : 'front'))}
+                >
+                  <Text style={styles.settingsLabel}>Camera</Text>
+                  <Text style={styles.settingsValue}>{facing === 'front' ? 'Front' : 'Back'}</Text>
+                </TouchableOpacity>
+              </View>
+            </TouchableOpacity>
+          </Modal>
+
+          <Modal
+            visible={showTopicModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setShowTopicModal(false)}
+          >
+            <TouchableOpacity style={styles.modalOverlay} activeOpacity={1} onPress={() => setShowTopicModal(false)}>
+              <View style={styles.settingsCard}>
+                <Text style={styles.settingsTitle}>Edit Live Topic</Text>
+                <TextInput
+                  style={styles.topicInput}
+                  value={topic}
+                  onChangeText={setTopic}
+                  placeholder="Live topic"
+                  placeholderTextColor="#999"
+                />
+                <TouchableOpacity style={styles.saveTopicBtn} onPress={handleTopicSubmit}>
+                  <Text style={styles.saveTopicText}>Save</Text>
+                </TouchableOpacity>
               </View>
             </TouchableOpacity>
           </Modal>
@@ -471,6 +604,7 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                   <TouchableOpacity style={styles.goLiveBtn} onPress={toggleLive}>
                     <Text style={styles.goLiveText}>Go LIVE</Text>
                   </TouchableOpacity>
+                  <Text style={styles.goalText}>{liveGoal}</Text>
 
                   <View style={styles.sourceSelectorWrapper}>
                     <View style={styles.sourceSelector}>
@@ -507,7 +641,7 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                   </View>
                 </View>
               ) : (
-                <View style={styles.broadcastControls}>
+                  <View style={styles.broadcastControls}>
                   <View style={styles.inputBar}>
                     <TextInput
                       style={styles.textInput}
@@ -521,6 +655,12 @@ const LiveBroadcastScreen = ({ navigation }: any) => {
                       <MaterialCommunityIcons name="send" size={20} color="#fff" />
                     </TouchableOpacity>
                   </View>
+                  <TouchableOpacity
+                    style={[styles.endBtn, { marginRight: 8 }]}
+                    onPress={() => setIsMicMuted((v) => !v)}
+                  >
+                    <MaterialCommunityIcons name={isMicMuted ? 'microphone-off' : 'microphone'} size={20} color="#fff" />
+                  </TouchableOpacity>
                   <TouchableOpacity style={styles.endBtn} onPress={toggleLive}>
                     <MaterialCommunityIcons name="close" size={24} color="#fff" />
                   </TouchableOpacity>
@@ -556,6 +696,15 @@ const styles = StyleSheet.create({
   },
   camera: {
     flex: 1,
+  },
+  enhanceOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 240, 210, 0.08)',
+  },
+  effectsOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    borderWidth: 3,
+    borderColor: 'rgba(252,213,53,0.35)',
   },
   safeArea: {
     flex: 1,
@@ -700,6 +849,12 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingBottom: 20,
   },
+  goalText: {
+    color: '#FCD535',
+    fontSize: 13,
+    marginBottom: 10,
+    fontWeight: '600',
+  },
   goLiveBtn: {
     backgroundColor: '#FF2C55',
     width: '90%',
@@ -757,6 +912,54 @@ const styles = StyleSheet.create({
   },
   activeTab: {
     opacity: 1,
+  },
+  settingsCard: {
+    width: '86%',
+    backgroundColor: '#1C1C1E',
+    borderRadius: 16,
+    padding: 16,
+  },
+  settingsTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '700',
+    marginBottom: 10,
+  },
+  settingsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: 'rgba(255,255,255,0.15)',
+  },
+  settingsLabel: {
+    color: '#fff',
+    fontSize: 15,
+  },
+  settingsValue: {
+    color: '#FCD535',
+    fontWeight: '700',
+  },
+  topicInput: {
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.2)',
+    borderRadius: 10,
+    color: '#fff',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    marginTop: 8,
+  },
+  saveTopicBtn: {
+    marginTop: 12,
+    backgroundColor: '#FCD535',
+    borderRadius: 10,
+    alignItems: 'center',
+    paddingVertical: 10,
+  },
+  saveTopicText: {
+    color: '#111',
+    fontWeight: '700',
   },
   activeTabText: {
     color: '#fff',

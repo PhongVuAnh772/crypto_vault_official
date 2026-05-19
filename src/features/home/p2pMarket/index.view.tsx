@@ -47,11 +47,17 @@ const P2PMarketScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       const serverRes = await fetch(
         `${ApiConstants.SERVER_URL}/api/v1/p2p/ads?type=${activeTab}&symbol=${selectedTokenId}`
       );
-      const serverData = await serverRes.json();
+      const serverText = await serverRes.text();
+      let serverData: any = null;
+      try {
+        serverData = serverText ? JSON.parse(serverText) : null;
+      } catch {
+        serverData = null;
+      }
 
       let formatted: any[] = [];
 
-      if (serverData.success && serverData.data.length > 0) {
+      if (serverRes.ok && serverData?.success && Array.isArray(serverData?.data) && serverData.data.length > 0) {
         formatted = serverData.data;
       } else {
          const response = await fetch(

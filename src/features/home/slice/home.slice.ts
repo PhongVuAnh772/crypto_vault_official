@@ -16,6 +16,7 @@ import {
 
 const initialState: HomeSliceType = {
     listCryptoData: [],
+    searchKeyword: '',
 };
 
 export const updateCryptoBalance = createAsyncThunk(
@@ -141,6 +142,9 @@ export const homeSlice = createSlice({
         setSelectedCryptoDataId: (state, action: PayloadAction<string>) => {
             state.selectedCryptoDataId = action.payload;
         },
+        setHomeSearchKeyword: (state, action: PayloadAction<string>) => {
+            state.searchKeyword = action.payload;
+        },
         resetHomeSlice: () => initialState,
     },
     extraReducers: builder => {
@@ -159,6 +163,7 @@ export const {
     setSelectTokenAction,
     setListCryptoDataSyn,
     setSelectedCryptoDataId,
+    setHomeSearchKeyword,
 } = homeSlice.actions;
 
 export const selectorSelectedCryptoDataId = (state: RootState) =>
@@ -167,6 +172,8 @@ export const selectorListCryptoData = (state: RootState) =>
     state?.home?.listCryptoData;
 export const selectorSelectTokenAction = (state: RootState) =>
     state?.home?.selectTokenAction;
+export const selectorHomeSearchKeyword = (state: RootState) =>
+    state?.home?.searchKeyword ?? '';
 export const getHomeState = (state: RootState) => state.home;
 
 const HomeConfig = {

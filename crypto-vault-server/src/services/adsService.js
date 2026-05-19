@@ -1,6 +1,11 @@
 const db = require('../utils/db');
 const logger = require('../utils/logger');
 
+const isValidUuid = (value) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+    String(value || ''),
+  );
+
 class AdsService {
   /**
    * Tạo lợi ích (giảm spread) khi người dùng xem xong Rewarded Ad
@@ -78,24 +83,26 @@ class AdsService {
         VALUES ($1, $2, 'OFFERWALL', $3, $4)
       `, [userId, amount, externalId, JSON.stringify(metadata)]);
 
-      // 3. Cộng tiền vào balance cho User (Giả định USDT token - cần ID token thực tế)
-      // Tìm Token USDT (mặc định cho Demo)
-      const tokenRes = await client.query("SELECT id FROM tokens WHERE symbol = 'USDT' LIMIT 1");
-      if (tokenRes.rows.length > 0) {
-        const tokenId = tokenRes.rows[0].id;
-        
-        await client.query(`
-          INSERT INTO balances (user_id, token_id, available_balance)
-          VALUES ($1, $2, $3)
-          ON CONFLICT (user_id, token_id) 
-          DO UPDATE SET available_balance = balances.available_balance + $3, updated_at = NOW()
-        `, [userId, tokenId, amount]);
+      // 3. Chỉ cộng số dư nếu userId là UUID hợp lệ với schema balances/transactions hiện tại
+      if (isValidUuid(userId)) {
+        const tokenRes = await client.query("SELECT id FROM tokens WHERE symbol = 'USDT' LIMIT 1");
+        if (tokenRes.rows.length > 0) {
+          const tokenId = tokenRes.rows[0].id;
+          
+          await client.query(`
+            INSERT INTO balances (user_id, token_id, available_balance)
+            VALUES ($1, $2, $3)
+            ON CONFLICT (user_id, token_id) 
+            DO UPDATE SET available_balance = balances.available_balance + $3, updated_at = NOW()
+          `, [userId, tokenId, amount]);
 
-        // Ghi transaction log
-        await client.query(`
-          INSERT INTO transactions (user_id, token_id, type, status, amount, metadata)
-          VALUES ($1, $2, 'DEPOSIT', 'COMPLETED', $3, $4)
-        `, [userId, tokenId, amount, JSON.stringify({ source: 'OFFERWALL', externalId })]);
+          await client.query(`
+            INSERT INTO transactions (user_id, token_id, type, status, amount, metadata)
+            VALUES ($1, $2, 'DEPOSIT', 'COMPLETED', $3, $4)
+          `, [userId, tokenId, amount, JSON.stringify({ source: 'OFFERWALL', externalId })]);
+        }
+      } else {
+        logger.warn(`[AdsService] Skip balance credit because userId is not UUID: ${userId}`);
       }
 
       await client.query('COMMIT');
