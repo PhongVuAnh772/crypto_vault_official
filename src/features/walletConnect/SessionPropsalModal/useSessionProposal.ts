@@ -5,6 +5,7 @@ import AppToastType from 'src/core/enum/AppToastType';
 import useAppSafeAreaInsets from 'src/core/hooks/useAppSafeAreaInsets';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { useAppDispatch, useAppSelector } from 'src/core/redux/hooks';
+import { getIsTestnet } from 'src/core/redux/slice/app.selector';
 import {
     useAccount,
     useCurrentWallet,
@@ -23,6 +24,7 @@ const useSessionProposal = () => {
     const theme = useAppTheme()
     const dispatch = useAppDispatch();
     const protocolDataLists = useAppSelector(getProtocolDataLists) ?? [];
+    const isTestnet = useAppSelector(getIsTestnet);
     const currentAccount = useAccount();
     const proposal = useAppSelector(getProposal);
     const wallet = useCurrentWallet();
@@ -32,9 +34,12 @@ const useSessionProposal = () => {
     const [visibleLoading, setVisibleLoading] = useState(false);
     const onShowModalConnect = () => bottomSheetConnectRef.current?.present();
     const onCloseModalConnect = () => bottomSheetConnectRef.current?.close();
+    const networkProtocolList = protocolDataLists.filter(
+        item => !!item.isTestnet === !!isTestnet,
+    );
     const supportedName = getSupportedChains(
         proposal?.params.optionalNamespaces,
-        protocolDataLists,
+        networkProtocolList,
         currentAccount!,
         wallet?.address!,
     ) as OptionalNamespacesType;
@@ -116,7 +121,7 @@ const useSessionProposal = () => {
         visibleLoading,
         theme,
         proposal,
-        protocolDataLists,
+        protocolDataLists: networkProtocolList,
         currentAccount,
         supportedName,
         wallet,

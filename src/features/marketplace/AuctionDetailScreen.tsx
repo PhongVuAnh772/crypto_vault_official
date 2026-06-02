@@ -7,6 +7,7 @@ import { getIsTestnet } from 'src/core/redux/slice/app.selector';
 import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import { auctionService, Auction } from './services/auctionService';
 import { tonConnectMarketplaceService } from './services/tonConnectService';
+import { auctionUtils } from './utils/auction';
 
 const AuctionDetailScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -37,27 +38,22 @@ const AuctionDetailScreen: React.FC = () => {
 
   const onBid = async () => {
     if (!auction || !wallet?.address) return;
-    const amount = Number(bidAmount);
-    if (!Number.isFinite(amount) || amount <= 0) return Alert.alert('Lỗi', 'Bid amount không hợp lệ');
-    const current = Number(auction.current_price || 0);
-    const minStep = Number(auction.min_bid_step || 0);
-    const start = Number(auction.start_price || 0);
-    if (new Date(auction.end_time).getTime() <= Date.now()) return Alert.alert('Lỗi', 'Auction đã hết hạn');
-    if (current > 0 && amount < current + minStep) return Alert.alert('Lỗi', 'Bid phải >= current + min step');
-    if (current <= 0 && amount < start) return Alert.alert('Lỗi', 'Bid phải >= start price');
+    const validate = auctionUtils.validateBidAmount(auction, bidAmount);
+    if (!validate.ok) return Alert.alert('Lỗi', validate.message);
 
     try {
       setBidLoading(true);
       const signed = await tonConnectMarketplaceService.bidAuction({
         auctionContractAddress: auction.auction_contract_address || auction.seller_address,
-        amountTon: amount,
+        amountTon: validate.amount,
       });
       await auctionService.bid({
         auction_id: auction.id,
         bidder_address: wallet.address,
-        amount,
+        amount: validate.amount,
         tx_hash: typeof signed === 'string' ? signed : (signed as any)?.txHash,
       });
+      setBidAmount('');
       await load();
     } catch (error) {
       Alert.alert('Lỗi', error instanceof Error ? error.message : 'Bid thất bại');
@@ -68,7 +64,8 @@ const AuctionDetailScreen: React.FC = () => {
 
   const onFinalize = async () => {
     if (!auction) return;
-    if (new Date(auction.end_time).getTime() > Date.now()) return Alert.alert('Lỗi', 'Chưa tới end_time');
+    const { isExpired } = auctionUtils.getAuctionMetrics(auction);
+    if (!isExpired) return Alert.alert('Lỗi', 'Chưa tới end_time');
     try {
       setFinalizeLoading(true);
       const signed = await tonConnectMarketplaceService.finalizeAuction({
@@ -96,7 +93,8 @@ const AuctionDetailScreen: React.FC = () => {
     );
   }
 
-  const isExpired = new Date(auction.end_time).getTime() <= Date.now();
+  const metrics = auctionUtils.getAuctionMetrics(auction);
+  const minBidHint = Number.isFinite(metrics.minBidAmount) ? metrics.minBidAmount : 0;
 
   return (
     <SafeAreaView style={styles.root}>
@@ -108,7 +106,8 @@ const AuctionDetailScreen: React.FC = () => {
           <Row label="Seller" value={auction.seller_address} mono />
           <Row label="Current" value={`${auction.current_price || 0} TON`} />
           <Row label="Current bidder" value={auction.current_bidder || '--'} mono />
-          <Row label="End time" value={auction.end_time} />
+          <Row label="End time" value={auctionUtils.formatDateTime(auction.end_time)} />
+          <Row label="Min bid now" value={`${minBidHint} TON`} />
           <Row label="Status" value={auction.status} status />
         </View>
 
@@ -117,17 +116,17 @@ const AuctionDetailScreen: React.FC = () => {
             style={styles.input}
             value={bidAmount}
             onChangeText={setBidAmount}
-            placeholder="Bid amount (TON)"
+            placeholder={`Bid amount (>= ${minBidHint} TON)`}
             placeholderTextColor="#6B7280"
             keyboardType="decimal-pad"
-            editable={!isExpired && !bidLoading}
+            editable={!metrics.isExpired && !bidLoading}
           />
-          <TouchableOpacity style={[styles.button, (isExpired || bidLoading) && styles.buttonDisabled]} onPress={onBid} disabled={isExpired || bidLoading}>
+          <TouchableOpacity style={[styles.button, (metrics.isExpired || bidLoading) && styles.buttonDisabled]} onPress={onBid} disabled={metrics.isExpired || bidLoading}>
             {bidLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Place Bid</Text>}
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[styles.button, (!isExpired || finalizeLoading) && styles.buttonDisabled]} onPress={onFinalize} disabled={!isExpired || finalizeLoading}>
+        <TouchableOpacity style={[styles.button, (!metrics.isExpired || finalizeLoading) && styles.buttonDisabled]} onPress={onFinalize} disabled={!metrics.isExpired || finalizeLoading}>
           {finalizeLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.btnText}>Finalize Auction</Text>}
         </TouchableOpacity>
 

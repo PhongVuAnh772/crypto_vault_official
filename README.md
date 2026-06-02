@@ -71,7 +71,65 @@ In the output, you'll find options to open the app in a
 - `POST /api/v1/sync/auction/:auction_contract_address`
 - `GET /api/v1/health`
 
+## CodeGraph workflow
+
+CodeGraph is initialized in this repo at `.codegraph/`.
+
+Quick commands:
+
+- `yarn codegraph:status` - Check index health and stats
+- `yarn codegraph:index` - Rebuild full index
+- `yarn codegraph:sync` - Sync incremental changes
+- `yarn codegraph:query "<keyword>"` - Search symbols/usages
+- `yarn codegraph:context "<task>"` - Build AI context for a task
+- `yarn codegraph:impact "<symbol>"` - Analyze impact before refactor
+- `yarn codegraph:affected <changed-file-1> <changed-file-2>` - Find affected tests/files
+
+Recommended usage:
+
+1. Run `yarn codegraph:sync` after pulling or changing many files.
+2. Run `yarn codegraph:impact "<symbol>"` before modifying shared core logic.
+3. Use `yarn codegraph:context "<task>"` when asking AI tools to work in this codebase.
+
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Build the LaTeX report
+
+This repository includes two LaTeX sources:
+
+- `DATN-Doc.tex`
+- `docs/cryptovault_report.tex`
+
+### macOS prerequisites
+
+Install a TeX distribution and `latexmk`:
+
+```bash
+brew install --cask mactex
+# or for a lighter install:
+brew install basictex
+sudo tlmgr install latexmk
+```
+
+### Build commands
+
+```bash
+make datn
+make report
+```
+
+Or from Yarn:
+
+```bash
+yarn latex:datn
+yarn latex:report
+```
+
+Generated PDFs are written to `build/DATN-Doc.pdf` and `build/cryptovault_report.pdf`.
+
+```bash
+yarn latex:clean
+```
 
 ## Get a fresh project
 

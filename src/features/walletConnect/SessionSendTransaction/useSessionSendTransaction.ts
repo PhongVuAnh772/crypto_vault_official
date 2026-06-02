@@ -38,7 +38,23 @@ import {
     setMaxTonEventList,
     setTonEvents,
 } from 'src/features/coinDetails/ton/ton.coinDetails.slice';
+import { getIsTestnet } from 'src/core/redux/slice/app.selector';
 import { SendTransactionParamsType } from '../SessionPropsalModal/sessionProposal.type';
+
+const TESTNET_CHAIN_IDS = new Set([5, 97, 80001, 11155111, 421614, 84532, 43113]);
+const MAINNET_CHAIN_IDS = new Set([1, 56, 137, 10, 42161, 8453, 43114]);
+
+const detectChainIsTestnet = (walletConnectChain?: string): boolean | undefined => {
+    if (!walletConnectChain) return undefined;
+    const idPart = walletConnectChain.includes(':')
+        ? walletConnectChain.split(':')[1]
+        : walletConnectChain;
+    const chainId = Number(idPart);
+    if (Number.isNaN(chainId)) return undefined;
+    if (TESTNET_CHAIN_IDS.has(chainId)) return true;
+    if (MAINNET_CHAIN_IDS.has(chainId)) return false;
+    return undefined;
+};
 
 const useSessionSendTransaction = () => {
     const dispatch = useAppDispatch();
@@ -51,6 +67,7 @@ const useSessionSendTransaction = () => {
     const { topic, params, id, verifyContext } = requestEvent!;
     const { request } = params;
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
+    const isTestnet = useAppSelector(getIsTestnet);
     const protocolSelected = [
         ...(protocolDataLists.length > 0 ? protocolDataLists : []),
     ]?.find(e => e?._id === selectedProtocolId);
@@ -113,6 +130,7 @@ const useSessionSendTransaction = () => {
                     await walletKit.respondSessionRequest({ topic, response });
                 } catch (e) {
                     console.log((e as Error).message, 'error');
+                    await rejectTransaction(id, topic);
                 }
                 setVisibleLoading(false);
                 closeModalConnect();
@@ -192,6 +210,22 @@ const useSessionSendTransaction = () => {
         dispatch(setSelectedProtocol(data._id));
     };
     const walletRequest = async () => {
+        const chainIsTestnet = detectChainIsTestnet(params.chainId);
+        const isWrongNetworkByChainId =
+            chainIsTestnet !== undefined && chainIsTestnet !== !!isTestnet;
+        const isWrongNetworkByProtocol =
+            protocolRequire?.isTestnet !== undefined &&
+            !!protocolRequire.isTestnet !== !!isTestnet;
+
+        if (isWrongNetworkByChainId || isWrongNetworkByProtocol) {
+            Utils.showToast({
+                type: AppToastType.error,
+                msg: 'WalletConnect request is not in current Testnet/Mainnet mode',
+            });
+            await rejectTransaction(id, topic);
+            closeModalConnect();
+            return;
+        }
         const walletDataProtocol = accountRequest?.protocolData.find(
             item => item._id === protocolSelected?._id,
         );
@@ -207,6 +241,15 @@ const useSessionSendTransaction = () => {
 
     };
     useEffect(() => {
+        if (!protocolRequire) {
+            Utils.showToast({
+                type: AppToastType.error,
+                msg: 'Unsupported WalletConnect chain',
+            });
+            rejectTransaction(id, topic);
+            closeModalConnect();
+            return;
+        }
         switchProtocol();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

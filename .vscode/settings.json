@@ -1,9 +1,8 @@
 {
   "editor.codeActionsOnSave": {
-    "source.fixAll":"never",
+    "source.fixAll": "never",
     "source.organizeImports": "explicit",
-    "source.sortMembers": "explicit",
-    
+    "source.sortMembers": "explicit"
   },
   "[javascript]": {
     "editor.codeActionsOnSave": {
@@ -16,5 +15,55 @@
     }
   },
 
-
+  // ─── LaTeX Workshop ───────────────────────────────────────────────
+  "latex-workshop.latex.tools": [
+    {
+      "name": "latexmk",
+      "command": "/Library/TeX/texbin/latexmk",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {
+        "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
+    },
+    {
+      "name": "pdflatex",
+      "command": "/Library/TeX/texbin/pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ],
+      "env": {
+        "PATH": "/Library/TeX/texbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+      }
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "latexmk (PDF)",
+      "tools": ["latexmk"]
+    },
+    {
+      "name": "pdflatex (direct)",
+      "tools": ["pdflatex"]
+    }
+  ],
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.view.pdf.viewer": "tab",
+  "latex-workshop.view.pdf.ref.viewer": "auto",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux", "*.bbl", "*.blg", "*.idx", "*.ind", "*.lof",
+    "*.lot", "*.out", "*.toc", "*.acn", "*.acr", "*.alg",
+    "*.glg", "*.glo", "*.gls", "*.fls", "*.log", "*.fdb_latexmk",
+    "*.snm", "*.synctex.gz", "*.nav", "*.dvi"
+  ],
+  "latex-workshop.latex.autoClean.run": "onSucceeded"
 }

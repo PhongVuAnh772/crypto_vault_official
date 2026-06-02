@@ -180,7 +180,19 @@ export interface NFTDetailEVMCollectionType {
     name: string;
     symbol: string;
     token_uri: string;
-    metadata: string;
+    metadata: string | Record<string, any> | null;
+    normalized_metadata?: Record<string, any> | null;
+    media?: Array<{
+        mimetype?: string;
+        parent_hash?: string;
+        status?: string;
+        updatedAt?: string;
+        media_collection?: {
+            low?: { url?: string };
+            high?: { url?: string };
+        };
+        original_media_url?: string;
+    }>;
     last_token_uri_sync: string;
     last_metadata_sync: string;
     minter_address: null | string;

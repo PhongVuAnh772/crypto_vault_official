@@ -7,6 +7,10 @@ export const appImages: Record<string, any> = {
   nftArt1: require("../../assets/images/nft_art_1.png"),
   nftArt2: require("../../assets/images/nft_art_2.png"),
   nftArt3: require("../../assets/images/nft_art_3.png"),
+  kintsugiBust: require("../../assets/images/kintsugi_bust.png"),
+  blueLiquidWave: require("../../assets/images/blue_liquid_wave.png"),
+  waterCaustics: require("../../assets/images/water_caustics.png"),
+  silverRayleigh: require("../../assets/images/silver_rayleigh.png"),
   ai_icon: require("../../../assets/images/ai_icons.png"),
 };
 

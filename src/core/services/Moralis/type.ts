@@ -176,6 +176,8 @@ export type GetHistoryMoralisParamType = {
     order?: 'ASC' | 'DESC';
     limit?: number;
     include?: 'internal_transactions';
+    normalizeMetadata?: boolean;
+    media_items?: boolean;
 };
 
 export type GetNFTDetailByWalletParamsType = {

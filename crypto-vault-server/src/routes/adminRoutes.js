@@ -418,6 +418,274 @@ router.post('/admin/custom-tokens/:id/reject', requireRole(['super_admin', 'mana
   }
 });
 
+// --- NFT MARKETPLACE AUCTIONS ---
+router.get('/admin/marketplace/auctions', async (req, res) => {
+  try {
+    const status = req.query.status ? String(req.query.status) : null;
+    const result = status
+      ? await db.query(
+        `SELECT a.*, n.name AS nft_name, n.image_url AS nft_image_url
+         FROM marketplace_auctions a
+         LEFT JOIN marketplace_nfts n ON n.nft_address = a.nft_address
+         WHERE a.status = $1
+         ORDER BY a.updated_at DESC, a.created_at DESC`,
+        [status],
+      )
+      : await db.query(
+        `SELECT a.*, n.name AS nft_name, n.image_url AS nft_image_url
+         FROM marketplace_auctions a
+         LEFT JOIN marketplace_nfts n ON n.nft_address = a.nft_address
+         ORDER BY a.updated_at DESC, a.created_at DESC`,
+      );
+
+    res.json({ success: true, data: result.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/admin/marketplace/auctions/:id/bids', async (req, res) => {
+  try {
+    const bids = await db.query(
+      `SELECT * FROM marketplace_bids WHERE auction_id = $1 ORDER BY created_at DESC`,
+      [req.params.id],
+    );
+    res.json({ success: true, data: bids.rows });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.patch('/admin/marketplace/auctions/:id', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const { status, tx_hash, current_price, current_bidder, end_time } = req.body || {};
+    const updates = [];
+    const values = [];
+    let idx = 1;
+
+    if (status !== undefined) {
+      updates.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (tx_hash !== undefined) {
+      updates.push(`tx_hash = $${idx++}`);
+      values.push(tx_hash || null);
+    }
+    if (current_price !== undefined) {
+      const price = Number(current_price);
+      if (!Number.isFinite(price) || price < 0) {
+        return res.status(400).json({ success: false, error: 'current_price must be a non-negative number' });
+      }
+      updates.push(`current_price = $${idx++}`);
+      values.push(price);
+    }
+    if (current_bidder !== undefined) {
+      updates.push(`current_bidder = $${idx++}`);
+      values.push(current_bidder || null);
+    }
+    if (end_time !== undefined) {
+      const endTs = new Date(end_time).getTime();
+      if (!Number.isFinite(endTs)) {
+        return res.status(400).json({ success: false, error: 'end_time must be a valid ISO datetime' });
+      }
+      updates.push(`end_time = $${idx++}`);
+      values.push(new Date(endTs).toISOString());
+    }
+
+    if (!updates.length) {
+      return res.status(400).json({ success: false, error: 'No valid fields to update' });
+    }
+
+    values.push(req.params.id);
+    const result = await db.query(
+      `UPDATE marketplace_auctions
+       SET ${updates.join(', ')}, updated_at = NOW()
+       WHERE id = $${idx}
+       RETURNING *`,
+      values,
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).json({ success: false, error: 'Auction not found' });
+    }
+
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.patch('/admin/marketplace/bids/:id', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const { status, tx_hash } = req.body || {};
+    const updates = [];
+    const values = [];
+    let idx = 1;
+
+    if (status !== undefined) {
+      updates.push(`status = $${idx++}`);
+      values.push(status);
+    }
+    if (tx_hash !== undefined) {
+      updates.push(`tx_hash = $${idx++}`);
+      values.push(tx_hash || null);
+    }
+    if (!updates.length) {
+      return res.status(400).json({ success: false, error: 'No valid fields to update' });
+    }
+
+    values.push(req.params.id);
+    const result = await db.query(
+      `UPDATE marketplace_bids
+       SET ${updates.join(', ')}
+       WHERE id = $${idx}
+       RETURNING *`,
+      values,
+    );
+
+    if (!result.rowCount) {
+      return res.status(404).json({ success: false, error: 'Bid not found' });
+    }
+
+    res.json({ success: true, data: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// --- TRANSACTION FEE CONFIG ---
+const DEFAULT_FEE_CONFIG = {
+  enabled: true,
+  mode: 'percentage', // percentage | flat
+  percent: 0.2, // 0.2%
+  flatAmount: 0,
+  minFee: 0,
+  maxFee: 0, // 0 = unlimited
+  gasBufferPercent: 5,
+  updatedBy: null,
+};
+
+const normalizeFeeConfig = (raw = {}) => ({
+  enabled: raw.enabled !== undefined ? !!raw.enabled : DEFAULT_FEE_CONFIG.enabled,
+  mode: raw.mode === 'flat' ? 'flat' : 'percentage',
+  percent: Number(raw.percent ?? DEFAULT_FEE_CONFIG.percent),
+  flatAmount: Number(raw.flatAmount ?? DEFAULT_FEE_CONFIG.flatAmount),
+  minFee: Number(raw.minFee ?? DEFAULT_FEE_CONFIG.minFee),
+  maxFee: Number(raw.maxFee ?? DEFAULT_FEE_CONFIG.maxFee),
+  gasBufferPercent: Number(raw.gasBufferPercent ?? DEFAULT_FEE_CONFIG.gasBufferPercent),
+  updatedBy: raw.updatedBy ?? null,
+});
+
+const validateFeeConfig = (cfg) => {
+  if (!['percentage', 'flat'].includes(cfg.mode)) return 'mode must be percentage or flat';
+  if (Number.isNaN(cfg.percent) || cfg.percent < 0 || cfg.percent > 100) return 'percent must be between 0 and 100';
+  if (Number.isNaN(cfg.flatAmount) || cfg.flatAmount < 0) return 'flatAmount must be >= 0';
+  if (Number.isNaN(cfg.minFee) || cfg.minFee < 0) return 'minFee must be >= 0';
+  if (Number.isNaN(cfg.maxFee) || cfg.maxFee < 0) return 'maxFee must be >= 0';
+  if (cfg.maxFee > 0 && cfg.maxFee < cfg.minFee) return 'maxFee must be >= minFee';
+  if (Number.isNaN(cfg.gasBufferPercent) || cfg.gasBufferPercent < 0 || cfg.gasBufferPercent > 100) {
+    return 'gasBufferPercent must be between 0 and 100';
+  }
+  return null;
+};
+
+const calculatePlatformFee = (amount, cfg) => {
+  const amountNum = Number(amount || 0);
+  if (!cfg.enabled || amountNum <= 0) return 0;
+
+  let fee = cfg.mode === 'flat'
+    ? cfg.flatAmount
+    : (amountNum * cfg.percent) / 100;
+
+  if (cfg.minFee > 0) fee = Math.max(fee, cfg.minFee);
+  if (cfg.maxFee > 0) fee = Math.min(fee, cfg.maxFee);
+
+  return Number(fee.toFixed(8));
+};
+
+router.get('/admin/fees', async (req, res) => {
+  try {
+    const result = await db.query("SELECT value FROM app_config WHERE key = 'transaction_fee'");
+    if (result.rows.length === 0) {
+      return res.json({ success: true, data: DEFAULT_FEE_CONFIG });
+    }
+    return res.json({ success: true, data: normalizeFeeConfig(result.rows[0].value) });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/admin/fees', requireRole(['super_admin', 'manager']), async (req, res) => {
+  try {
+    const input = req.body?.feeConfig || req.body || {};
+    const feeConfig = normalizeFeeConfig({
+      ...input,
+      updatedBy: req.user?.id || null,
+      updatedAt: new Date().toISOString(),
+    });
+
+    const validationError = validateFeeConfig(feeConfig);
+    if (validationError) {
+      return res.status(400).json({ success: false, error: validationError });
+    }
+
+    const result = await db.query(
+      `INSERT INTO app_config (key, value) VALUES ('transaction_fee', $1)
+       ON CONFLICT (key) DO UPDATE SET value = $1, updated_at = NOW()
+       RETURNING value, updated_at`,
+      [feeConfig]
+    );
+
+    globalEvents.emit('broadcast', {
+      event: 'config_update',
+      data: { type: 'transaction_fee', value: result.rows[0].value },
+    });
+
+    return res.json({
+      success: true,
+      data: result.rows[0].value,
+      updated_at: result.rows[0].updated_at,
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/admin/fees/calculate', async (req, res) => {
+  try {
+    const { amount, networkFee = 0 } = req.body || {};
+    if (amount === undefined || Number(amount) <= 0) {
+      return res.status(400).json({ success: false, error: 'amount must be > 0' });
+    }
+
+    const cfgRes = await db.query("SELECT value FROM app_config WHERE key = 'transaction_fee'");
+    const feeConfig = cfgRes.rows.length > 0
+      ? normalizeFeeConfig(cfgRes.rows[0].value)
+      : DEFAULT_FEE_CONFIG;
+
+    const platformFee = calculatePlatformFee(amount, feeConfig);
+    const networkFeeNum = Math.max(0, Number(networkFee || 0));
+    const gasBufferAmount = Number(((networkFeeNum * feeConfig.gasBufferPercent) / 100).toFixed(8));
+    const totalFee = Number((platformFee + networkFeeNum + gasBufferAmount).toFixed(8));
+
+    return res.json({
+      success: true,
+      data: {
+        amount: Number(amount),
+        feeConfig,
+        feeBreakdown: {
+          platformFee,
+          networkFee: networkFeeNum,
+          gasBufferAmount,
+          totalFee,
+        },
+      },
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 // --- CONFIG ---
 router.get('/config', async (req, res) => {
   try {

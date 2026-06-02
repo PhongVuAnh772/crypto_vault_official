@@ -1,0 +1,136 @@
+\selectlanguage *{vietnamese}
+\contentsline {chapter}{\numberline {1}Lời mở đầu}{5}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Lý do chọn đề tài}{5}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Mục tiêu tổng quát}{5}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Mục tiêu cụ thể}{6}{section.1.3}%
+\contentsline {chapter}{\numberline {2}Tổng quan hệ thống CryptoVault}{7}{chapter.2}%
+\contentsline {section}{\numberline {2.1}Bối cảnh nghiệp vụ}{7}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Phạm vi đề tài}{7}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Phạm vi chức năng có trong báo cáo}{7}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Phạm vi chức năng chưa đi sâu}{7}{subsection.2.2.2}%
+\contentsline {section}{\numberline {2.3}Tệp và module tham chiếu trong repo}{8}{section.2.3}%
+\contentsline {chapter}{\numberline {3}Công nghệ sử dụng}{9}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Mobile frontend}{9}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}React Native + Expo}{9}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Ngôn ngữ và thư viện lõi}{9}{subsection.3.1.2}%
+\contentsline {section}{\numberline {3.2}Backend}{9}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Node.js/Express cho \texttt {crypto-vault-server}}{9}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}TypeScript service cho \texttt {p2p-backend}}{9}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Dữ liệu và dịch vụ nền}{10}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Supabase}{10}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Blockchain và hợp đồng}{10}{subsection.3.3.2}%
+\contentsline {chapter}{\numberline {4}Nền tảng Crypto và Luồng On-chain}{11}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Crypto là gì?}{11}{section.4.1}%
+\contentsline {subsection}{\numberline {4.1.1}Khái niệm cơ bản}{11}{subsection.4.1.1}%
+\contentsline {subsection}{\numberline {4.1.2}Thành phần kỹ thuật quan trọng}{11}{subsection.4.1.2}%
+\contentsline {section}{\numberline {4.2}Blockchain là gì và vì sao quan trọng với hệ thống}{11}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Luồng giao dịch từ ứng dụng lên blockchain}{12}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Luồng tổng quát}{12}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Luồng chi tiết cho NFT trong CryptoVault}{12}{subsection.4.3.2}%
+\contentsline {subsection}{\numberline {4.3.3}Luồng chi tiết cho Auction}{13}{subsection.4.3.3}%
+\contentsline {subsection}{\numberline {4.3.4}Luồng P2P (off-chain state + tài chính có kiểm soát)}{13}{subsection.4.3.4}%
+\contentsline {section}{\numberline {4.4}Luồng theo từng mạng đang hỗ trợ}{13}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Mạng TON (đang là trọng tâm triển khai thực tế)}{13}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Nhóm mạng EVM (hỗ trợ trong định hướng kiến trúc và một phần luồng ứng dụng)}{14}{subsection.4.4.2}%
+\contentsline {subsection}{\numberline {4.4.3}Mạng Solana (định hướng mở rộng tiếp theo)}{14}{subsection.4.4.3}%
+\contentsline {section}{\numberline {4.5}Các đối tượng trong hệ thống và vai trò sử dụng}{14}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Nhóm đối tượng nghiệp vụ}{14}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Nhóm đối tượng kỹ thuật (hệ thống con)}{15}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Phân rã trách nhiệm theo luồng nghiệp vụ}{15}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Luồng mint NFT}{15}{subsection.4.6.1}%
+\contentsline {subsection}{\numberline {4.6.2}Luồng release P2P}{16}{subsection.4.6.2}%
+\contentsline {section}{\numberline {4.7}Mối quan hệ giữa luồng on-chain và off-chain}{16}{section.4.7}%
+\contentsline {chapter}{\numberline {5}Phân tích yêu cầu hệ thống}{17}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Tác nhân của hệ thống}{17}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Yêu cầu chức năng tổng quát}{17}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Khối xác thực và phiên}{17}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Khối NFT marketplace}{17}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Khối P2P marketplace}{18}{subsection.5.2.3}%
+\contentsline {section}{\numberline {5.3}Yêu cầu phi chức năng}{18}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}An toàn giao dịch}{18}{subsection.5.3.1}%
+\contentsline {subsection}{\numberline {5.3.2}Hiệu năng}{18}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Khả năng mở rộng}{18}{subsection.5.3.3}%
+\contentsline {chapter}{\numberline {6}Thiết kế kiến trúc}{19}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Biểu đồ kiến trúc mức cao}{19}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Thiết kế frontend}{19}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Nguyên tắc tổ chức mã}{19}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Vai trò các lớp}{20}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Thiết kế backend theo dịch vụ}{20}{section.6.3}%
+\contentsline {subsection}{\numberline {6.3.1}Backend chính \texttt {crypto-vault-server}}{20}{subsection.6.3.1}%
+\contentsline {subsection}{\numberline {6.3.2}Backend P2P \texttt {p2p-backend}}{20}{subsection.6.3.2}%
+\contentsline {section}{\numberline {6.4}Thiết kế kiến trúc realtime và mở rộng}{20}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Đặc tả Use Case}{21}{chapter.7}%
+\contentsline {section}{\numberline {7.1}Use case tổng quát}{21}{section.7.1}%
+\contentsline {section}{\numberline {7.2}Use case Đăng nhập ví}{21}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Mục tiêu}{21}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Dữ liệu vào}{21}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Luồng chính}{21}{subsection.7.2.3}%
+\contentsline {subsection}{\numberline {7.2.4}Luồng lỗi}{22}{subsection.7.2.4}%
+\contentsline {section}{\numberline {7.3}Use case Mint NFT}{22}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Mục tiêu}{22}{subsection.7.3.1}%
+\contentsline {subsection}{\numberline {7.3.2}Luồng chính}{22}{subsection.7.3.2}%
+\contentsline {subsection}{\numberline {7.3.3}Luồng lỗi}{22}{subsection.7.3.3}%
+\contentsline {section}{\numberline {7.4}Use case Tạo và quản lý Auction}{22}{section.7.4}%
+\contentsline {subsection}{\numberline {7.4.1}Mục tiêu}{22}{subsection.7.4.1}%
+\contentsline {subsection}{\numberline {7.4.2}Luồng chính}{23}{subsection.7.4.2}%
+\contentsline {section}{\numberline {7.5}Use case Tạo quảng cáo P2P}{23}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Mục tiêu}{23}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Dữ liệu vào cơ bản}{23}{subsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.5.3}Luồng chính}{23}{subsection.7.5.3}%
+\contentsline {section}{\numberline {7.6}Use case Tạo đơn P2P}{23}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}Mục tiêu}{23}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {7.6.2}Luồng chính}{24}{subsection.7.6.2}%
+\contentsline {section}{\numberline {7.7}Use case Xác nhận đã thanh toán}{24}{section.7.7}%
+\contentsline {subsection}{\numberline {7.7.1}Luồng chính}{24}{subsection.7.7.1}%
+\contentsline {section}{\numberline {7.8}Use case Release tài sản}{24}{section.7.8}%
+\contentsline {subsection}{\numberline {7.8.1}Mục tiêu}{24}{subsection.7.8.1}%
+\contentsline {subsection}{\numberline {7.8.2}Luồng chính}{24}{subsection.7.8.2}%
+\contentsline {subsection}{\numberline {7.8.3}Luồng lỗi và chống lặp}{25}{subsection.7.8.3}%
+\contentsline {chapter}{\numberline {8}Biểu đồ tuần tự nghiệp vụ}{26}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Biểu đồ tuần tự Đăng nhập ví}{26}{section.8.1}%
+\contentsline {section}{\numberline {8.2}Biểu đồ tuần tự Mint NFT}{26}{section.8.2}%
+\contentsline {section}{\numberline {8.3}Biểu đồ tuần tự Release P2P}{27}{section.8.3}%
+\contentsline {chapter}{\numberline {9}Đặc tả API chi tiết}{28}{chapter.9}%
+\contentsline {section}{\numberline {9.1}Nguyên tắc thiết kế API}{28}{section.9.1}%
+\contentsline {section}{\numberline {9.2}Bảng đặc tả nhóm NFT/Auction}{28}{section.9.2}%
+\contentsline {section}{\numberline {9.3}Bảng đặc tả nhóm P2P}{29}{section.9.3}%
+\contentsline {chapter}{\numberline {10}Thiết kế dữ liệu}{30}{chapter.10}%
+\contentsline {section}{\numberline {10.1}Mục tiêu thiết kế dữ liệu}{30}{section.10.1}%
+\contentsline {section}{\numberline {10.2}Nhóm bảng nghiệp vụ chính (mô tả khái niệm)}{30}{section.10.2}%
+\contentsline {section}{\numberline {10.3}Mô hình trạng thái đơn P2P}{30}{section.10.3}%
+\contentsline {section}{\numberline {10.4}RPC trọng yếu trong P2P}{30}{section.10.4}%
+\contentsline {section}{\numberline {10.5}Vì sao phải dùng RPC thay vì update trực tiếp}{31}{section.10.5}%
+\contentsline {chapter}{\numberline {11}Bảo mật hệ thống}{32}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Bảo mật trên thiết bị di động}{32}{section.11.1}%
+\contentsline {section}{\numberline {11.2}Bảo mật API}{32}{section.11.2}%
+\contentsline {section}{\numberline {11.3}Bảo mật dữ liệu và vận hành}{32}{section.11.3}%
+\contentsline {section}{\numberline {11.4}Rủi ro và biện pháp giảm thiểu}{32}{section.11.4}%
+\contentsline {chapter}{\numberline {12}Triển khai, kiểm thử và vận hành}{34}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Các bước triển khai local}{34}{section.12.1}%
+\contentsline {subsection}{\numberline {12.1.1}Mobile app}{34}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}Backend chính}{34}{subsection.12.1.2}%
+\contentsline {subsection}{\numberline {12.1.3}P2P backend}{34}{subsection.12.1.3}%
+\contentsline {section}{\numberline {12.2}Setup dữ liệu Supabase}{34}{section.12.2}%
+\contentsline {section}{\numberline {12.3}Kịch bản kiểm thử chức năng}{35}{section.12.3}%
+\contentsline {subsection}{\numberline {12.3.1}Kịch bản đăng nhập}{35}{subsection.12.3.1}%
+\contentsline {subsection}{\numberline {12.3.2}Kịch bản NFT}{35}{subsection.12.3.2}%
+\contentsline {subsection}{\numberline {12.3.3}Kịch bản P2P}{35}{subsection.12.3.3}%
+\contentsline {section}{\numberline {12.4}Kịch bản kiểm thử lỗi}{35}{section.12.4}%
+\contentsline {section}{\numberline {12.5}Vận hành và giám sát đề xuất}{36}{section.12.5}%
+\contentsline {subsection}{\numberline {12.5.1}Quan sát kỹ thuật}{36}{subsection.12.5.1}%
+\contentsline {subsection}{\numberline {12.5.2}Quan sát nghiệp vụ}{36}{subsection.12.5.2}%
+\contentsline {chapter}{\numberline {13}So sánh với định hướng production trong repo}{37}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Hiện trạng MVP}{37}{section.13.1}%
+\contentsline {section}{\numberline {13.2}Định hướng production-grade (theo docs/dex-architecture)}{37}{section.13.2}%
+\contentsline {section}{\numberline {13.3}Khoảng cách cần hoàn thiện}{37}{section.13.3}%
+\contentsline {chapter}{\numberline {14}Đánh giá kết quả}{39}{chapter.14}%
+\contentsline {section}{\numberline {14.1}Ưu điểm}{39}{section.14.1}%
+\contentsline {section}{\numberline {14.2}Hạn chế}{39}{section.14.2}%
+\contentsline {section}{\numberline {14.3}Bài học rút ra}{39}{section.14.3}%
+\contentsline {chapter}{\numberline {15}Định hướng phát triển tiếp theo}{40}{chapter.15}%
+\contentsline {section}{\numberline {15.1}Ngắn hạn}{40}{section.15.1}%
+\contentsline {section}{\numberline {15.2}Trung hạn}{40}{section.15.2}%
+\contentsline {section}{\numberline {15.3}Dài hạn}{40}{section.15.3}%
+\contentsline {chapter}{\numberline {16}Kết luận}{41}{chapter.16}%
+\contentsline {chapter}{\numberline {A}Phụ lục A: Danh sách endpoint tổng hợp}{42}{appendix.A}%
+\contentsline {chapter}{\numberline {B}Phụ lục B: Cấu trúc thư mục tham khảo}{44}{appendix.B}%

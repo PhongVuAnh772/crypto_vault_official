@@ -437,7 +437,16 @@ const NFTCollectionStatItem = ({
 }: NFTItemStatsProps) => {
     const styles = NFTCollectionStyle();
 
-    const metadata = item.metadata ? JSON.parse(item.metadata) : {};
+    const metadata =
+        typeof item.metadata === 'string'
+            ? (() => {
+                  try {
+                      return JSON.parse(item.metadata);
+                  } catch (error) {
+                      return {};
+                  }
+              })()
+            : item.metadata || item.normalized_metadata || {};
     const containerStyle =
         index % 2 === 0 ? NFTItemStyle.pr8 : NFTItemStyle.pl8;
     const image = nftUtils.convertIpfsUrl(metadata.image ?? '');

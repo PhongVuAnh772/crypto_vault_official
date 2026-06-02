@@ -4,6 +4,69 @@ import appStyles from 'src/core/styles';
 
 const NFTCollectionStyle = StyleSheet.create({
     ...appStyles,
+    screenContent: {
+        paddingHorizontal: 20,
+        flex: 1,
+    },
+    listContentContainer: {
+        flexGrow: 1,
+        paddingTop: 16,
+        paddingBottom: 20,
+    },
+    collectionCard: {
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: appColors.neutral.n200,
+        backgroundColor: appColors.neutral.white,
+        padding: 14,
+        shadowColor: appColors.neutral.black,
+        shadowOffset: {
+            width: 0,
+            height: 6,
+        },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
+    },
+    collectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingBottom: 14,
+    },
+    headerLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    avatarFrame: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        overflow: 'hidden',
+        borderWidth: 1,
+        borderColor: appColors.neutral.n200,
+    },
+    collectionTitleWrap: {
+        paddingHorizontal: 12,
+        flex: 1,
+    },
+    viewAllButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: appColors.neutral.n200,
+        borderRadius: 999,
+        paddingVertical: 6,
+        paddingHorizontal: 10,
+    },
+    viewAllText: {
+        marginRight: 2,
+    },
+    cardInnerList: {
+        marginHorizontal: -8,
+    },
     container: {
         borderRadius: 4,
         flex: 1,
@@ -58,8 +121,21 @@ const NFTCollectionStyle = StyleSheet.create({
         color: appColors.neutral.n500,
     },
     listEmptyContainer: {
-        paddingHorizontal: 48,
-        paddingBottom: 100,
+        paddingHorizontal: 28,
+        paddingVertical: 32,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: appColors.neutral.n200,
+        backgroundColor: appColors.neutral.white,
+        alignItems: 'center',
+    },
+    emptyIconWrap: {
+        width: 64,
+        height: 64,
+        borderRadius: 18,
+        backgroundColor: appColors.neutral.n100,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     pv12: {
         paddingVertical: 12,
@@ -71,7 +147,7 @@ const NFTCollectionStyle = StyleSheet.create({
         width: '100%',
     },
     separator: {
-        height: 20,
+        height: 14,
     },
 });
 

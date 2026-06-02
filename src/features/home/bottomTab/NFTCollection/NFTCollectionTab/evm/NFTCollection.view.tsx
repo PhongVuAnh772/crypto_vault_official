@@ -33,7 +33,7 @@ const NFTCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
             //     lightMode ? appImages.background1Dark : appImages.background1
             // }
             subStyle={[NFTCollectionStyle.flex1]}>
-            <View style={[NFTCollectionStyle.pH25, NFTCollectionStyle.flex1]}>
+            <View style={NFTCollectionStyle.screenContent}>
                 <FlatList
                     data={collection}
                     keyExtractor={item => item?.network + item?.contractAddress}
@@ -50,8 +50,7 @@ const NFTCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                     }
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={[
-                        NFTCollectionStyle.flexGrow1,
-                        NFTCollectionStyle.pT15,
+                        NFTCollectionStyle.listContentContainer,
                     ]}
                     ItemSeparatorComponent={SeparatorCollection}
                     renderItem={({ item }) => {
@@ -77,7 +76,7 @@ const NFTCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                         });
 
                         return (
-                            <>
+                            <View style={NFTCollectionStyle.collectionCard}>
                                 <HeaderCollectionRendering
                                     imageUri={imageUri}
                                     setLoadingImage={setLoadings}
@@ -98,6 +97,7 @@ const NFTCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                                     }
                                     bounces={false}
                                     numColumns={2}
+                                    contentContainerStyle={NFTCollectionStyle.cardInnerList}
                                     renderItem={data => {
                                         return (
                                             <NFTItem
@@ -117,7 +117,7 @@ const NFTCollectionScreen: React.FC<RootNavigationType> = ({ navigation }) => {
                                         );
                                     }}
                                 />
-                            </>
+                            </View>
                         );
                     }}
                 />

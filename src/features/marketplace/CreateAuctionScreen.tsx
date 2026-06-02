@@ -8,6 +8,7 @@ import { HomeStackScreenKey } from 'src/navigation/enum/NavigationKey';
 import { auctionService } from './services/auctionService';
 import { MarketplaceNft } from './services/nftService';
 import { tonConnectMarketplaceService } from './services/tonConnectService';
+import { auctionUtils } from './utils/auction';
 
 const CreateAuctionScreen: React.FC = () => {
   const route = useRoute<any>();
@@ -26,7 +27,12 @@ const CreateAuctionScreen: React.FC = () => {
     if (wallet.address.trim() !== (nft.owner_address || '').trim()) {
       return Alert.alert('Lỗi', 'NFT không thuộc owner hiện tại');
     }
-    if (!endTime) return Alert.alert('Lỗi', 'Thiếu end_time (ISO)');
+    const validate = auctionUtils.validateCreateAuctionInput({
+      startPrice,
+      minStep,
+      endTime,
+    });
+    if (!validate.ok) return Alert.alert('Lỗi', validate.message);
 
     try {
       setLoading(true);
@@ -38,9 +44,9 @@ const CreateAuctionScreen: React.FC = () => {
       const created = await auctionService.createAuction({
         nft_address: nft.nft_address,
         seller_address: wallet.address,
-        start_price: Number(startPrice),
-        min_bid_step: Number(minStep),
-        end_time: endTime,
+        start_price: validate.startPrice,
+        min_bid_step: validate.minBidStep,
+        end_time: validate.endTime,
         status: 'pending',
         tx_hash: typeof deployCall === 'string' ? deployCall : (deployCall as any)?.txHash || null,
       });

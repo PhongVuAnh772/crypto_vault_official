@@ -198,11 +198,18 @@ const useNFTUnAddedDetailEVM = ({
     const fetchData = async () => {
       try {
         if (detail.metadata) {
-          const metadata = JSON.parse(detail.metadata);
-          setDataFetching({
-            resMetadata: metadata,
-          });
-          return;
+          try {
+            const metadata =
+              typeof detail.metadata === "string"
+                ? JSON.parse(detail.metadata)
+                : detail.metadata;
+            setDataFetching({
+              resMetadata: metadata,
+            });
+            return;
+          } catch (error) {
+            // fallback to on-chain tokenURI flow when metadata payload is malformed
+          }
         }
         if (!wallet) {
           setDataFetching(null);

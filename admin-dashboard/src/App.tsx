@@ -61,8 +61,37 @@ interface TransJob { id: string; type: string; status: string; chain_name: strin
 interface AppConfig { features: { p2pEnabled: boolean; swapEnabled: boolean; bridgeEnabled: boolean; maintenanceMode: boolean; }; }
 interface Withdrawal { id: string; user_id: string; token_id: string; amount: string; status: string; created_at: string; }
 interface CustomTokenRequest { id: string; chain_id: string; chain_name: string; symbol: string; name: string; decimals: number; contract_address: string; status: string; created_at: string; metadata?: any; }
+interface FeeConfig {
+  enabled: boolean;
+  mode: 'percentage' | 'flat';
+  percent: number;
+  flatAmount: number;
+  minFee: number;
+  maxFee: number;
+  gasBufferPercent: number;
+}
+interface MarketplaceAuction {
+  id: string;
+  nft_address: string;
+  nft_name?: string | null;
+  seller_address: string;
+  current_bidder?: string | null;
+  start_price: string | number;
+  current_price: string | number;
+  min_bid_step: string | number;
+  end_time: string;
+  status: string;
+}
+interface MarketplaceBid {
+  id: string;
+  auction_id: string;
+  bidder_address: string;
+  amount: string | number;
+  status: string;
+  created_at: string;
+}
 
-type Tab = 'overview' | 'tokens' | 'custom-tokens' | 'chains' | 'p2p' | 'withdrawals' | 'wallets' | 'users' | 'jobs' | 'config';
+type Tab = 'overview' | 'tokens' | 'custom-tokens' | 'chains' | 'p2p' | 'auctions' | 'withdrawals' | 'wallets' | 'users' | 'jobs' | 'fees' | 'config';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -84,7 +113,14 @@ function App() {
   const [jobs, setJobs] = useState<TransJob[]>([]);
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
   const [customTokenRequests, setCustomTokenRequests] = useState<CustomTokenRequest[]>([]);
+  const [auctions, setAuctions] = useState<MarketplaceAuction[]>([]);
+  const [selectedAuctionId, setSelectedAuctionId] = useState<string>('');
+  const [selectedAuctionBids, setSelectedAuctionBids] = useState<MarketplaceBid[]>([]);
   const [config, setConfig] = useState<AppConfig | null>(null);
+  const [feeConfig, setFeeConfig] = useState<FeeConfig | null>(null);
+  const [feeAmount, setFeeAmount] = useState('100');
+  const [networkFee, setNetworkFee] = useState('0.1');
+  const [feePreview, setFeePreview] = useState<any>(null);
   // Không lưu State Price ở Root App để tránh Re-render hàng loạt mỗi Mili-giây khiến Web bị treo
   // const [prices, setPrices] = useState<Record<string, number>>({});
 
@@ -101,7 +137,7 @@ function App() {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, wdRes, customRes, configRes] = await Promise.all([
+      const [tokenRes, profileRes, chainRes, orderRes, adRes, walletRes, jobRes, wdRes, customRes, auctionRes, feeRes, configRes] = await Promise.all([
         axios.get(`${API_BASE}/api/v1/admin/tokens`),
         axios.get(`${API_BASE}/api/v1/admin/profiles`),
         axios.get(`${API_BASE}/api/v1/admin/chains`),
@@ -111,6 +147,8 @@ function App() {
         axios.get(`${API_BASE}/api/v1/admin/jobs`),
         axios.get(`${API_BASE}/api/v1/admin/withdrawals`),
         axios.get(`${API_BASE}/api/v1/admin/custom-tokens`),
+        axios.get(`${API_BASE}/api/v1/admin/marketplace/auctions`),
+        axios.get(`${API_BASE}/api/v1/admin/fees`),
         axios.get(`${API_BASE}/api/v1/config`)
       ]);
       setTokens(tokenRes.data.data || []);
@@ -122,6 +160,8 @@ function App() {
       setJobs(jobRes.data.data || []);
       setWithdrawals(wdRes.data.data || []);
       setCustomTokenRequests(customRes.data.data || []);
+      setAuctions(auctionRes.data.data || []);
+      setFeeConfig(feeRes.data.data || null);
       setConfig({ features: configRes.data.features });
     } catch (err) {
       console.error('Fetch failed', err);
@@ -205,6 +245,37 @@ function App() {
     } catch (err) { alert('Rejection failed'); }
   };
 
+  const loadAuctionBids = async (auctionId: string) => {
+    try {
+      const res = await axios.get(`${API_BASE}/api/v1/admin/marketplace/auctions/${auctionId}/bids`);
+      setSelectedAuctionId(auctionId);
+      setSelectedAuctionBids(res.data.data || []);
+    } catch (err) {
+      alert('Load bids failed');
+    }
+  };
+
+  const updateAuctionStatus = async (id: string, status: string) => {
+    try {
+      await axios.patch(`${API_BASE}/api/v1/admin/marketplace/auctions/${id}`, { status });
+      setAuctions(prev => prev.map(a => a.id === id ? { ...a, status } : a));
+      if (selectedAuctionId === id) {
+        await loadAuctionBids(id);
+      }
+    } catch (err) {
+      alert('Update auction failed');
+    }
+  };
+
+  const updateBidStatus = async (id: string, status: string) => {
+    try {
+      await axios.patch(`${API_BASE}/api/v1/admin/marketplace/bids/${id}`, { status });
+      setSelectedAuctionBids(prev => prev.map(b => b.id === id ? { ...b, status } : b));
+    } catch (err) {
+      alert('Update bid failed');
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -215,6 +286,29 @@ function App() {
       }
     } catch (err) {
       alert('Đăng nhập thất bại: Sai email hoặc mật khẩu');
+    }
+  };
+
+  const saveFeeConfig = async () => {
+    if (!feeConfig) return;
+    try {
+      const res = await axios.post(`${API_BASE}/api/v1/admin/fees`, feeConfig);
+      setFeeConfig(res.data.data || feeConfig);
+      alert('Fee config saved');
+    } catch (err) {
+      alert('Save fee config failed');
+    }
+  };
+
+  const calculateFeePreview = async () => {
+    try {
+      const res = await axios.post(`${API_BASE}/api/v1/admin/fees/calculate`, {
+        amount: Number(feeAmount),
+        networkFee: Number(networkFee),
+      });
+      setFeePreview(res.data.data || null);
+    } catch (err) {
+      alert('Calculate fee failed');
     }
   };
 
@@ -243,10 +337,12 @@ function App() {
           <NavItem icon={<Activity size={18} />} label="Custom Tokens" active={activeTab === 'custom-tokens'} onClick={() => setActiveTab('custom-tokens')} />
           <NavItem icon={<Globe size={18} />} label="Network Chains" active={activeTab === 'chains'} onClick={() => setActiveTab('chains')} />
           <NavItem icon={<ShoppingCart size={18} />} label="P2P Marketplace" active={activeTab === 'p2p'} onClick={() => setActiveTab('p2p')} />
+          <NavItem icon={<Gavel size={18} />} label="NFT Auctions" active={activeTab === 'auctions'} onClick={() => setActiveTab('auctions')} />
           <NavItem icon={<ArrowRightLeft size={18} />} label="Withdrawals" active={activeTab === 'withdrawals'} onClick={() => setActiveTab('withdrawals')} />
           <NavItem icon={<Wallet size={18} />} label="User Wallets" active={activeTab === 'wallets'} onClick={() => setActiveTab('wallets')} />
           <NavItem icon={<Users size={18} />} label="Profiles" active={activeTab === 'users'} onClick={() => setActiveTab('users')} />
           <NavItem icon={<Cpu size={18} />} label="System Jobs" active={activeTab === 'jobs'} onClick={() => setActiveTab('jobs')} />
+          <NavItem icon={<Activity size={18} />} label="Admin Fee" active={activeTab === 'fees'} onClick={() => setActiveTab('fees')} />
           <NavItem icon={<Settings size={18} />} label="App Config" active={activeTab === 'config'} onClick={() => setActiveTab('config')} />
         </nav>
 
@@ -416,6 +512,49 @@ function App() {
                 </div>
               )}
 
+              {activeTab === 'auctions' && (
+                <div className="grid grid-cols-1" style={{ gap: '1rem' }}>
+                  <div className="glass-card">
+                    <h3>NFT Auction Registry</h3>
+                    <TableLayout items={auctions} headers={['NFT', 'Seller', 'Current', 'End Time', 'Status', 'Actions']} renderRow={(a: MarketplaceAuction) => (
+                      <tr key={a.id}>
+                        <td>
+                          <div style={{ fontWeight: 700 }}>{a.nft_name || 'Unnamed NFT'}</div>
+                          <div className="mono" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{a.nft_address}</div>
+                        </td>
+                        <td className="mono">{a.seller_address?.slice(0, 14)}...</td>
+                        <td>{a.current_price || 0} TON</td>
+                        <td>{new Date(a.end_time).toLocaleString()}</td>
+                        <td><Badge active={a.status === 'active'} label={a.status} danger={a.status === 'cancelled'} /></td>
+                        <td>
+                          <button className="btn btn-ghost" style={{ marginRight: 6 }} onClick={() => loadAuctionBids(a.id)}>Bids</button>
+                          <button className="btn btn-primary" style={{ marginRight: 6, padding: '0.35rem 0.7rem' }} onClick={() => updateAuctionStatus(a.id, 'finished')}>Finish</button>
+                          <button className="btn" style={{ padding: '0.35rem 0.7rem', background: 'var(--accent-red)', borderColor: 'var(--accent-red)' }} onClick={() => updateAuctionStatus(a.id, 'cancelled')}>Cancel</button>
+                        </td>
+                      </tr>
+                    )} />
+                  </div>
+
+                  {selectedAuctionId ? (
+                    <div className="glass-card">
+                      <h3>Bid Queue ({selectedAuctionBids.length})</h3>
+                      <TableLayout items={selectedAuctionBids} headers={['Bidder', 'Amount', 'Status', 'Created', 'Actions']} renderRow={(b: MarketplaceBid) => (
+                        <tr key={b.id}>
+                          <td className="mono">{b.bidder_address}</td>
+                          <td style={{ fontWeight: 700 }}>{b.amount} TON</td>
+                          <td><Badge active={b.status === 'accepted'} label={b.status} danger={b.status === 'rejected'} /></td>
+                          <td>{new Date(b.created_at).toLocaleString()}</td>
+                          <td>
+                            <button className="btn btn-primary" style={{ marginRight: 6, padding: '0.35rem 0.7rem' }} onClick={() => updateBidStatus(b.id, 'accepted')}>Accept</button>
+                            <button className="btn" style={{ padding: '0.35rem 0.7rem', background: 'var(--accent-red)', borderColor: 'var(--accent-red)' }} onClick={() => updateBidStatus(b.id, 'rejected')}>Reject</button>
+                          </td>
+                        </tr>
+                      )} />
+                    </div>
+                  ) : null}
+                </div>
+              )}
+
               {activeTab === 'users' && <TableLayout items={profiles} headers={['Identity', 'Auth ID', 'Seed Phrase Status', 'Created', 'KYC Status']} renderRow={(p: Profile) => (
                 <tr key={p.id}>
                   <td>
@@ -454,6 +593,52 @@ function App() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'fees' && feeConfig && (
+                <div className="grid grid-cols-2">
+                  <div className="glass-card">
+                    <h3>Transaction Fee Config</h3>
+                    <div className="switch-list">
+                      <div className="switch-row">
+                        <span>Enabled</span>
+                        <label className="switch">
+                          <input type="checkbox" checked={feeConfig.enabled} onChange={(e) => setFeeConfig({ ...feeConfig, enabled: e.target.checked })} />
+                          <span className="slider"></span>
+                        </label>
+                      </div>
+                    </div>
+                    <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
+                      <select value={feeConfig.mode} onChange={(e) => setFeeConfig({ ...feeConfig, mode: e.target.value as 'percentage' | 'flat' })} style={inputStyle}>
+                        <option value="percentage">percentage</option>
+                        <option value="flat">flat</option>
+                      </select>
+                      <input type="number" value={feeConfig.percent} onChange={(e) => setFeeConfig({ ...feeConfig, percent: Number(e.target.value) })} placeholder="percent" style={inputStyle} />
+                      <input type="number" value={feeConfig.flatAmount} onChange={(e) => setFeeConfig({ ...feeConfig, flatAmount: Number(e.target.value) })} placeholder="flatAmount" style={inputStyle} />
+                      <input type="number" value={feeConfig.minFee} onChange={(e) => setFeeConfig({ ...feeConfig, minFee: Number(e.target.value) })} placeholder="minFee" style={inputStyle} />
+                      <input type="number" value={feeConfig.maxFee} onChange={(e) => setFeeConfig({ ...feeConfig, maxFee: Number(e.target.value) })} placeholder="maxFee" style={inputStyle} />
+                      <input type="number" value={feeConfig.gasBufferPercent} onChange={(e) => setFeeConfig({ ...feeConfig, gasBufferPercent: Number(e.target.value) })} placeholder="gasBufferPercent" style={inputStyle} />
+                      <button className="btn btn-primary" onClick={saveFeeConfig}>Save Fee Config</button>
+                    </div>
+                  </div>
+
+                  <div className="glass-card">
+                    <h3>Fee Calculator</h3>
+                    <div style={{ display: 'grid', gap: '0.75rem', marginTop: '1rem' }}>
+                      <input type="number" value={feeAmount} onChange={(e) => setFeeAmount(e.target.value)} placeholder="Amount" style={inputStyle} />
+                      <input type="number" value={networkFee} onChange={(e) => setNetworkFee(e.target.value)} placeholder="Network fee" style={inputStyle} />
+                      <button className="btn btn-ghost" onClick={calculateFeePreview}>Calculate</button>
+                    </div>
+                    {feePreview ? (
+                      <div style={{ marginTop: '1rem', lineHeight: 1.8 }}>
+                        <div>Platform fee: <b>{feePreview.feeBreakdown?.platformFee}</b></div>
+                        <div>Network fee: <b>{feePreview.feeBreakdown?.networkFee}</b></div>
+                        <div>Gas buffer: <b>{feePreview.feeBreakdown?.gasBufferAmount}</b></div>
+                        <div>Total fee: <b>{feePreview.feeBreakdown?.totalFee}</b></div>
+                      </div>
+                    ) : null}
                   </div>
                 </div>
               )}
@@ -505,5 +690,13 @@ function Badge({ active, label, danger }: any) {
   const type = active ? 'success' : (danger ? 'danger' : 'neutral');
   return <span className={`badge badge-${type}`}>{text}</span>;
 }
+
+const inputStyle: React.CSSProperties = {
+  padding: '0.7rem 0.8rem',
+  borderRadius: 8,
+  border: '1px solid #334155',
+  background: '#0f172a',
+  color: '#fff',
+};
 
 export default App;

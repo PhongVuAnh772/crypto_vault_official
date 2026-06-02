@@ -49,7 +49,9 @@ const ListNFTEmpty: React.FC<ListEmpty> = ({ onPress }) => {
         NFTCollectionStyle.listEmptyContainer,
       ]}
     >
-      <AddDocumentSvgIcon color={appColors.neutral.n500} />
+      <View style={NFTCollectionStyle.emptyIconWrap}>
+        <AddDocumentSvgIcon color={appColors.neutral.n500} />
+      </View>
       <View style={NFTCollectionStyle.pv12}>
         <AppText
           titleWithI18n={LanguageKey.nft_no_nfts_yet}
@@ -96,54 +98,55 @@ const HeaderCollectionRendering = ({
   return (
     <View
       style={[
-        NFTCollectionStyle.flexRow,
-        NFTCollectionStyle.justifyContentBetween,
-        NFTCollectionStyle.alignItemsCenter,
-        NFTCollectionStyle.pB15,
+        NFTCollectionStyle.collectionHeader,
       ]}
     >
-      <AppImage
-        uri={imageUri}
-        height={32}
-        width={32}
-        setIsLoading={setLoadingImage}
-        isLoading={isLoading}
-        defaultImage={appImages.NFTDefault}
-      />
+      <View style={NFTCollectionStyle.headerLeft}>
+        <View style={NFTCollectionStyle.avatarFrame}>
+          <AppImage
+            uri={imageUri}
+            height={40}
+            width={40}
+            setIsLoading={setLoadingImage}
+            isLoading={isLoading}
+            defaultImage={appImages.NFTDefault}
+          />
+        </View>
 
-      <LoadingWrapper
-        loading={loading}
-        skeletonWidth={100}
-        containerSkeleton={[NFTCollectionStyle.flex1, NFTCollectionStyle.pH12]}
-      >
-        <View style={[NFTCollectionStyle.flex1, NFTCollectionStyle.pH12]}>
-          <AppText
-            title={title}
-            variant={TextVariantKeys.bodyMMedium}
-            textColor={theme.colors.text_on_surface_text_high}
-          >
+        <LoadingWrapper
+          loading={loading}
+          skeletonWidth={100}
+          containerSkeleton={[
+            NFTCollectionStyle.flex1,
+            NFTCollectionStyle.collectionTitleWrap,
+          ]}
+        >
+          <View style={[NFTCollectionStyle.collectionTitleWrap]}>
             <AppText
-              title={` (${length?.toString() || ""})`}
+              title={title}
               variant={TextVariantKeys.bodyMMedium}
               textColor={theme.colors.text_on_surface_text_high}
-            />
-          </AppText>
-        </View>
-      </LoadingWrapper>
+            >
+              <AppText
+                title={` (${length?.toString() || ""})`}
+                variant={TextVariantKeys.bodyMMedium}
+                textColor={theme.colors.text_on_surface_text_high}
+              />
+            </AppText>
+          </View>
+        </LoadingWrapper>
+      </View>
       {isHideViewAll && (
         <LoadingWrapper loading={loading} skeletonWidth={100}>
           <TouchableOpacity
             onPress={handlePressViewAll}
-            style={[
-              NFTCollectionStyle.flexRow,
-              NFTCollectionStyle.justifyContentBetween,
-              NFTCollectionStyle.alignItemsCenter,
-            ]}
+            style={NFTCollectionStyle.viewAllButton}
           >
             <AppText
               titleWithI18n={LanguageKey.common_view_all}
               variant={TextVariantKeys.bodyMSmall}
               textColor={theme.colors.text_on_surface_text_light}
+              styles={NFTCollectionStyle.viewAllText}
             />
             <ArrowRightSvgIcon
               color={theme.colors.text_on_surface_text_light}

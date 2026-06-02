@@ -16,7 +16,7 @@ import { useAppTheme } from "src/core/hooks/useAppTheme";
 import LanguageKey from "src/core/locales/LanguageKey";
 import { useAppDispatch, useAppSelector } from "src/core/redux/hooks";
 import { setHeightBottomTab } from "src/core/redux/slice/app.slice";
-import NFTMarketplaceScreen from "src/features/home/bottomTab/NFTMarketplace/NFTMarketplace.view";
+import MarketplaceHomeScreen from "src/features/marketplace/HomeScreen";
 import { getDataProjectOnGoing } from "src/features/home/bottomTab/explore/explore.slice";
 import SettingScreen from "src/features/home/bottomTab/setting/setting.view";
 import HomeView from "src/features/home/home.view";
@@ -64,7 +64,7 @@ const BottomTab = () => {
       />
       <Tab.Screen
         name={LanguageKey.home_tab_nft_collection_title}
-        component={NFTMarketplaceScreen}
+        component={MarketplaceHomeScreen}
         options={{ headerShown: false }}
       />
       <Tab.Screen

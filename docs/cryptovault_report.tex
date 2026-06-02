@@ -1,0 +1,1109 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage{polyglossia}
+\setdefaultlanguage{vietnamese}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setmonofont{Menlo}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
+
+\geometry{left=3cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\onehalfspacing
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{XÂY DỰNG NỀN TẢNG CRYPTOVAULT}
+\fancyfoot[L]{Trang \thepage}
+\fancyfoot[R]{Báo cáo kỹ thuật}
+
+\renewcommand{\contentsname}{Mục lục}
+\titleformat{\chapter}{\normalfont\huge\bfseries}{\thechapter.}{12pt}{}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{10pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{10pt}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        {\Large\textbf{BÁO CÁO PHÂN TÍCH, THIẾT KẾ VÀ TRIỂN KHAI HỆ THỐNG}}\\[0.8cm]
+        {\LARGE\textbf{CRYPTOVAULT}}\\[0.4cm]
+        {\Large\textbf{ỨNG DỤNG VÍ CRYPTO DI ĐỘNG}}\\[0.2cm]
+        {\Large\textbf{TÍCH HỢP NFT MARKETPLACE VÀ P2P MARKETPLACE MVP}}\\[2.1cm]
+
+        \textbf{Sinh viên thực hiện:} ..........................................................\\[0.3cm]
+        \textbf{Mã số sinh viên:} ..........................................................\\[0.3cm]
+        \textbf{Lớp:} ..........................................................\\[0.3cm]
+        \textbf{Giảng viên hướng dẫn:} ..........................................................\\[2cm]
+
+        \vfill
+        \textbf{HÀ NỘI, THÁNG 05 NĂM 2026}
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\chapter{Lời mở đầu}
+
+\section{Lý do chọn đề tài}
+Trong vài năm gần đây, tài sản số đã chuyển từ giai đoạn thử nghiệm sang giai đoạn ứng dụng thực tế ở quy mô người dùng lớn. Cùng với đó, các nhu cầu giao dịch phổ thông như lưu trữ tài sản, theo dõi danh mục, mua bán NFT, và giao dịch ngang hàng P2P xuất hiện đồng thời trong một hệ sinh thái duy nhất.
+
+Trên thị trường hiện có nhiều ứng dụng tập trung vào một mảng cụ thể, ví dụ chỉ làm ví lưu ký, hoặc chỉ làm marketplace. Tuy nhiên, trải nghiệm của người dùng cuối thường bị phân mảnh: phải đăng nhập nhiều hệ thống, thao tác qua nhiều lớp trung gian, và thiếu nhất quán về bảo mật.
+
+Đề tài \textbf{CryptoVault} được lựa chọn để giải quyết bài toán đó theo hướng tích hợp. Hệ thống nhắm đến một ứng dụng di động có khả năng:
+\begin{itemize}
+    \item Quản lý tài sản và phiên đăng nhập theo chuẩn bảo mật cho mobile.
+    \item Kết nối backend phục vụ nghiệp vụ NFT marketplace.
+    \item Mở rộng sang P2P marketplace với cơ chế escrow và kiểm soát trạng thái đơn hàng.
+    \item Tách kiến trúc thành các mô-đun độc lập để duy trì tốc độ phát triển nhưng vẫn đảm bảo khả năng nâng cấp production.
+\end{itemize}
+
+\section{Mục tiêu tổng quát}
+Đề tài tập trung vào việc thiết kế và xây dựng một nền tảng crypto mobile-first có tính thực dụng cao, từ lớp ứng dụng đến lớp dữ liệu:
+\begin{itemize}
+    \item Thiết kế kiến trúc rõ ràng giữa frontend, backend, blockchain interaction và dữ liệu.
+    \item Hoàn thiện luồng nghiệp vụ cốt lõi cho NFT và P2P ở mức MVP có thể vận hành.
+    \item Thiết lập các nguyên tắc bảo mật tối thiểu bắt buộc cho thao tác tài chính.
+    \item Chuẩn bị nền tảng tài liệu để nâng cấp lên kiến trúc sản xuất quy mô lớn.
+\end{itemize}
+
+\section{Mục tiêu cụ thể}
+\begin{enumerate}
+    \item Xây dựng ứng dụng React Native có khả năng chạy trên iOS/Android, điều hướng rõ ràng, mở rộng theo feature.
+    \item Xây dựng backend \texttt{crypto-vault-server} cho các nhóm API NFT/auction/sync.
+    \item Xây dựng backend \texttt{p2p-backend} tách biệt cho nghiệp vụ P2P có tính tài chính.
+    \item Triển khai và sử dụng Supabase cho PostgreSQL, Auth, Storage và Realtime.
+    \item Tạo SQL schema và RPC phục vụ write-path an toàn cho P2P.
+    \item Đề xuất kế hoạch vận hành, giám sát và kiểm thử cho giai đoạn mở rộng.
+\end{enumerate}
+
+\chapter{Tổng quan hệ thống CryptoVault}
+
+\section{Bối cảnh nghiệp vụ}
+CryptoVault là một nền tảng tích hợp nhiều lớp chức năng:
+\begin{itemize}
+    \item \textbf{Lớp ví và tài khoản:} quản lý định danh người dùng, phiên truy cập, thông tin ví.
+    \item \textbf{Lớp NFT marketplace:} upload ảnh, tạo metadata, mint NFT, tạo auction, đặt giá thầu.
+    \item \textbf{Lớp P2P marketplace:} tạo quảng cáo, tạo đơn hàng, xác nhận đã thanh toán, release tài sản.
+    \item \textbf{Lớp dữ liệu và đồng bộ:} lưu trạng thái giao dịch, đồng bộ dữ liệu từ chain về hệ thống.
+\end{itemize}
+
+\section{Phạm vi đề tài}
+\subsection{Phạm vi chức năng có trong báo cáo}
+\begin{itemize}
+    \item Đăng nhập và xác thực yêu cầu API.
+    \item NFT marketplace MVP theo danh sách endpoint hiện có trong repo.
+    \item P2P marketplace MVP theo module \texttt{p2p-backend}.
+    \item Mô tả kiến trúc tương lai theo bộ tài liệu \texttt{docs/dex-architecture}.
+\end{itemize}
+
+\subsection{Phạm vi chức năng chưa đi sâu}
+\begin{itemize}
+    \item Chưa đặc tả toàn bộ logic định giá AMM chuyên sâu.
+    \item Chưa triển khai đầy đủ anti-fraud tự động theo machine learning.
+    \item Chưa xây dựng dashboard giám sát production hoàn chỉnh.
+\end{itemize}
+
+\section{Tệp và module tham chiếu trong repo}
+Các thành phần chính được sử dụng khi xây dựng báo cáo:
+\begin{itemize}
+    \item Root mobile app: \texttt{/Users/phongva/Code/CryptoVault}
+    \item Backend NFT/auction: \texttt{/Users/phongva/Code/CryptoVault/crypto-vault-server}
+    \item Backend P2P: \texttt{/Users/phongva/Code/CryptoVault/p2p-backend}
+    \item SQL/Supabase: \texttt{/Users/phongva/Code/CryptoVault/supabase}
+    \item Tài liệu kiến trúc mở rộng: \texttt{/Users/phongva/Code/CryptoVault/docs/dex-architecture}
+\end{itemize}
+
+\chapter{Công nghệ sử dụng}
+
+\section{Mobile frontend}
+\subsection{React Native + Expo}
+Hệ thống mobile được xây dựng bằng React Native và Expo, cho phép triển khai nhanh trên đa nền tảng mà vẫn duy trì khả năng tích hợp native module cho các tác vụ liên quan bảo mật và blockchain.
+
+\subsection{Ngôn ngữ và thư viện lõi}
+\begin{itemize}
+    \item TypeScript cho an toàn kiểu dữ liệu.
+    \item React Navigation cho điều hướng.
+    \item Redux Toolkit và các utility state management hiện có trong dự án.
+    \item Các plugin bảo mật, keychain, biometric, và thông báo.
+\end{itemize}
+
+\section{Backend}
+\subsection{Node.js/Express cho \texttt{crypto-vault-server}}
+Dịch vụ này xử lý các API marketplace liên quan đến NFT/auction và đồng bộ chain.
+
+\subsection{TypeScript service cho \texttt{p2p-backend}}
+Dịch vụ P2P được tách riêng để giới hạn phạm vi thay đổi khi xử lý nghiệp vụ tài chính, hỗ trợ kiến trúc module theo Controller-Service-Repository.
+
+\section{Dữ liệu và dịch vụ nền}
+\subsection{Supabase}
+Supabase cung cấp:
+\begin{itemize}
+    \item PostgreSQL làm cơ sở dữ liệu giao dịch.
+    \item Auth để xác thực và quản lý token.
+    \item Storage để lưu ảnh NFT.
+    \item Realtime để cập nhật trạng thái gần thời gian thực.
+\end{itemize}
+
+\subsection{Blockchain và hợp đồng}
+Dự án có thư mục hợp đồng TON phục vụ NFT:
+\begin{itemize}
+    \item \texttt{ton-contracts/contracts/nft\_collection.tact}
+    \item \texttt{ton-contracts/contracts/nft\_item.tact}
+    \item \texttt{ton-contracts/contracts/nft\_auction.tact}
+\end{itemize}
+
+
+
+\chapter{Nền tảng Crypto và Luồng On-chain}
+
+\section{Crypto là gì?}
+\subsection{Khái niệm cơ bản}
+\textbf{Crypto} (tiền mã hóa/tài sản mã hóa) là một dạng tài sản số sử dụng kỹ thuật mật mã để xác thực quyền sở hữu, bảo vệ giao dịch và vận hành trên các mạng blockchain phi tập trung. Khác với tiền điện tử truyền thống do ngân hàng quản lý tập trung, crypto cho phép người dùng tự quản lý tài sản thông qua khóa cá nhân (private key).
+
+Trong bối cảnh sản phẩm CryptoVault, crypto không chỉ là một đồng tiền để chuyển nhận, mà là một tập hợp tài sản gồm:
+\begin{itemize}
+    \item Coin/native token của từng blockchain.
+    \item Token tiêu chuẩn trên mạng (fungible token).
+    \item NFT (non-fungible token) đại diện tài sản độc nhất.
+\end{itemize}
+
+\subsection{Thành phần kỹ thuật quan trọng}
+\begin{itemize}
+    \item \textbf{Ví (Wallet):} nơi quản lý private key và địa chỉ public.
+    \item \textbf{Địa chỉ ví (Address):} định danh tài khoản trên blockchain.
+    \item \textbf{Khóa riêng (Private key):} quyền kiểm soát tài sản; mất khóa đồng nghĩa mất quyền kiểm soát.
+    \item \textbf{Gas/Fee:} chi phí xử lý giao dịch trên mạng.
+    \item \textbf{Transaction hash:} mã định danh duy nhất cho mỗi giao dịch on-chain.
+\end{itemize}
+
+\section{Blockchain là gì và vì sao quan trọng với hệ thống}
+Blockchain là sổ cái phân tán, trong đó các giao dịch được ghi vào block theo thứ tự thời gian và được xác thực bởi mạng nút. Đặc điểm quan trọng:
+\begin{itemize}
+    \item \textbf{Bất biến tương đối:} dữ liệu đã xác nhận rất khó sửa đổi.
+    \item \textbf{Minh bạch:} có thể truy xuất lịch sử giao dịch qua transaction hash.
+    \item \textbf{Không cần trung gian tập trung:} người dùng tương tác trực tiếp qua giao thức mạng.
+\end{itemize}
+
+Với CryptoVault, blockchain là lớp sự thật cuối cùng (source of truth) cho sở hữu tài sản, còn backend/database đóng vai trò tối ưu trải nghiệm, đồng bộ trạng thái và hỗ trợ nghiệp vụ ngoài chain (ví dụ P2P escrow logic ở mức hệ thống ứng dụng).
+
+\section{Luồng giao dịch từ ứng dụng lên blockchain}
+
+\subsection{Luồng tổng quát}
+\begin{enumerate}
+    \item Người dùng khởi tạo hành động trên app (mint NFT, bid, transfer, swap...).
+    \item App tạo payload giao dịch và gửi lên backend hoặc wallet adapter tùy nghiệp vụ.
+    \item Hệ thống ký giao dịch (thường do ví người dùng ký).
+    \item Giao dịch được broadcast tới RPC/node của blockchain đích.
+    \item Mạng xác thực, đưa giao dịch vào mempool rồi ghi vào block.
+    \item App/backend nhận transaction hash và theo dõi trạng thái xác nhận.
+    \item Sau khi xác nhận thành công, backend đồng bộ dữ liệu on-chain vào DB để hiển thị nhanh.
+\end{enumerate}
+
+\subsection{Luồng chi tiết cho NFT trong CryptoVault}
+\begin{enumerate}
+    \item User upload ảnh NFT lên storage.
+    \item Backend tạo metadata và chuẩn bị dữ liệu mint.
+    \item User ký hoặc xác nhận giao dịch mint.
+    \item Giao dịch mint được gửi tới mạng TON.
+    \item Smart contract NFT collection/item ghi nhận NFT mới.
+    \item Backend gọi endpoint sync để cập nhật trạng thái NFT trong hệ thống.
+\end{enumerate}
+
+\subsection{Luồng chi tiết cho Auction}
+\begin{enumerate}
+    \item Chủ sở hữu NFT tạo phiên đấu giá.
+    \item Các bidder gửi bid theo quy tắc giá và thời gian.
+    \item Mỗi bid tạo sự kiện thay đổi trạng thái phiên đấu giá.
+    \item Backend theo dõi và đồng bộ kết quả (giá cao nhất, trạng thái mở/đóng).
+\end{enumerate}
+
+\subsection{Luồng P2P (off-chain state + tài chính có kiểm soát)}
+P2P trong giai đoạn MVP của dự án tập trung vào trạng thái giao dịch ứng dụng với tính nguyên tử ở database bằng RPC:
+\begin{enumerate}
+    \item Seller tạo ads, buyer tạo order.
+    \item Buyer đánh dấu \texttt{PAID} sau khi chuyển khoản ngoài hệ thống.
+    \item Seller release qua endpoint bảo vệ idempotency.
+    \item RPC thực hiện chuyển trạng thái/số dư logic theo transaction DB.
+\end{enumerate}
+Luồng này chưa phải mọi bước đều ghi trực tiếp lên chain, nhưng được thiết kế để đảm bảo tính toàn vẹn và có thể mở rộng tích hợp on-chain sâu hơn trong các giai đoạn tiếp theo.
+
+\section{Luồng theo từng mạng đang hỗ trợ}
+
+\subsection{Mạng TON (đang là trọng tâm triển khai thực tế)}
+Repo hiện có thành phần hợp đồng và kiểu dữ liệu TON, vì vậy TON là mạng cốt lõi cho các nghiệp vụ NFT/auction hiện tại.
+
+\textbf{Đặc điểm luồng TON trong dự án:}
+\begin{itemize}
+    \item Dữ liệu và kiểu transaction được định nghĩa trong nhóm type TON.
+    \item NFT mint/auction sử dụng contract trong thư mục \texttt{ton-contracts}.
+    \item Backend có endpoint sync để kéo trạng thái từ chain về DB.
+\end{itemize}
+
+\textbf{Các bước điển hình khi user thao tác trên TON:}
+\begin{enumerate}
+    \item Chọn tài sản/đối tượng cần giao dịch.
+    \item Tạo payload message theo chuẩn TON.
+    \item Ký bằng ví tương thích TON.
+    \item Gửi message lên mạng TON.
+    \item Nhận hash và theo dõi trạng thái.
+    \item Đồng bộ về backend để hiển thị nhất quán trên app.
+\end{enumerate}
+
+\subsection{Nhóm mạng EVM (hỗ trợ trong định hướng kiến trúc và một phần luồng ứng dụng)}
+Trong tài liệu kiến trúc của repo có định hướng mở rộng EVM-first cho DEX production-grade. Điều đó có nghĩa hệ thống thiết kế theo mô hình adapter để bổ sung Ethereum/BSC/Polygon/Arbitrum/Optimism.
+
+\textbf{Luồng chuẩn EVM dự kiến:}
+\begin{enumerate}
+    \item App tạo giao dịch với thông số \texttt{to/data/value/gas}.
+    \item Ví ký giao dịch ECDSA.
+    \item Gửi raw transaction tới RPC mesh.
+    \item Nhận tx hash, theo dõi receipt và log event.
+    \item Indexer/backend chuẩn hóa dữ liệu để hiển thị trong app.
+\end{enumerate}
+
+\subsection{Mạng Solana (định hướng mở rộng tiếp theo)}
+Tài liệu kiến trúc ghi nhận khả năng mở rộng sang Solana theo chain adapter độc lập.
+
+\textbf{Luồng Solana dự kiến:}
+\begin{enumerate}
+    \item App tạo instruction + account metas.
+    \item Ví ký transaction theo chuẩn Solana.
+    \item Gửi transaction tới RPC endpoint Solana.
+    \item Nhận signature, theo dõi confirmation/finality.
+    \item Đồng bộ kết quả vào lớp dữ liệu ứng dụng.
+\end{enumerate}
+
+\section{Các đối tượng trong hệ thống và vai trò sử dụng}
+
+\subsection{Nhóm đối tượng nghiệp vụ}
+\begin{longtable}{|p{3.0cm}|p{5.0cm}|p{5.2cm}|}
+\hline
+\textbf{Đối tượng} & \textbf{Mục tiêu sử dụng} & \textbf{Công việc chính} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Đối tượng} & \textbf{Mục tiêu sử dụng} & \textbf{Công việc chính} \\
+\hline
+\endhead
+Người dùng ví & Quản lý tài sản số & Đăng nhập, xem số dư, xem lịch sử, tương tác tài sản \\
+\hline
+Creator NFT & Phát hành tài sản số độc nhất & Upload ảnh, tạo metadata, mint NFT, theo dõi NFT đã tạo \\
+\hline
+Trader NFT & Đầu tư/mua bán NFT & Xem marketplace, tham gia bid, theo dõi kết quả đấu giá \\
+\hline
+Seller P2P & Bán hoặc mua tài sản theo quảng cáo & Tạo ads, quản lý order, xác nhận release \\
+\hline
+Buyer P2P & Khớp lệnh từ ads có sẵn & Tạo order, đánh dấu paid, theo dõi trạng thái \\
+\hline
+Admin/Operator & Vận hành nền tảng & Theo dõi trạng thái hệ thống, xử lý dispute, vận hành job \\
+\hline
+\end{longtable}
+
+\subsection{Nhóm đối tượng kỹ thuật (hệ thống con)}
+\begin{longtable}{|p{3.4cm}|p{4.4cm}|p{5.4cm}|}
+\hline
+\textbf{Thành phần} & \textbf{Vai trò} & \textbf{Nhiệm vụ chính} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Thành phần} & \textbf{Vai trò} & \textbf{Nhiệm vụ chính} \\
+\hline
+\endhead
+Mobile App & Lớp tương tác người dùng & Hiển thị UI, thu thập input, gọi API, theo dõi trạng thái giao dịch \\
+\hline
+crypto-vault-server & Dịch vụ nghiệp vụ NFT/auction & Xử lý API, upload, metadata, sync chain \\
+\hline
+p2p-backend & Dịch vụ nghiệp vụ P2P & Quản lý ads/order/chat, áp dụng policy bảo mật write-path \\
+\hline
+Supabase Postgres & Kho dữ liệu giao dịch & Lưu trạng thái nghiệp vụ, chạy RPC transaction \\
+\hline
+Supabase Auth & Xác thực danh tính & Quản lý JWT/session và kiểm tra quyền truy cập \\
+\hline
+Supabase Storage & Lưu trữ file & Lưu ảnh NFT và tài nguyên liên quan \\
+\hline
+Blockchain/RPC & Lớp xác nhận on-chain & Nhận transaction, xác nhận block, trả hash/receipt \\
+\hline
+\end{longtable}
+
+\section{Phân rã trách nhiệm theo luồng nghiệp vụ}
+\subsection{Luồng mint NFT}
+\begin{itemize}
+    \item User: cung cấp nội dung NFT.
+    \item App: gửi upload/metadata/mint request.
+    \item Backend: validate, chuẩn hóa, gọi chain action.
+    \item Chain: xác nhận mint và tạo địa chỉ NFT.
+    \item Backend+DB: sync và lưu bản ghi phục vụ truy vấn nhanh.
+\end{itemize}
+
+\subsection{Luồng release P2P}
+\begin{itemize}
+    \item Buyer: xác nhận \texttt{PAID}.
+    \item Seller: xác nhận \texttt{RELEASE}.
+    \item Backend P2P: kiểm tra quyền, trạng thái, idempotency.
+    \item DB RPC: xử lý chuyển trạng thái/tài sản theo transaction atom.
+    \item App: cập nhật kết quả cho cả hai bên.
+\end{itemize}
+
+\section{Mối quan hệ giữa luồng on-chain và off-chain}
+Trong hệ thống CryptoVault, không phải mọi nghiệp vụ đều có cùng mức on-chain.
+\begin{itemize}
+    \item \textbf{On-chain mạnh:} mint NFT, tương tác hợp đồng, các thao tác cần bằng chứng công khai.
+    \item \textbf{Off-chain kiểm soát:} trạng thái nghiệp vụ ứng dụng như order P2P/chat/notification.
+    \item \textbf{Mô hình kết hợp:} ghi nhận sự kiện on-chain làm bằng chứng cuối, còn off-chain tối ưu UX và truy vấn.
+\end{itemize}
+Cách kết hợp này giúp hệ thống đạt cân bằng giữa minh bạch blockchain và hiệu năng trải nghiệm người dùng di động.
+
+
+\chapter{Phân tích yêu cầu hệ thống}
+
+\section{Tác nhân của hệ thống}
+\begin{itemize}
+    \item \textbf{User:} người dùng ví nói chung.
+    \item \textbf{Seller P2P:} người tạo quảng cáo bán/mua.
+    \item \textbf{Buyer P2P:} người chọn quảng cáo và tạo order.
+    \item \textbf{Admin/Operator:} giám sát, xử lý tranh chấp, vận hành cron/job.
+    \item \textbf{Blockchain/Supabase:} tác nhân hạ tầng tương tác gián tiếp.
+\end{itemize}
+
+\section{Yêu cầu chức năng tổng quát}
+\subsection{Khối xác thực và phiên}
+\begin{itemize}
+    \item Đăng nhập và kiểm tra hợp lệ user.
+    \item Duy trì phiên đăng nhập trên mobile.
+    \item Xác thực JWT cho các endpoint cần quyền.
+\end{itemize}
+
+\subsection{Khối NFT marketplace}
+\begin{itemize}
+    \item Upload ảnh tài sản số.
+    \item Tạo metadata cho NFT.
+    \item Mint NFT.
+    \item Xem danh sách NFT theo owner.
+    \item Tạo và cập nhật auction.
+    \item Đặt bid và xem bid list.
+\end{itemize}
+
+\subsection{Khối P2P marketplace}
+\begin{itemize}
+    \item Xem danh sách ads.
+    \item Tạo ads.
+    \item Tạo order từ ads.
+    \item Chuyển trạng thái order: created, paid, released, disputed, expired.
+    \item Chat trong order.
+    \item Job hết hạn order tự động.
+\end{itemize}
+
+\section{Yêu cầu phi chức năng}
+\subsection{An toàn giao dịch}
+\begin{itemize}
+    \item Không để client trực tiếp cập nhật số dư.
+    \item Dùng SQL RPC cho các thao tác tài chính quan trọng.
+    \item Có idempotency key tại endpoint release.
+\end{itemize}
+
+\subsection{Hiệu năng}
+\begin{itemize}
+    \item Endpoint danh sách phải có phân trang.
+    \item Khả năng thêm cache ở read-path (đặc biệt cho ads/list).
+\end{itemize}
+
+\subsection{Khả năng mở rộng}
+\begin{itemize}
+    \item Dịch vụ P2P tách riêng khỏi backend chính.
+    \item Kiến trúc tương lai có thể tách BFF, quote, routing, simulation.
+\end{itemize}
+
+\chapter{Thiết kế kiến trúc}
+
+\section{Biểu đồ kiến trúc mức cao}
+\begin{center}
+\begin{tikzpicture}[
+node distance=1.5cm,
+svc/.style={rectangle, rounded corners, draw=black, minimum width=4.8cm, minimum height=0.9cm, align=center},
+arrow/.style={-{Latex[length=2.5mm]}, thick}
+]
+\node[svc] (mobile) {React Native App};
+\node[svc, below=of mobile] (api) {crypto-vault-server (Express)};
+\node[svc, right=2.4cm of api] (p2p) {p2p-backend (TypeScript)};
+\node[svc, below=of api] (supa) {Supabase: Postgres + Auth + Storage + Realtime};
+\node[svc, below=of supa] (chain) {TON Contracts / Blockchain Layer};
+
+\draw[arrow] (mobile) -- (api);
+\draw[arrow] (mobile) -- (p2p);
+\draw[arrow] (api) -- (supa);
+\draw[arrow] (p2p) -- (supa);
+\draw[arrow] (api) -- (chain);
+\end{tikzpicture}
+\end{center}
+
+\section{Thiết kế frontend}
+\subsection{Nguyên tắc tổ chức mã}
+Frontend tuân theo cách chia module theo tính năng nhằm hạn chế phụ thuộc chéo:
+\begin{itemize}
+    \item \texttt{src/features}: nghiệp vụ theo từng tính năng.
+    \item \texttt{src/auth}: cụm xác thực và onboarding.
+    \item \texttt{components}: reusable component.
+    \item \texttt{src/navigation}: định tuyến theo stack/tab.
+    \item \texttt{src/modules}: các module mới (ví dụ DEX trade state machine).
+\end{itemize}
+
+\subsection{Vai trò các lớp}
+\begin{itemize}
+    \item UI layer: hiển thị và tương tác người dùng.
+    \item State layer: điều phối trạng thái màn hình/luồng nghiệp vụ.
+    \item Service layer: gọi API, xử lý mapping dữ liệu.
+    \item Secure layer: quản lý token, thông tin nhạy cảm.
+\end{itemize}
+
+\section{Thiết kế backend theo dịch vụ}
+\subsection{Backend chính \texttt{crypto-vault-server}}
+Nhiệm vụ chính:
+\begin{itemize}
+    \item Xác thực ví và cấp session.
+    \item Upload ảnh NFT và tạo metadata.
+    \item Quản lý NFT, auction, bids.
+    \item Sync dữ liệu blockchain về DB.
+\end{itemize}
+
+\subsection{Backend P2P \texttt{p2p-backend}}
+Nhiệm vụ chính:
+\begin{itemize}
+    \item Quản lý ads và order trong P2P.
+    \item Bảo vệ write-path bằng SQL RPC.
+    \item Hỗ trợ chat đơn hàng.
+    \item Hỗ trợ job expire order bằng secret endpoint.
+\end{itemize}
+
+\section{Thiết kế kiến trúc realtime và mở rộng}
+Theo định hướng tài liệu \texttt{docs/dex-architecture}, hệ thống có thể tiến tới event-driven:
+\begin{itemize}
+    \item Tách service quote/routing/simulation.
+    \item Dùng bus sự kiện để đồng bộ trạng thái nhanh.
+    \item Dùng gateway websocket cho fanout realtime.
+\end{itemize}
+
+\chapter{Đặc tả Use Case}
+
+\section{Use case tổng quát}
+\begin{center}
+\begin{tikzpicture}[
+actor/.style={draw, rectangle, rounded corners, minimum width=2.2cm, minimum height=0.8cm},
+uc/.style={draw, ellipse, minimum width=3.4cm, minimum height=0.9cm},
+line/.style={thick}
+]
+\node[actor] (user) at (-6,2) {User};
+\node[actor] (seller) at (-6,0) {Seller P2P};
+\node[actor] (buyer) at (-6,-2) {Buyer P2P};
+\node[actor] (admin) at (6,-2) {Admin};
+
+\node[uc] (login) at (0,3.2) {Đăng nhập ví};
+\node[uc] (nft) at (0,1.8) {Mint NFT};
+\node[uc] (auction) at (0,0.4) {Tạo phiên đấu giá};
+\node[uc] (bid) at (0,-1.0) {Đặt giá thầu};
+\node[uc] (ads) at (0,-2.4) {Tạo quảng cáo P2P};
+\node[uc] (order) at (0,-3.8) {Tạo/Quản lý đơn P2P};
+
+\draw[line] (user)--(login);
+\draw[line] (user)--(nft);
+\draw[line] (user)--(auction);
+\draw[line] (user)--(bid);
+\draw[line] (seller)--(ads);
+\draw[line] (seller)--(order);
+\draw[line] (buyer)--(order);
+\draw[line] (admin)--(order);
+\end{tikzpicture}
+\end{center}
+
+\section{Use case Đăng nhập ví}
+\subsection{Mục tiêu}
+Thiết lập phiên đăng nhập hợp lệ để sử dụng các chức năng cần xác thực.
+
+\subsection{Dữ liệu vào}
+\begin{itemize}
+    \item Định danh ví hoặc thông tin yêu cầu đăng nhập.
+    \item Chữ ký hoặc token theo thiết kế backend.
+\end{itemize}
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item User gửi yêu cầu đăng nhập.
+    \item Backend xác thực thông tin.
+    \item Nếu hợp lệ, hệ thống phát hành token phiên.
+    \item Mobile lưu phiên tại secure storage.
+\end{enumerate}
+
+\subsection{Luồng lỗi}
+\begin{itemize}
+    \item Thông tin ví không hợp lệ.
+    \item Token hết hạn hoặc sai định dạng.
+    \item Backend trả lỗi xác thực.
+\end{itemize}
+
+\section{Use case Mint NFT}
+\subsection{Mục tiêu}
+Người dùng tạo một NFT mới từ ảnh và metadata.
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item User chọn ảnh cần mint.
+    \item App gọi \texttt{POST /api/v1/upload/nft-image}.
+    \item App gọi \texttt{POST /api/v1/nfts/metadata}.
+    \item App gọi \texttt{POST /api/v1/nfts} để mint.
+    \item Hệ thống trả thông tin NFT đã tạo.
+\end{enumerate}
+
+\subsection{Luồng lỗi}
+\begin{itemize}
+    \item Upload ảnh thất bại.
+    \item Metadata thiếu trường bắt buộc.
+    \item Mint transaction bị từ chối.
+\end{itemize}
+
+\section{Use case Tạo và quản lý Auction}
+\subsection{Mục tiêu}
+Cho phép người sở hữu NFT mở phiên đấu giá để nhận bid.
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item User chọn NFT đủ điều kiện đấu giá.
+    \item Gửi yêu cầu \texttt{POST /api/v1/auctions}.
+    \item Hệ thống tạo phiên với trạng thái ban đầu.
+    \item User khác gửi bid qua \texttt{POST /api/v1/bids}.
+    \item Chủ sở hữu theo dõi danh sách bid.
+\end{enumerate}
+
+\section{Use case Tạo quảng cáo P2P}
+\subsection{Mục tiêu}
+Seller tạo quảng cáo mua/bán với giới hạn giao dịch.
+
+\subsection{Dữ liệu vào cơ bản}
+\begin{itemize}
+    \item Loại tài sản và mạng.
+    \item Fiat hỗ trợ.
+    \item Giá, min amount, max amount.
+    \item Điều khoản thanh toán.
+\end{itemize}
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item Seller nhập thông tin quảng cáo.
+    \item App gọi \texttt{POST /api/v1/p2p/ads}.
+    \item Backend validate dữ liệu.
+    \item DB lưu bản ghi quảng cáo.
+    \item Seller thấy quảng cáo trong danh sách.
+\end{enumerate}
+
+\section{Use case Tạo đơn P2P}
+\subsection{Mục tiêu}
+Buyer tạo đơn từ quảng cáo phù hợp.
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item Buyer chọn quảng cáo từ \texttt{GET /api/v1/p2p/ads}.
+    \item Buyer nhập số lượng và tạo order.
+    \item Backend gọi RPC tạo đơn atomically.
+    \item Hệ thống chuyển order sang trạng thái \texttt{CREATED}.
+\end{enumerate}
+
+\section{Use case Xác nhận đã thanh toán}
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item Buyer hoàn tất chuyển khoản ngoài hệ thống.
+    \item Buyer gọi \texttt{POST /api/v1/p2p/orders/:orderId/paid}.
+    \item Backend kiểm tra quyền và trạng thái order.
+    \item Order chuyển sang \texttt{PAID}.
+\end{enumerate}
+
+\section{Use case Release tài sản}
+\subsection{Mục tiêu}
+Seller xác nhận đã nhận tiền và giải phóng tài sản cho buyer.
+
+\subsection{Luồng chính}
+\begin{enumerate}
+    \item Seller gọi \texttt{POST /api/v1/p2p/orders/:orderId/release} kèm idempotency key.
+    \item Backend gọi RPC \texttt{rpc\_release\_p2p\_order}.
+    \item DB khóa bản ghi order, kiểm tra trạng thái và quyền.
+    \item DB thực hiện chuyển tài sản escrow atomically.
+    \item Order chuyển \texttt{RELEASED}, trả kết quả thành công.
+\end{enumerate}
+
+\subsection{Luồng lỗi và chống lặp}
+\begin{itemize}
+    \item Order không ở trạng thái \texttt{PAID}.
+    \item Người gọi không phải seller hợp lệ.
+    \item Yêu cầu lặp với cùng idempotency key sẽ trả kết quả nhất quán.
+\end{itemize}
+
+\chapter{Biểu đồ tuần tự nghiệp vụ}
+
+\section{Biểu đồ tuần tự Đăng nhập ví}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+\node (u) at (0,0) {User};
+\node (a) at (4,0) {Mobile App};
+\node (b) at (8,0) {Backend};
+\node (d) at (12,0) {Supabase Auth};
+
+\draw (u) -- +(0,-6);
+\draw (a) -- +(0,-6);
+\draw (b) -- +(0,-6);
+\draw (d) -- +(0,-6);
+
+\draw[->] (0,-1) -- (4,-1) node[midway,above] {Nhập thông tin đăng nhập};
+\draw[->] (4,-2) -- (8,-2) node[midway,above] {POST wallet-login};
+\draw[->] (8,-3) -- (12,-3) node[midway,above] {Verify token/signature};
+\draw[->] (12,-4) -- (8,-4) node[midway,above] {Kết quả xác thực};
+\draw[->] (8,-5) -- (4,-5) node[midway,above] {Access token};
+\draw[->] (4,-5.6) -- (0,-5.6) node[midway,above] {Đăng nhập thành công};
+\end{tikzpicture}
+\end{center}
+
+\section{Biểu đồ tuần tự Mint NFT}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+\node (u) at (0,0) {User};
+\node (a) at (3.5,0) {Mobile App};
+\node (b) at (7.2,0) {Backend};
+\node (s) at (10.9,0) {Storage/DB};
+\node (c) at (14.6,0) {Chain};
+
+\draw (u) -- +(0,-8);
+\draw (a) -- +(0,-8);
+\draw (b) -- +(0,-8);
+\draw (s) -- +(0,-8);
+\draw (c) -- +(0,-8);
+
+\draw[->] (0,-1) -- (3.5,-1) node[midway,above] {Chọn ảnh NFT};
+\draw[->] (3.5,-2) -- (7.2,-2) node[midway,above] {POST upload image};
+\draw[->] (7.2,-2.7) -- (10.9,-2.7) node[midway,above] {Lưu file};
+\draw[->] (10.9,-3.3) -- (7.2,-3.3);
+\draw[->] (3.5,-4.0) -- (7.2,-4.0) node[midway,above] {POST metadata};
+\draw[->] (7.2,-4.8) -- (10.9,-4.8) node[midway,above] {Lưu metadata};
+\draw[->] (3.5,-5.6) -- (7.2,-5.6) node[midway,above] {POST mint nft};
+\draw[->] (7.2,-6.3) -- (14.6,-6.3) node[midway,above] {Mint transaction};
+\draw[->] (14.6,-7.0) -- (7.2,-7.0);
+\draw[->] (7.2,-7.6) -- (3.5,-7.6) node[midway,above] {Kết quả NFT};
+\end{tikzpicture}
+\end{center}
+
+\section{Biểu đồ tuần tự Release P2P}
+\begin{center}
+\begin{tikzpicture}[font=\small]
+\node (seller) at (0,0) {Seller};
+\node (app) at (3.8,0) {Mobile App};
+\node (api) at (7.6,0) {P2P Backend};
+\node (db) at (11.4,0) {Supabase DB};
+
+\draw (seller) -- +(0,-8);
+\draw (app) -- +(0,-8);
+\draw (api) -- +(0,-8);
+\draw (db) -- +(0,-8);
+
+\draw[->] (0,-1) -- (3.8,-1) node[midway,above] {Bấm Release};
+\draw[->] (3.8,-2) -- (7.6,-2) node[midway,above] {POST /release + idempotency key};
+\draw[->] (7.6,-3) -- (11.4,-3) node[midway,above] {rpc\_release\_p2p\_order};
+\draw[->] (11.4,-4) -- (11.4,-4.8) node[midway,right] {Lock + Verify};
+\draw[->] (11.4,-5.2) -- (11.4,-6.0) node[midway,right] {wallet\_move escrow};
+\draw[->] (11.4,-6.4) -- (7.6,-6.4) node[midway,above] {Order released};
+\draw[->] (7.6,-7.2) -- (3.8,-7.2) node[midway,above] {200 OK};
+\draw[->] (3.8,-7.8) -- (0,-7.8) node[midway,above] {Thông báo hoàn tất};
+\end{tikzpicture}
+\end{center}
+
+\chapter{Đặc tả API chi tiết}
+
+\section{Nguyên tắc thiết kế API}
+\begin{itemize}
+    \item URL versioning theo tiền tố \texttt{/api/v1}.
+    \item Response chuẩn hóa theo cấu trúc thành công/thất bại.
+    \item Endpoint ghi dữ liệu bắt buộc xác thực token.
+    \item Endpoint tài chính ưu tiên idempotency và transaction server-side.
+\end{itemize}
+
+\section{Bảng đặc tả nhóm NFT/Auction}
+\begin{longtable}{|p{3.4cm}|p{2.2cm}|p{4.8cm}|p{4.2cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Method} & \textbf{Mục đích} & \textbf{Ghi chú} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Endpoint} & \textbf{Method} & \textbf{Mục đích} & \textbf{Ghi chú} \\
+\hline
+\endhead
+\texttt{/api/v1/auth/wallet-login} & POST & Đăng nhập theo ví, cấp token phiên & Bắt buộc validate chữ ký/token \\
+\hline
+\texttt{/api/v1/upload/nft-image} & POST & Upload ảnh NFT lên storage & Kiểm tra định dạng và kích thước file \\
+\hline
+\texttt{/api/v1/nfts/metadata} & POST & Tạo metadata JSON cho NFT & Chuẩn hóa trường name/description/image \\
+\hline
+\texttt{/api/v1/nfts} & POST & Tạo NFT mới & Kết hợp metadata + chain action \\
+\hline
+\texttt{/api/v1/nfts} & GET & Lấy danh sách NFT theo owner & Hỗ trợ filter \texttt{owner\_address} \\
+\hline
+\texttt{/api/v1/auctions} & POST & Tạo phiên đấu giá & Cần NFT hợp lệ thuộc quyền user \\
+\hline
+\texttt{/api/v1/auctions} & GET & Lấy danh sách phiên đấu giá & Có thể thêm phân trang theo trạng thái \\
+\hline
+\texttt{/api/v1/bids} & POST & Tạo bid cho auction & Kiểm tra điều kiện giá thầu \\
+\hline
+\texttt{/api/v1/auctions/:id/bids} & GET & Lấy lịch sử bid & Sắp xếp theo thời gian/giá \\
+\hline
+\end{longtable}
+
+\section{Bảng đặc tả nhóm P2P}
+\begin{longtable}{|p{3.8cm}|p{1.8cm}|p{4.6cm}|p{4.4cm}|}
+\hline
+\textbf{Endpoint} & \textbf{Method} & \textbf{Mục đích} & \textbf{Ghi chú} \\
+\hline
+\endfirsthead
+\hline
+\textbf{Endpoint} & \textbf{Method} & \textbf{Mục đích} & \textbf{Ghi chú} \\
+\hline
+\endhead
+\texttt{/api/v1/p2p/ads} & GET & Lấy danh sách quảng cáo & Read-path có thể cache \\
+\hline
+\texttt{/api/v1/p2p/ads} & POST & Tạo quảng cáo mới & Validate min/max, asset, fiat \\
+\hline
+\texttt{/api/v1/p2p/orders} & GET & Lấy danh sách order theo user & Filter theo trạng thái \\
+\hline
+\texttt{/api/v1/p2p/orders} & POST & Tạo order từ ads & Dùng RPC tạo đơn atomically \\
+\hline
+\texttt{/api/v1/p2p/orders/:id/paid} & POST & Buyer xác nhận đã thanh toán & Chỉ buyer mới được gọi \\
+\hline
+\texttt{/api/v1/p2p/orders/:id/release} & POST & Seller release tài sản & Cần idempotency key \\
+\hline
+\texttt{/api/v1/p2p/orders/:id/dispute} & POST & Tạo tranh chấp & Lưu audit lý do tranh chấp \\
+\hline
+\texttt{/api/v1/p2p/orders/:id/chat} & GET/POST & Xem và gửi chat đơn hàng & Hạn chế quyền theo thành viên order \\
+\hline
+\texttt{/api/v1/p2p/jobs/expire-orders} & POST & Job hết hạn order & Bảo vệ bởi \texttt{x-job-secret} \\
+\hline
+\end{longtable}
+
+\chapter{Thiết kế dữ liệu}
+
+\section{Mục tiêu thiết kế dữ liệu}
+\begin{itemize}
+    \item Bảo toàn tính nhất quán nghiệp vụ tài chính.
+    \item Truy vấn nhanh cho màn hình danh sách.
+    \item Dễ kiểm toán thay đổi trạng thái giao dịch.
+\end{itemize}
+
+\section{Nhóm bảng nghiệp vụ chính (mô tả khái niệm)}
+\begin{itemize}
+    \item \textbf{users/wallets:} định danh tài khoản và ví.
+    \item \textbf{nfts/auctions/bids:} dữ liệu NFT và đấu giá.
+    \item \textbf{p2p\_ads/p2p\_orders:} quảng cáo và đơn hàng P2P.
+    \item \textbf{p2p\_chat/p2p\_audit:} hội thoại và nhật ký nghiệp vụ.
+\end{itemize}
+
+\section{Mô hình trạng thái đơn P2P}
+\begin{center}
+\begin{tikzpicture}[
+state/.style={rectangle,rounded corners,draw=black,minimum width=2.4cm,minimum height=0.9cm,align=center},
+arrow/.style={-{Latex[length=2mm]},thick}
+]
+\node[state] (c) at (0,0) {CREATED};
+\node[state] (p) at (3.4,0) {PAID};
+\node[state] (r) at (6.8,0) {RELEASED};
+\node[state] (d) at (3.4,-2.2) {DISPUTED};
+\node[state] (e) at (0,-2.2) {EXPIRED};
+
+\draw[arrow] (c)--(p) node[midway,above] {Buyer paid};
+\draw[arrow] (p)--(r) node[midway,above] {Seller release};
+\draw[arrow] (c)--(e) node[midway,left] {Job expire};
+\draw[arrow] (p)--(d) node[midway,right] {Dispute};
+\draw[arrow] (c)--(d) node[midway,right] {Dispute};
+\end{tikzpicture}
+\end{center}
+
+\section{RPC trọng yếu trong P2P}
+Theo tài liệu P2P MVP, các RPC quan trọng gồm:
+\begin{itemize}
+    \item \texttt{rpc\_wallet\_move}
+    \item \texttt{rpc\_create\_p2p\_order}
+    \item \texttt{rpc\_release\_p2p\_order}
+    \item \texttt{rpc\_expire\_p2p\_orders}
+\end{itemize}
+
+\section{Vì sao phải dùng RPC thay vì update trực tiếp}
+\begin{enumerate}
+    \item Gom nhiều bước thành một transaction database duy nhất.
+    \item Tránh trạng thái trung gian sai lệch khi có lỗi mạng.
+    \item Khóa hàng (row lock) để chống race condition.
+    \item Dễ áp chính sách quyền trực tiếp ở tầng DB.
+\end{enumerate}
+
+\chapter{Bảo mật hệ thống}
+
+\section{Bảo mật trên thiết bị di động}
+\begin{itemize}
+    \item Lưu token trong lớp lưu trữ bảo mật của hệ điều hành.
+    \item Hạn chế ghi log dữ liệu nhạy cảm.
+    \item Hỗ trợ cơ chế xác thực sinh trắc học ở các màn hình nhạy cảm.
+\end{itemize}
+
+\section{Bảo mật API}
+\begin{itemize}
+    \item JWT validation tại middleware.
+    \item Reject request không có quyền hoặc sai vai trò.
+    \item Validate payload trước khi vào business service.
+\end{itemize}
+
+\section{Bảo mật dữ liệu và vận hành}
+\begin{itemize}
+    \item Service role key chỉ tồn tại ở backend.
+    \item RLS và policy hạn chế truy cập trực tiếp.
+    \item Ghi audit log cho mutation nhạy cảm: release/dispute.
+    \item Job endpoint bắt buộc secret riêng cho hệ thống scheduler.
+\end{itemize}
+
+\section{Rủi ro và biện pháp giảm thiểu}
+\begin{longtable}{|p{4.2cm}|p{4.7cm}|p{4.7cm}|}
+\hline
+\textbf{Rủi ro} & \textbf{Tác động} & \textbf{Biện pháp} \\
+\hline
+Replay request release & Release lặp nhiều lần & Idempotency key + unique constraint \\
+\hline
+Race condition order state & Sai trạng thái giao dịch & RPC transaction + row lock \\
+\hline
+Lộ service key & Truy cập dữ liệu trái phép & Không lưu ở client, rotate key định kỳ \\
+\hline
+Payload không hợp lệ & Lỗi nghiệp vụ/tấn công injection & Validate schema đầu vào \\
+\hline
+Mất đồng bộ chain-DB & Hiển thị sai trạng thái tài sản & Endpoint sync + job đối soát định kỳ \\
+\hline
+\end{longtable}
+
+\chapter{Triển khai, kiểm thử và vận hành}
+
+\section{Các bước triển khai local}
+\subsection{Mobile app}
+\begin{enumerate}
+    \item Cài dependency: \texttt{yarn}
+    \item Chạy app: \texttt{yarn start}
+    \item Chạy iOS/Android: \texttt{yarn ios} hoặc \texttt{yarn android}
+\end{enumerate}
+
+\subsection{Backend chính}
+\begin{enumerate}
+    \item \texttt{cd crypto-vault-server}
+    \item Cấu hình \texttt{.env}
+    \item Chạy \texttt{npm install}
+    \item Chạy \texttt{npm run dev}
+\end{enumerate}
+
+\subsection{P2P backend}
+\begin{enumerate}
+    \item \texttt{cd p2p-backend}
+    \item Cấu hình \texttt{.env}
+    \item Chạy \texttt{npm install}
+    \item Chạy \texttt{npm run dev}
+\end{enumerate}
+
+\section{Setup dữ liệu Supabase}
+\begin{enumerate}
+    \item Chạy \texttt{supabase/schema.sql} cho nền tảng chung.
+    \item Chạy \texttt{supabase/p2p\_mvp.sql} cho nghiệp vụ P2P.
+    \item Chạy \texttt{supabase/p2p\_seed.sql} để nạp dữ liệu mẫu.
+    \item Tạo bucket \texttt{nft-assets} theo cấu hình môi trường.
+\end{enumerate}
+
+\section{Kịch bản kiểm thử chức năng}
+\subsection{Kịch bản đăng nhập}
+\begin{itemize}
+    \item Trường hợp đúng thông tin: trả token hợp lệ.
+    \item Trường hợp sai định dạng: trả mã lỗi xác thực.
+    \item Trường hợp token hết hạn: yêu cầu đăng nhập lại.
+\end{itemize}
+
+\subsection{Kịch bản NFT}
+\begin{itemize}
+    \item Upload ảnh hợp lệ và tạo metadata thành công.
+    \item Mint thành công và xuất hiện trong danh sách owner.
+    \item Tạo auction và tạo bid từ tài khoản khác.
+\end{itemize}
+
+\subsection{Kịch bản P2P}
+\begin{itemize}
+    \item Tạo ad mới và hiển thị trên market.
+    \item Buyer tạo order từ ad.
+    \item Buyer chuyển paid.
+    \item Seller release thành công.
+    \item Gửi lại release cùng idempotency key: không tạo hiệu ứng lặp.
+\end{itemize}
+
+\section{Kịch bản kiểm thử lỗi}
+\begin{itemize}
+    \item Buyer gọi release: bị từ chối quyền.
+    \item Release khi order chưa paid: bị từ chối trạng thái.
+    \item Job expire không có secret: bị từ chối truy cập.
+\end{itemize}
+
+\section{Vận hành và giám sát đề xuất}
+\subsection{Quan sát kỹ thuật}
+\begin{itemize}
+    \item Log theo request id/correlation id.
+    \item Theo dõi độ trễ endpoint P50/P95/P99.
+    \item Theo dõi tỷ lệ lỗi theo endpoint và mã lỗi nghiệp vụ.
+\end{itemize}
+
+\subsection{Quan sát nghiệp vụ}
+\begin{itemize}
+    \item Số lượng ad mới theo ngày.
+    \item Số lượng order theo trạng thái.
+    \item Tỷ lệ dispute và tỷ lệ expire.
+    \item Thời gian trung bình từ \texttt{CREATED} đến \texttt{RELEASED}.
+\end{itemize}
+
+\chapter{So sánh với định hướng production trong repo}
+
+\section{Hiện trạng MVP}
+\begin{itemize}
+    \item Đã có mobile app và hai backend phục vụ nghiệp vụ chính.
+    \item Đã có SQL cho P2P cùng các RPC cốt lõi.
+    \item Đã có nhóm endpoint đủ cho chu trình giao dịch cơ bản.
+\end{itemize}
+
+\section{Định hướng production-grade (theo docs/dex-architecture)}
+\begin{itemize}
+    \item Tách service theo năng lực mở rộng: gateway, quote, routing, simulation.
+    \item Bổ sung websocket gateway và bus sự kiện.
+    \item Tăng khả năng failover RPC mesh và scoring provider.
+    \item Thêm lớp analytics và observability đầy đủ.
+\end{itemize}
+
+\section{Khoảng cách cần hoàn thiện}
+\begin{longtable}{|p{4.2cm}|p{4.8cm}|p{4.6cm}|}
+\hline
+\textbf{Hạng mục} & \textbf{MVP hiện tại} & \textbf{Mục tiêu production} \\
+\hline
+Kiến trúc dịch vụ & 2 backend chính & Nhiều service độc lập theo domain \\
+\hline
+Realtime & Mức cơ bản qua Supabase & WS gateway + cursor replay \\
+\hline
+Cache & Chưa chuẩn hóa toàn cục & Redis cluster và chính sách cache \\
+\hline
+Quan sát hệ thống & Log mức cơ bản & OTel + dashboard + alerting \\
+\hline
+Khả năng tải & Chưa benchmark sâu & Stress test và capacity planning \\
+\hline
+\end{longtable}
+
+\chapter{Đánh giá kết quả}
+
+\section{Ưu điểm}
+\begin{itemize}
+    \item Thiết kế bám sát nhu cầu thực tế của người dùng crypto mobile.
+    \item Dễ mở rộng nhờ tách backend theo nghiệp vụ.
+    \item Luồng tài chính P2P có tính an toàn cao hơn nhờ RPC transaction.
+    \item Tài liệu kỹ thuật trong repo hỗ trợ tốt cho lộ trình nâng cấp.
+\end{itemize}
+
+\section{Hạn chế}
+\begin{itemize}
+    \item Vẫn ở giai đoạn MVP ở nhiều thành phần.
+    \item Chưa có bộ kiểm thử tải và chaos test đầy đủ.
+    \item Một số thành phần cần tối ưu hóa cho quy mô lớn.
+\end{itemize}
+
+\section{Bài học rút ra}
+\begin{itemize}
+    \item Việc tách write-path tài chính vào DB RPC giúp giảm đáng kể rủi ro logic.
+    \item Tổ chức module rõ ràng ngay từ đầu giảm chi phí refactor về sau.
+    \item Tài liệu kiến trúc nên đi song song với triển khai để kiểm soát kỹ thuật.
+\end{itemize}
+
+\chapter{Định hướng phát triển tiếp theo}
+
+\section{Ngắn hạn}
+\begin{itemize}
+    \item Hoàn thiện test tự động cho các endpoint critical.
+    \item Chuẩn hóa error code nghiệp vụ.
+    \item Bổ sung cache read-path cho ads/list.
+\end{itemize}
+
+\section{Trung hạn}
+\begin{itemize}
+    \item Tích hợp websocket manager nhất quán cho app.
+    \item Tăng khả năng đồng bộ trạng thái từ chain.
+    \item Tối ưu cấu trúc bảng và chỉ mục theo dữ liệu thực tế.
+\end{itemize}
+
+\section{Dài hạn}
+\begin{itemize}
+    \item Triển khai kiến trúc event-driven đa dịch vụ.
+    \item Mở rộng đa chain theo adapter.
+    \item Xây dựng lớp compliance và anti-fraud nâng cao.
+\end{itemize}
+
+\chapter{Kết luận}
+CryptoVault là một đề tài có tính ứng dụng cao trong bối cảnh tài sản số phát triển mạnh. Trên nền tảng React Native, Node.js/TypeScript backend và Supabase, hệ thống đã hiện thực được các luồng nghiệp vụ trọng tâm của một ứng dụng crypto mobile hiện đại, bao gồm NFT marketplace và P2P marketplace ở mức MVP.
+
+Điểm quan trọng của hệ thống nằm ở tư duy kiến trúc: triển khai nhanh nhưng không bỏ qua các nguyên tắc an toàn giao dịch. Việc chuyển các thao tác tài chính quan trọng vào RPC transaction phía cơ sở dữ liệu giúp giảm đáng kể rủi ro sai lệch trạng thái và tạo tiền đề tốt để mở rộng lên quy mô lớn.
+
+Trong tương lai, nếu tiếp tục hoàn thiện theo lộ trình đã đề xuất (tách service sâu hơn, nâng cấp realtime, chuẩn hóa giám sát và kiểm thử tải), CryptoVault có thể trở thành một nền tảng ví và giao dịch tài sản số mạnh, đáng tin cậy, và phù hợp với nhu cầu của người dùng đại chúng.
+
+\appendix
+\chapter{Phụ lục A: Danh sách endpoint tổng hợp}
+\section*{NFT Marketplace}
+\begin{itemize}
+    \item \texttt{POST /api/v1/auth/wallet-login}
+    \item \texttt{POST /api/v1/upload/nft-image}
+    \item \texttt{POST /api/v1/nfts/metadata}
+    \item \texttt{POST /api/v1/nfts}
+    \item \texttt{GET /api/v1/nfts?owner\_address=}
+    \item \texttt{PATCH /api/v1/nfts/:id}
+    \item \texttt{GET /api/v1/auctions}
+    \item \texttt{GET /api/v1/auctions/:id}
+    \item \texttt{POST /api/v1/auctions}
+    \item \texttt{PATCH /api/v1/auctions/:id}
+    \item \texttt{POST /api/v1/bids}
+    \item \texttt{GET /api/v1/auctions/:id/bids}
+    \item \texttt{POST /api/v1/sync/nft/:nft\_address}
+    \item \texttt{POST /api/v1/sync/auction/:auction\_contract\_address}
+    \item \texttt{GET /api/v1/health}
+\end{itemize}
+
+\section*{P2P Marketplace}
+\begin{itemize}
+    \item \texttt{GET /api/v1/p2p/ads}
+    \item \texttt{POST /api/v1/p2p/ads}
+    \item \texttt{GET /api/v1/p2p/orders}
+    \item \texttt{POST /api/v1/p2p/orders}
+    \item \texttt{GET /api/v1/p2p/orders/:orderId}
+    \item \texttt{POST /api/v1/p2p/orders/:orderId/paid}
+    \item \texttt{POST /api/v1/p2p/orders/:orderId/release}
+    \item \texttt{POST /api/v1/p2p/orders/:orderId/dispute}
+    \item \texttt{GET /api/v1/p2p/orders/:orderId/chat}
+    \item \texttt{POST /api/v1/p2p/orders/:orderId/chat}
+    \item \texttt{POST /api/v1/p2p/jobs/expire-orders}
+\end{itemize}
+
+\chapter{Phụ lục B: Cấu trúc thư mục tham khảo}
+\begin{verbatim}
+CryptoVault/
+├── src/
+├── components/
+├── docs/
+│   ├── dex-architecture/
+│   └── p2p-mvp/
+├── crypto-vault-server/
+├── p2p-backend/
+├── supabase/
+└── ton-contracts/
+\end{verbatim}
+
+\end{document}

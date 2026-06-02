@@ -41,7 +41,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
             //     lightMode ? appImages.background1Dark : appImages.background1
             // }
             subStyle={[NFTCollectionStyle.flex1]}>
-            <View style={[NFTCollectionStyle.pH25, NFTCollectionStyle.flex1]}>
+            <View style={NFTCollectionStyle.screenContent}>
                 <FlatList
                     data={collection}
                     keyExtractor={item => item?.network + item?.contractAddress}
@@ -58,8 +58,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                     }
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={[
-                        NFTCollectionStyle.flexGrow1,
-                        NFTCollectionStyle.pT15,
+                        NFTCollectionStyle.listContentContainer,
                     ]}
                     ItemSeparatorComponent={SeparatorCollection}
                     renderItem={({ item }) => {
@@ -82,36 +81,31 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                             }
                         });
                         return (
-                            <>
+                            <View style={NFTCollectionStyle.collectionCard}>
                                 <View
-                                    style={[
-                                        NFTCollectionStyle.flexRow,
-                                        NFTCollectionStyle.justifyContentBetween,
-                                        NFTCollectionStyle.alignItemsCenter,
-                                        NFTCollectionStyle.pB15,
-                                    ]}>
-                                    <AppImage
-                                        uri={imageUri}
-                                        height={32}
-                                        width={32}
-                                        setIsLoading={setLoadings}
-                                        isLoading={
-                                            isLoadings[imageUri]?.loading
-                                        }
-                                        defaultImage={appImages.NFTDefault}
-                                    />
+                                    style={NFTCollectionStyle.collectionHeader}>
+                                    <View style={NFTCollectionStyle.headerLeft}>
+                                        <View style={NFTCollectionStyle.avatarFrame}>
+                                            <AppImage
+                                                uri={imageUri}
+                                                height={40}
+                                                width={40}
+                                                setIsLoading={setLoadings}
+                                                isLoading={
+                                                    isLoadings[imageUri]?.loading
+                                                }
+                                                defaultImage={appImages.NFTDefault}
+                                            />
+                                        </View>
                                     <LoadingWrapper
                                         loading={bothLoading}
                                         skeletonWidth={100}
                                         containerSkeleton={[
                                             NFTCollectionStyle.flex1,
-                                            NFTCollectionStyle.pH12,
+                                            NFTCollectionStyle.collectionTitleWrap,
                                         ]}>
                                         <View
-                                            style={[
-                                                NFTCollectionStyle.flex1,
-                                                NFTCollectionStyle.pH12,
-                                            ]}>
+                                            style={NFTCollectionStyle.collectionTitleWrap}>
                                             <AppText
                                                 title={
                                                     item?.name ||
@@ -126,9 +120,19 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                                     theme.colors
                                                         .text_on_surface_text_high
                                                 }
-                                            />
+                                            >
+                                                <AppText
+                                                    title={` (${item?.data?.length?.toString() || ''})`}
+                                                    variant={TextVariantKeys.bodyMMedium}
+                                                    textColor={
+                                                        theme.colors
+                                                            .text_on_surface_text_high
+                                                    }
+                                                />
+                                            </AppText>
                                         </View>
                                     </LoadingWrapper>
+                                    </View>
                                     {item?.data && item?.data.length > 2 && (
                                         <LoadingWrapper
                                             loading={bothLoading}
@@ -137,11 +141,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                                 onPress={() =>
                                                     handlePressViewAll(item)
                                                 }
-                                                style={[
-                                                    NFTCollectionStyle.flexRow,
-                                                    NFTCollectionStyle.justifyContentBetween,
-                                                    NFTCollectionStyle.alignItemsCenter,
-                                                ]}>
+                                                style={NFTCollectionStyle.viewAllButton}>
                                                 <AppText
                                                     titleWithI18n={
                                                         LanguageKey.common_view_all
@@ -153,6 +153,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                                         theme.colors
                                                             .text_on_surface_text_light
                                                     }
+                                                    styles={NFTCollectionStyle.viewAllText}
                                                 />
                                                 <ArrowRightSvgIcon
                                                     color={
@@ -171,6 +172,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                     }
                                     bounces={false}
                                     numColumns={2}
+                                    contentContainerStyle={NFTCollectionStyle.cardInnerList}
                                     renderItem={data => {
                                         return (
                                             <NFTTonItem
@@ -190,7 +192,7 @@ const NFTCollectionTonList: React.FC<NFTCollectionTonListProps> = ({
                                         );
                                     }}
                                 />
-                            </>
+                            </View>
                         );
                     }}
                 />

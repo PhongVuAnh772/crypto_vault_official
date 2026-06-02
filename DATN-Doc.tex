@@ -1,0 +1,105 @@
+\documentclass[a4paper,12pt]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,fit,backgrounds}
+
+\geometry{left=3cm,right=2.2cm,top=2.5cm,bottom=2.5cm}
+\onehalfspacing
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[R]{XÂY DỰNG NỀN TẢNG CRYPTOVAULT}
+\fancyfoot[L]{Trang \thepage}
+\fancyfoot[R]{Báo cáo kỹ thuật}
+
+\renewcommand{\contentsname}{Mục lục}
+\titleformat{\chapter}{\normalfont\huge\bfseries}{\thechapter.}{12pt}{}
+\titleformat{\section}{\normalfont\Large\bfseries}{\thesection}{10pt}{}
+\titleformat{\subsection}{\normalfont\large\bfseries}{\thesubsection}{10pt}{}
+
+\begin{document}
+
+\begin{titlepage}
+    \begin{center}
+        {\Large\textbf{BÁO CÁO PHÂN TÍCH, THIẾT KẾ VÀ TRIỂN KHAI HỆ THỐNG}}\\[0.8cm]
+        {\LARGE\textbf{CRYPTOVAULT}}\\[0.4cm]
+        {\Large\textbf{ỨNG DỤNG VÍ CRYPTO DI ĐỘNG}}\\[0.2cm]
+        {\Large\textbf{TÍCH HỢP NFT MARKETPLACE VÀ P2P MARKETPLACE MVP}}\\[2.1cm]
+
+        \textbf{Sinh viên thực hiện:} ..........................................................\\[0.3cm]
+        \textbf{Mã số sinh viên:} ..........................................................\\[0.3cm]
+        \textbf{Lớp:} ..........................................................\\[0.3cm]
+        \textbf{Giảng viên hướng dẫn:} ..........................................................\\[2cm]
+
+        \vfill
+        \textbf{HÀ NỘI, THÁNG 05 NĂM 2026}
+    \end{center}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\chapter{Lời mở đầu}
+
+\section{Lý do chọn đề tài}
+Trong vài năm gần đây, tài sản số đã chuyển từ giai đoạn thử nghiệm sang giai đoạn ứng dụng thực tế ở quy mô người dùng lớn. Cùng với đó, các nhu cầu giao dịch phổ thông như lưu trữ tài sản, theo dõi danh mục, mua bán NFT, và giao dịch ngang hàng P2P xuất hiện đồng thời trong một hệ sinh thái duy nhất.
+
+Trên thị trường hiện có nhiều ứng dụng tập trung vào một mảng cụ thể, ví dụ chỉ làm ví lưu ký, hoặc chỉ làm marketplace. Tuy nhiên, trải nghiệm của người dùng cuối thường bị phân mảnh: phải đăng nhập nhiều hệ thống, thao tác qua nhiều lớp trung gian, và thiếu nhất quán về bảo mật.
+
+Đề tài \textbf{CryptoVault} được lựa chọn để giải quyết bài toán đó theo hướng tích hợp. Hệ thống nhắm đến một ứng dụng di động có khả năng:
+\begin{itemize}
+    \item Quản lý tài sản và phiên đăng nhập theo chuẩn bảo mật cho mobile.
+    \item Kết nối backend phục vụ nghiệp vụ NFT marketplace.
+    \item Mở rộng sang P2P marketplace với cơ chế escrow và kiểm soát trạng thái đơn hàng.
+    \item Tách kiến trúc thành các mô-đun độc lập để duy trì tốc độ phát triển nhưng vẫn đảm bảo khả năng nâng cấp production.
+\end{itemize}
+
+\section{Mục tiêu tổng quát}
+Đề tài tập trung vào việc thiết kế và xây dựng một nền tảng crypto mobile-first có tính thực dụng cao, từ lớp ứng dụng đến lớp dữ liệu:
+\begin{itemize}
+    \item Thiết kế kiến trúc rõ ràng giữa frontend, backend, blockchain interaction và dữ liệu.
+    \item Hoàn thiện luồng nghiệp vụ cốt lõi cho NFT và P2P ở mức MVP có thể vận hành.
+    \item Thiết lập các nguyên tắc bảo mật tối thiểu bắt buộc cho thao tác tài chính.
+    \item Chuẩn bị nền tảng tài liệu để nâng cấp lên kiến trúc sản xuất quy mô lớn.
+\end{itemize}
+
+\section{Mục tiêu cụ thể}
+\begin{enumerate}
+    \item Xây dựng ứng dụng React Native có khả năng chạy trên iOS/Android, điều hướng rõ ràng, mở rộng theo feature.
+    \item Xây dựng backend \texttt{crypto-vault-server} cho các nhóm API NFT/auction/sync.
+    \item Xây dựng backend \texttt{p2p-backend} tách biệt cho nghiệp vụ P2P có tính tài chính.
+    \item Triển khai và sử dụng Supabase cho PostgreSQL, Auth, Storage và Realtime.
+    \item Tạo SQL schema và RPC phục vụ write-path an toàn cho P2P.
+    \item Đề xuất kế hoạch vận hành, giám sát và kiểm thử cho giai đoạn mở rộng.
+\end{enumerate}
+
+\chapter{Tổng quan hệ thống CryptoVault}
+
+\section{Bối cảnh nghiệp vụ}
+CryptoVault là một nền tảng tích hợp nhiều lớp chức năng:
+\begin{itemize}
+    \item \textbf{Lớp ví và tài khoản:} quản lý định danh người dùng, phiên truy cập, thông tin ví.
+    \item \textbf{Lớp NFT marketplace:} upload ảnh, tạo metadata, mint NFT, tạo auction, đặt giá thầu.
+    \item \textbf{Lớp P2P marketplace:} tạo quảng cáo, tạo đơn hàng, xác nhận đã thanh toán, release tài sản.
+    \item \textbf{Lớp dữ liệu và đồng bộ:} lưu trạng thái giao dịch, đồng bộ dữ liệu từ chain về hệ thống.
+\end{itemize}
+
+\section{Phạm vi đề tài}
+Nội dung trong báo cáo tập trung vào kiến trúc và triển khai MVP cho ứng dụng CryptoVault, bao gồm các thành phần frontend, backend NFT, backend P2P và lớp dữ liệu Supabase.
+
+Các nội dung mở rộng như kiểm toán bảo mật độc lập, tối ưu chi phí vận hành đa khu vực và chiến lược scale toàn cầu nằm ngoài phạm vi triển khai của phiên bản hiện tại.
+
+\end{document}

@@ -34,8 +34,24 @@ import {
     setMaxTonEventList,
     setTonEvents,
 } from 'src/features/coinDetails/ton/ton.coinDetails.slice';
+import { getIsTestnet } from 'src/core/redux/slice/app.selector';
 import { getRequestEvent, setModalConnect } from '../slice/walletConnect.slice';
 import { SignTypedData } from './sessionSingTypeData.type';
+
+const TESTNET_CHAIN_IDS = new Set([5, 97, 80001, 11155111, 421614, 84532, 43113]);
+const MAINNET_CHAIN_IDS = new Set([1, 56, 137, 10, 42161, 8453, 43114]);
+
+const detectChainIsTestnet = (walletConnectChain?: string): boolean | undefined => {
+    if (!walletConnectChain) return undefined;
+    const idPart = walletConnectChain.includes(':')
+        ? walletConnectChain.split(':')[1]
+        : walletConnectChain;
+    const chainId = Number(idPart);
+    if (Number.isNaN(chainId)) return undefined;
+    if (TESTNET_CHAIN_IDS.has(chainId)) return true;
+    if (MAINNET_CHAIN_IDS.has(chainId)) return false;
+    return undefined;
+};
 
 const useSessionSignTypeData = () => {
     const insets = useAppSafeAreaInsets();
@@ -52,6 +68,7 @@ const useSessionSignTypeData = () => {
     const [visibleLoading, setVisibleLoading] = useState(false);
     const [requirePinCode, setRequirePinCode] = useState(false);
     const protocolDataLists = useAppSelector(getProtocolDataLists) ?? [];
+    const isTestnet = useAppSelector(getIsTestnet);
     const selectedAccountId = useAppSelector(getAccountId);
     const selectedProtocolId = useAppSelector(getSelectedProtocolId);
     const protocolSelected = [
@@ -100,6 +117,7 @@ const useSessionSignTypeData = () => {
     const parsedParams = JSON.parse(
         requestEvent?.params.request.params[1],
     ) as SignTypedData;
+    const signTypedDataRequest = request.params[0] as string;
     const onApprove = useCallback(
         async (pinCode: string) => {
             if (requestEvent) {
@@ -128,6 +146,7 @@ const useSessionSignTypeData = () => {
                     closeModalSignType();
                 } catch (e) {
                     console.log((e as Error).message, 'error');
+                    await rejectTransaction(id, topic);
                     closeModalSignType();
 
                     return;
@@ -166,7 +185,7 @@ const useSessionSignTypeData = () => {
         setRequirePinCode(true);
     };
     const accountRequest = getIdAccountWithChainIdAndAddress({
-        addressRequest: request.params[0],
+        addressRequest: signTypedDataRequest,
         chaiId: params.chainId,
         protocolListData: protocolDataLists,
         allCount: allAccounts,
@@ -175,12 +194,28 @@ const useSessionSignTypeData = () => {
         accountRequest?.id !== selectedAccountId,
     );
     const walletRequest = async () => {
+        const chainIsTestnet = detectChainIsTestnet(params.chainId);
+        const isWrongNetworkByChainId =
+            chainIsTestnet !== undefined && chainIsTestnet !== !!isTestnet;
+        const isWrongNetworkByProtocol =
+            protocolRequire?.isTestnet !== undefined &&
+            !!protocolRequire.isTestnet !== !!isTestnet;
+
+        if (isWrongNetworkByChainId || isWrongNetworkByProtocol) {
+            Utils.showToast({
+                type: AppToastType.error,
+                msg: 'WalletConnect request is not in current Testnet/Mainnet mode',
+            });
+            await rejectTransaction(id, topic);
+            closeModalSignType();
+            return;
+        }
         const walletDataProtocol = accountRequest?.protocolData.find(
             item => item._id === protocolSelected?._id,
         );
-        if (wallet?.address !== request.params.from) {
+        if (wallet?.address !== signTypedDataRequest) {
             const addressRequest = walletDataProtocol?.addressList.find(item =>
-                compareAddressesEVM(item.address, request.params.from),
+                compareAddressesEVM(item.address, signTypedDataRequest),
             );
             if (addressRequest?.id) {
                 await dispatch(changWallet(addressRequest?.id));
@@ -223,6 +258,15 @@ const useSessionSignTypeData = () => {
         }
     };
     useEffect(() => {
+        if (!protocolRequire) {
+            Utils.showToast({
+                type: AppToastType.error,
+                msg: 'Unsupported WalletConnect chain',
+            });
+            rejectTransaction(id, topic);
+            closeModalSignType();
+            return;
+        }
         switchProtocol();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);

@@ -36,9 +36,21 @@ export default function useWalletKitEventsManager(initialized: boolean) {
     );
 
     useEffect(() => {
-        if (initialized) {
-            walletKit.on(WalletConnectKey.sessionProposal, onSessionProposal);
-            walletKit.on(WalletConnectKey.sessionRequest, onSessionRequest);
-        }
+        if (!initialized || !walletKit) return;
+
+        walletKit.on(WalletConnectKey.sessionProposal, onSessionProposal);
+        walletKit.on(WalletConnectKey.sessionRequest, onSessionRequest);
+
+        return () => {
+            try {
+                walletKit.off(
+                    WalletConnectKey.sessionProposal,
+                    onSessionProposal,
+                );
+                walletKit.off(WalletConnectKey.sessionRequest, onSessionRequest);
+            } catch (error) {
+                console.log('walletKit off listener error', error);
+            }
+        };
     }, [initialized, onSessionProposal, onSessionRequest]);
 }

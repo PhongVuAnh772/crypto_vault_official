@@ -8,7 +8,17 @@
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "codegraph:status": "codegraph status .",
+    "codegraph:index": "codegraph index .",
+    "codegraph:sync": "codegraph sync .",
+    "codegraph:query": "codegraph query",
+    "codegraph:context": "codegraph context",
+    "codegraph:impact": "codegraph impact",
+    "codegraph:affected": "codegraph affected",
+    "latex:datn": "make datn",
+    "latex:report": "make report",
+    "latex:clean": "make clean"
   },
   "dependencies": {
     "@craftzdog/react-native-buffer": "^6.0.5",
