@@ -1,0 +1,20 @@
+export const appImages: Record<string, any> = {
+  logo: require("../../assets/images/logo.png"),
+  newLogo: require("../../assets/images/new_logo.png"),
+  logoF: require("../../assets/images/logo_f.png"),
+  aiLogo: require("../../assets/images/ai_logo.png"),
+  ledgerifyBalanceBackground: require("../../assets/images/ledgerify_balance_background.png"),
+  nftArt1: require("../../assets/images/nft_art_1.png"),
+  nftArt2: require("../../assets/images/nft_art_2.png"),
+  nftArt3: require("../../assets/images/nft_art_3.png"),
+  kintsugiBust: require("../../assets/images/kintsugi_bust.png"),
+  blueLiquidWave: require("../../assets/images/blue_liquid_wave.png"),
+  waterCaustics: require("../../assets/images/water_caustics.png"),
+  silverRayleigh: require("../../assets/images/silver_rayleigh.png"),
+  ai_icon: require("../../../assets/images/ai_icons.png"),
+  balanceBg: require("../../assets/images/balance_bg.jpg"),
+  walletIllustration: require("../../assets/images/wallet_illustration.png"),
+  nftIllustration: require("../../../assets/images/nft_illustration.png"),
+};
+
+export default appImages;

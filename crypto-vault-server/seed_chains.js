@@ -1,6 +1,22 @@
 require('dotenv').config({ path: __dirname + '/.env' });
 const db = require('./src/utils/db');
 
+// Protocol Icon URLs for easy tracing and updating
+const PROTOCOL_ICONS = {
+  btc: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png',
+  eth: 'https://cryptologos.cc/logos/ethereum-eth-logo.png',
+  ton: 'https://cryptologos.cc/logos/toncoin-ton-logo.png',
+  bsc: 'https://cryptologos.cc/logos/bnb-bnb-logo.png',
+  polygon: 'https://cryptologos.cc/logos/polygon-matic-logo.png',
+
+  // Legacy S3 Links for reference:
+  // btc_legacy: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042111-bitcoin.png',
+  // eth_legacy: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png',
+  // ton_legacy: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042148-ton.png',
+  // bsc_legacy: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042120-bsc%20testnet.png',
+  // polygon_legacy: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-041952-polygon.png',
+};
+
 const SEED_DATA = {
   chains: [
     {
@@ -14,7 +30,7 @@ const SEED_DATA = {
         slip0044: 0,
         explorer_url: 'https://blockstream.info',
         rpc_url: '',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042111-bitcoin.png'
+        icon_url: PROTOCOL_ICONS.btc
       }
     },
     {
@@ -29,7 +45,7 @@ const SEED_DATA = {
         chainId: 1,
         explorer_url: 'https://etherscan.io',
         rpc_url: 'https://rpc.ankr.com/eth',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png'
+        icon_url: PROTOCOL_ICONS.eth
       }
     },
     {
@@ -45,7 +61,7 @@ const SEED_DATA = {
         chainId: 11155111,
         explorer_url: 'https://sepolia.etherscan.io',
         rpc_url: 'https://rpc.sepolia.org',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042132-ethereum.png'
+        icon_url: PROTOCOL_ICONS.eth
       }
     },
     {
@@ -59,7 +75,7 @@ const SEED_DATA = {
         slip0044: 607,
         explorer_url: 'https://tonscan.org',
         rpc_url: 'https://toncenter.com/api/v2/jsonRPC',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042148-ton.png'
+        icon_url: PROTOCOL_ICONS.ton
       }
     },
     {
@@ -74,7 +90,7 @@ const SEED_DATA = {
         chainId: 56,
         explorer_url: 'https://bscscan.com',
         rpc_url: 'https://bsc-dataseed.binance.org/',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042120-bsc%20testnet.png'
+        icon_url: PROTOCOL_ICONS.bsc
       }
     },
     {
@@ -90,7 +106,7 @@ const SEED_DATA = {
         chainId: 97,
         explorer_url: 'https://testnet.bscscan.com',
         rpc_url: 'https://data-seed-prebsc-1-s1.binance.org:8545/',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-042120-bsc%20testnet.png'
+        icon_url: PROTOCOL_ICONS.bsc
       }
     },
     {
@@ -105,7 +121,7 @@ const SEED_DATA = {
         chainId: 137,
         explorer_url: 'https://polygonscan.com',
         rpc_url: 'https://polygon-rpc.com',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-041952-polygon.png'
+        icon_url: PROTOCOL_ICONS.polygon
       }
     },
     {
@@ -121,7 +137,7 @@ const SEED_DATA = {
         chainId: 80002,
         explorer_url: 'https://amoy.polygonscan.com',
         rpc_url: 'https://rpc-amoy.polygon.technology',
-        icon_url: 'https://red-x-dev-public.s3.ap-northeast-1.amazonaws.com/token/20241106-041952-polygon.png'
+        icon_url: PROTOCOL_ICONS.polygon
       }
     }
   ],

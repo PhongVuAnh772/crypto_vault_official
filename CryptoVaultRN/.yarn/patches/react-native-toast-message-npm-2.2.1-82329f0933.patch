@@ -1,0 +1,13 @@
+diff --git a/lib/src/components/AnimatedContainer.js b/lib/src/components/AnimatedContainer.js
+index 1d469fddfa510ef0d969fde7cfd4d81a6216eca4..f8921e63ed6f4a4112447a232577ebd8a2fda056 100644
+--- a/lib/src/components/AnimatedContainer.js
++++ b/lib/src/components/AnimatedContainer.js
+@@ -73,7 +73,7 @@ export function AnimatedContainer({ children, isVisible, position, topOffset, bo
+         const newAnimationValue = isVisible ? 1 : 0;
+         animate(newAnimationValue);
+     }, [animate, isVisible]);
+-    return (<Animated.View testID={getTestId('AnimatedContainer')} onLayout={computeViewDimensions} style={[styles.base, styles[position], animationStyles]} 
++    return (isVisible && <Animated.View testID={getTestId('AnimatedContainer')} onLayout={computeViewDimensions} style={[styles.base, styles[position], animationStyles]} 
+     // This container View is never the target of touch events but its subviews can be.
+     // By doing this, tapping buttons behind the Toast is allowed
+     pointerEvents={isVisible ? 'box-none' : 'none'} {...panResponder.panHandlers}>

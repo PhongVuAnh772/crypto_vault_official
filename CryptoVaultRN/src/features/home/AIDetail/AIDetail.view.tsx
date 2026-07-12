@@ -1,0 +1,178 @@
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { BlurView } from 'expo-blur';
+import React, { useState } from 'react';
+import {
+    Image,
+    SafeAreaView,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+    Alert
+} from 'react-native';
+import AIDetailStyle from './AIDetail.style';
+
+import BackIcon from 'src/assets/icons/arrow_left.svg';
+import ExportIcon from 'src/assets/icons/new_send.svg';
+import HeartIcon from 'src/assets/icons/star.svg';
+import { useNftMarketplace } from '../NFTCollectionDetail/useNftMarketplace';
+import { NftItem } from 'src/types/nft';
+
+const AIDetailScreen = () => {
+    const navigation = useNavigation<any>();
+    const route = useRoute<any>();
+    const { imageUri, title, price, isOwner, id, nft } = route.params || {};
+    const nftPrice = price || 0;
+
+    const owlImage = 'https://i.ibb.co/L6V6v6V/owl.png';
+    const HIGH_PRICE_THRESHOLD = 5;
+
+    const { handleBuy, handleBid, loading } = useNftMarketplace();
+    const [isSelling, setIsSelling] = useState(false);
+    const [sellPrice, setSellPrice] = useState('1');
+
+    const onBuyPress = () => {
+        const selectedNft: NftItem = {
+            id: String(nft?.id ?? id ?? ''),
+            name: nft?.name ?? title ?? '',
+            price: Number(nft?.price ?? nftPrice ?? 0),
+            image: nft?.image ?? imageUri ?? '',
+            type: nft?.type,
+            owner: nft?.owner,
+            highestBid: nft?.highestBid,
+        };
+        if (selectedNft.price >= HIGH_PRICE_THRESHOLD) {
+            handleBid(selectedNft, selectedNft.price + 0.5);
+        } else {
+            handleBuy(selectedNft);
+        }
+    };
+
+    const onSellPress = () => {
+        if (!isSelling) {
+            setIsSelling(true);
+            return;
+        }
+        
+        const numericPrice = parseFloat(sellPrice);
+        if (isNaN(numericPrice) || numericPrice <= 0) {
+            Alert.alert('Error', 'Please enter a valid price');
+            return;
+        }
+        
+        if (numericPrice >= HIGH_PRICE_THRESHOLD) {
+            Alert.alert('NFT Listed for Auction', `Your NFT has a high price (${numericPrice} TON) so it will be sold via Auction.`);
+        } else {
+            Alert.alert('NFT Listed for Sale', `Your NFT has been listed for sale at ${numericPrice} TON.`);
+        }
+        setIsSelling(false);
+    };
+
+    return (
+        <View style={AIDetailStyle.container}>
+            <Image
+                source={{ uri: imageUri || owlImage }}
+                style={AIDetailStyle.backgroundImage}
+                resizeMode="cover"
+            />
+
+            <SafeAreaView style={{ flex: 1 }}>
+                <View style={AIDetailStyle.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <BackIcon width={24} height={24} fill="#fff" />
+                    </TouchableOpacity>
+                    <Text style={AIDetailStyle.headerTitle}>AI360</Text>
+                    <View style={{ width: 24 }} />
+                </View>
+
+                {/* Social Actions */}
+                <View style={AIDetailStyle.socialActions}>
+                    <TouchableOpacity style={AIDetailStyle.likeBadge}>
+                        <HeartIcon width={16} height={16} fill="#fff" />
+                        <Text style={AIDetailStyle.likeText}>2.3k</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[AIDetailStyle.socialIcon, { backgroundColor: '#E60023' }]}>
+                        {/* Pinterest Placeholder */}
+                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>P</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[AIDetailStyle.socialIcon, { backgroundColor: '#0057FF' }]}>
+                        {/* Behance Placeholder */}
+                        <Text style={{ color: '#fff', fontWeight: 'bold' }}>Bē</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={AIDetailStyle.socialIcon}>
+                        <ExportIcon width={20} height={20} fill="#fff" />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Info Card */}
+                <View style={AIDetailStyle.infoCard}>
+                    <BlurView intensity={80} style={AIDetailStyle.blurContainer} tint="dark">
+                        <Text style={AIDetailStyle.title}>{title || 'A lovely blue owl'}</Text>
+
+                        <View style={AIDetailStyle.statsRow}>
+                            <View>
+                                <Text style={AIDetailStyle.label}>Price / Type</Text>
+                                <Text style={AIDetailStyle.value}>{nftPrice >= HIGH_PRICE_THRESHOLD ? 'Auction' : 'Fixed Price'}</Text>
+                            </View>
+                            <View style={{ alignItems: 'flex-end' }}>
+                                <Text style={AIDetailStyle.label}>Generated by</Text>
+                                <View style={AIDetailStyle.creatorInfo}>
+                                    <Text style={AIDetailStyle.creatorName}>AIG Robot</Text>
+                                    <Image
+                                        source={{ uri: 'https://i.ibb.co/XzVzVzV/avatar.png' }}
+                                        style={AIDetailStyle.creatorAvatar}
+                                    />
+                                </View>
+                            </View>
+                        </View>
+
+                        <View style={AIDetailStyle.buttonRow}>
+                            {isOwner ? (
+                                <>
+                                    {isSelling && (
+                                        <TextInput
+                                            style={{ flex: 1, backgroundColor: '#fff', borderRadius: 18, paddingHorizontal: 15, height: 56, color: '#000', fontSize: 16, fontWeight: 'bold' }}
+                                            value={sellPrice}
+                                            onChangeText={setSellPrice}
+                                            keyboardType="numeric"
+                                            placeholder="Price in TON"
+                                            placeholderTextColor="#999"
+                                        />
+                                    )}
+                                    <TouchableOpacity 
+                                        style={[AIDetailStyle.downloadButton, { flex: isSelling ? 1 : 2, backgroundColor: isSelling ? (parseFloat(sellPrice) >= HIGH_PRICE_THRESHOLD ? '#FF9900' : '#2D6BFF') : '#2D6BFF' }]} 
+                                        onPress={onSellPress}
+                                    >
+                                        <Text style={AIDetailStyle.downloadText}>
+                                            {!isSelling ? 'Sell NFT' : (parseFloat(sellPrice) >= HIGH_PRICE_THRESHOLD ? 'Auction' : 'List Sale')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
+                            ) : (
+                                <>
+                                    <View style={AIDetailStyle.donateButton}>
+                                        <Text style={AIDetailStyle.donateText}>{nftPrice} TON</Text>
+                                    </View>
+                                    <TouchableOpacity 
+                                        style={[AIDetailStyle.downloadButton, { backgroundColor: nftPrice >= HIGH_PRICE_THRESHOLD ? '#FF9900' : '#2D6BFF'}]} 
+                                        onPress={onBuyPress}
+                                        disabled={loading}
+                                    >
+                                        <Text style={AIDetailStyle.downloadText}>
+                                            {loading ? 'Processing...' : (nftPrice >= HIGH_PRICE_THRESHOLD ? 'Bid NFT' : 'Buy NFT')}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </View>
+                    </BlurView>
+                </View>
+            </SafeAreaView>
+        </View>
+    );
+};
+
+export default AIDetailScreen;
