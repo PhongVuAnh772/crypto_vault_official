@@ -427,6 +427,12 @@ app.use('/api/v1/notifications', notificationRoutes);
 app.use('/api/v1/audit', auditRoutes);
 app.use('/api/v1/staff', staffRoutes);
 
+// ============================================================
+// EXTERNAL TICKET PROVIDERS (VNtix, Globaltix)
+// ============================================================
+const externalTicketRoutes = require('./routes/externalTicketRoutes');
+app.use('/api/v1/external-tickets', externalTicketRoutes);
+
 // 3. INTERNAL TRADING REST API
 app.get('/api/market/summary/:market/:symbol', async (req, res) => {
   try {
