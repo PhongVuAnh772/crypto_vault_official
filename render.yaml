@@ -28,6 +28,8 @@ services:
       - key: VITE_API_URL
         fromService:
           type: web
+          name: cryptovault-backend
+          property: host
   # --- SERVICE 3: OTA APP DISTRIBUTION ---
   - type: web
     name: ota-app-distribution
