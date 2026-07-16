@@ -23,7 +23,6 @@ const pushErrorEventToAnalytics = async ({
         return;
     }
 
-    console.log('Pushing Error Event To Analytics....');
     Utils.showToast({
         msg: AppI18Next.t(LanguageKey.common_server_busy),
         type: AppToastType.error,

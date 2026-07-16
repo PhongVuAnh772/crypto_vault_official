@@ -181,10 +181,7 @@ export const getBitcoinFullData = createAsyncThunk(
                 });
             }
         } catch (error: any) {
-            pushErrorEventToAnalytics({
-                error: error + '',
-                thirdPartyName: ThirdPartyService.BlockCypher,
-            });
+        
             return rejectWithValue(error?.response);
         }
     },

@@ -404,6 +404,29 @@ app.use('/api/v1/ads', adsRoutes);
 app.use('/api/v1/feed', feedRoutes);
 app.use('/api/v1', marketplaceRoutes);
 
+// ============================================================
+// TICKET PLATFORM ROUTES
+// ============================================================
+const partnerRoutes = require('./routes/partnerRoutes');
+const eventRoutes = require('./routes/eventRoutes');
+const ticketRoutes = require('./routes/ticketRoutes');
+const verificationRoutes = require('./routes/verificationRoutes');
+const qrRoutes = require('./routes/qrRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const auditRoutes = require('./routes/auditRoutes');
+const staffRoutes = require('./routes/staffRoutes');
+
+app.use('/api/v1/partners', partnerRoutes);
+app.use('/api/v1/events', eventRoutes);
+app.use('/api/v1/tickets', ticketRoutes);
+app.use('/api/v1/verify', verificationRoutes);
+app.use('/api/v1/qr', qrRoutes);
+app.use('/api/v1/webhooks', webhookRoutes);
+app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/audit', auditRoutes);
+app.use('/api/v1/staff', staffRoutes);
+
 // 3. INTERNAL TRADING REST API
 app.get('/api/market/summary/:market/:symbol', async (req, res) => {
   try {

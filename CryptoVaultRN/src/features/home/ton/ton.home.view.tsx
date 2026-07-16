@@ -80,6 +80,15 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
 
   const topAsset = listCryptoData[0];
   const networkLabel = protocolBaseData?.symbol?.toUpperCase?.() || "NETWORK";
+
+  const getTopAssetAmount = () => {
+    if (!topAsset) return '-';
+    const balanceVal = typeof topAsset.balanceToken === 'number' 
+      ? topAsset.balanceToken 
+      : Number(topAsset.balance ?? 0);
+    return `${Utils.formattedBalanceCurrency(balanceVal)} ${topAsset.symbol ?? ''}`;
+  };
+
   const widgets: HomeWidgetData[] = [
     {
       id: 'portfolio',
@@ -91,7 +100,7 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
     {
       id: 'top-asset',
       label: t(LanguageKey.home_widget_top_asset_label),
-      amount: topAsset ? `${Utils.formattedCurrency(Number(topAsset.balance ?? 0))} ${topAsset.symbol ?? ''}` : '-',
+      amount: topAsset ? getTopAssetAmount() : '-',
       trend: topAsset?.name || t(LanguageKey.home_widget_no_data),
       trendUp: Number(topAsset?.balance ?? 0) >= 0,
     },
@@ -166,6 +175,7 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
             onPressAccount={showBottomSheetModalAction}
             onPressScan={goToScan}
             onPressAI={goToAIDetail}
+            isLoading={isFirstInitial}
           />
 
           {/* Promo Swiper Section */}

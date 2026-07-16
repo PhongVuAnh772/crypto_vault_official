@@ -1,5 +1,4 @@
 import Utils from 'src/core/utils/commonUtils';
-import {pushErrorEventToAnalytics} from '../FirebaseAnalytics';
 import {ThirdPartyService} from '../FirebaseAnalytics/type';
 import AppI18Next from 'src/core/locales';
 import AppToastType from 'src/core/enum/AppToastType';
@@ -17,10 +16,7 @@ const handleServicesError = ({
         type: AppToastType.error,
     });
 
-    pushErrorEventToAnalytics({
-        error: error,
-        thirdPartyName: thirdPartyName,
-    });
+   
 };
 
 export {handleServicesError};

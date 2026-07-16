@@ -4,11 +4,14 @@ import {LinearGradient} from 'expo-linear-gradient';
 import appColors from 'src/core/constants/AppColors';
 import React from 'react';
 
+import { useAppTheme } from 'src/core/hooks/useAppTheme';
+import ThemeKey from 'src/core/enum/ThemeKey';
+
 type AppSkeletonType = {
     styles?: StyleProp<ViewStyle>;
     animation?: 'wave' | 'none' | 'pulse';
-    width?: number;
-    height?: number;
+    width?: number | string;
+    height?: number | string;
 };
 
 const AppSkeleton: React.FC<AppSkeletonType> = ({
@@ -17,6 +20,9 @@ const AppSkeleton: React.FC<AppSkeletonType> = ({
     width,
     height,
 }) => {
+    const { colorSchemeMode } = useAppTheme();
+    const isDark = colorSchemeMode === ThemeKey.dark;
+
     return (
         <Skeleton
             LinearGradientComponent={LinearGradient}
@@ -25,7 +31,7 @@ const AppSkeleton: React.FC<AppSkeletonType> = ({
             height={height}
             style={[
                 styles ?? {
-                    backgroundColor: appColors.neutral.n200,
+                    backgroundColor: isDark ? '#181A45' : appColors.neutral.n200,
                 },
             ]}
         />

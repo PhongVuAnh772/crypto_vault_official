@@ -22,7 +22,6 @@ import {
   DetailJettonByAddressResponse,
   RawTimeResponse,
 } from "src/features/home/addCustomToken/ton/addCustomToken.ton.type";
-import { pushErrorEventToAnalytics } from "../FirebaseAnalytics";
 import { ThirdPartyService } from "../FirebaseAnalytics/type";
 import {
   DetailNFTByAddressUsingAPIType,
@@ -56,10 +55,7 @@ class TonServices {
       console.error("====================================");
       console.error("Ton API Error:", error);
       console.error("====================================");
-      pushErrorEventToAnalytics({
-        error: error,
-        thirdPartyName: ThirdPartyService.Ton,
-      });
+  
     }
   };
 

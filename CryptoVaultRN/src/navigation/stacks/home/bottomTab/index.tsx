@@ -21,6 +21,7 @@ import { getDataProjectOnGoing } from "src/features/home/bottomTab/explore/explo
 import SettingScreen from "src/features/home/bottomTab/setting/setting.view";
 import HomeView from "src/features/home/home.view";
 import TransactionTab from "src/features/transactionTab/transactionTab.view";
+import TicketWalletScreen from "src/features/tickets/ticketWallet/ticketWallet.view";
 import { BottomTabScreenKey } from "src/navigation/enum/NavigationKey";
 import { renderHeaderTabbar } from "../headerTabbar/headerTabbar.view";
 import AppTabBar from "./AppTabBar";
@@ -74,6 +75,12 @@ const BottomTab = () => {
       <Tab.Screen
         name={LanguageKey.home_tab_transaction_title}
         component={TransactionTab}
+        options={{ headerShown: false }}
+      />
+
+      <Tab.Screen
+        name={LanguageKey.home_tab_tickets_title}
+        component={TicketWalletScreen}
         options={{ headerShown: false }}
       />
 

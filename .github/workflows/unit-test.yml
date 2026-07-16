@@ -15,4 +15,4 @@ jobs:
 
       - run: |
           chmod +x scripts/deployment/common/run-unit-tests.sh
-          scripts/deployment/common/run-unit-tests.sh $GITHUB_WORKSPACE
+          scripts/deployment/common/run-unit-tests.sh $GITHUB_WORKSPACE/crypto-vault-expo

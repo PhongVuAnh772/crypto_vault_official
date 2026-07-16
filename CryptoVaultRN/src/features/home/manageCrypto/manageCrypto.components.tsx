@@ -56,7 +56,6 @@ const ManageCrypto: React.FC<ExtendedManageListCryptoType> = ({
                         uri={item.logo ?? ''}
                         setIsLoading={setIsLoadingImage}
                         isLoading={isLoadingImages[item.logo ?? '']?.loading}
-                        styleImage={styles.image}
                         skeletonRadius={100}
                         defaultImage={appImages.logo}
                     />

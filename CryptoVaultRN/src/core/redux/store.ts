@@ -32,6 +32,7 @@ import NFTDataReducer from "./slice/NftData.slice";
 import swapReducer from "./slice/swap/swap.slice";
 import appConfigSliceReducer from "./slice/appConfig.slice";
 import authSliceReducer from "./slice/auth.slice";
+import ticketReducer from "./slice/ticket.slice";
 
 const persistConfig = {
   storage: AsyncStorage,
@@ -52,6 +53,7 @@ const persistConfig = {
     ReduxKey.swap,
     ReduxKey.TonConnect,
     ReduxKey.walletConnect,
+    'ticket',
   ],
 };
 
@@ -76,6 +78,7 @@ const rootReducer = combineReducers({
   tonConnect: tonConnectReducer,
   walletConnect: walletConnectSliceReducer,
   auth: authSliceReducer,
+  ticket: ticketReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

@@ -110,8 +110,8 @@ export type SupportedNativeTokenType = {
   logo: string | null;
   name: string;
   symbol: string;
-  contractAddress: string;
-  network: string;
+  contractAddress?: string;
+  network?: string;
 };
 
 export interface ProtocolDataWithSupportedTokensFormBEType

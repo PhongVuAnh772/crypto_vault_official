@@ -147,7 +147,7 @@ const HeaderTabBar: React.FC<HeaderTabBarProps> = ({
         );
     }
   };
-  const isScrolled = route?.params?.isScrolled ?? false;
+  const isScrolled = (route?.params as any)?.isScrolled ?? false;
   const opacity = useSharedValue(0);
 
   React.useEffect(() => {

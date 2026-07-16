@@ -87,6 +87,13 @@ import CreatePostScreen from "src/features/socialFeed/CreatePostScreen";
 import PostDetailScreen from "src/features/socialFeed/PostDetailScreen";
 import AuctionDetailScreen from "src/features/marketplace/AuctionDetailScreen";
 import BidHistoryScreen from "src/features/marketplace/BidHistoryScreen";
+
+// Ticket Platform
+import TicketWalletScreen from "src/features/tickets/ticketWallet/ticketWallet.view";
+import TicketDetailScreen from "src/features/tickets/ticketDetail/ticketDetail.view";
+import TicketQRScreen from "src/features/tickets/ticketQR/ticketQR.view";
+import TicketTransferScreen from "src/features/tickets/ticketTransfer/ticketTransfer.view";
+import ScannerScreen from "src/features/tickets/scanner/scanner.view";
 import ConnectWalletScreen from "src/features/marketplace/ConnectWalletScreen";
 import CreateAuctionScreen from "src/features/marketplace/CreateAuctionScreen";
 import CreateNFTScreen from "src/features/marketplace/CreateNFTScreen";
@@ -460,6 +467,28 @@ const HomeStack = () => {
         <Stack.Screen
           name={HomeStackScreenKey.BidHistoryScreen}
           component={BidHistoryScreen}
+        />
+
+        {/* Ticket Platform */}
+        <Stack.Screen
+          name={HomeStackScreenKey.TicketWallet}
+          component={TicketWalletScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.TicketDetail}
+          component={TicketDetailScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.TicketQR}
+          component={TicketQRScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.TicketTransfer}
+          component={TicketTransferScreen}
+        />
+        <Stack.Screen
+          name={HomeStackScreenKey.TicketScanner}
+          component={ScannerScreen}
         />
       </HideHeaderStack>
       <AccountListener />

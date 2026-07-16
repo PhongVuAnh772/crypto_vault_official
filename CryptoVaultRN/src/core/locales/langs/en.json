@@ -37,6 +37,7 @@
     "home_tab_nft_collection_title": "NFT Collection",
     "home_tab_transaction_title": "Transaction",
     "home_tab_explore_title": "Explore",
+    "home_tab_tickets_title": "Tickets",
     "home_tab_setting_title": "Setting",
     "onboarding_new_wallet_button_title": "Get a New Account",
     "onboarding_restore_wallet_button_title": "I already have one",
@@ -704,5 +705,14 @@
     "home_widget_portfolio_label": "Portfolio value",
     "home_widget_top_asset_label": "Top asset",
     "home_widget_assets_count": "{{count}} assets",
-    "home_widget_no_data": "No data"
+    "home_widget_no_data": "No data",
+    "protect_secret_phrase_title_new": "Bảo vệ ví của bạn",
+    "protect_secret_phrase_subtitle_new": "12 từ khôi phục là chìa khóa duy nhất để truy cập tài sản của bạn.",
+    "protect_secret_phrase_item_title_1": "Không chia sẻ",
+    "protect_secret_phrase_item_desc_1": "Ngay cả đội ngũ hỗ trợ cũng sẽ không bao giờ hỏi bạn về 12 từ này.",
+    "protect_secret_phrase_item_title_2": "Lưu ngoại tuyến",
+    "protect_secret_phrase_item_desc_2": "Viết ra giấy và cất ở nơi an toàn, không lưu trên thiết bị điện tử.",
+    "protect_secret_phrase_item_title_3": "Không lưu lên Cloud",
+    "protect_secret_phrase_item_desc_3": "Tránh lưu ảnh chụp, file hoặc lưu trên Google Drive, iCloud.",
+    "protect_secret_phrase_footer_new": "Tài sản của bạn được bảo vệ bởi mã hóa"
 }

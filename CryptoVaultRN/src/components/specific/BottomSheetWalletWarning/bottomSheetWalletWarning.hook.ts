@@ -14,13 +14,19 @@ import { bottomSheetPhraseType } from "./bottomSheetWalletWarning.type";
 const useBottomSheetWallet = () => {
   const listBottomSheetPhrase: bottomSheetPhraseType[] = [
     {
-      icon: "lock",
-      title: LanguageKey.protect_secret_phrase_desc_1,
+      icon: "shield",
+      title: LanguageKey.protect_secret_phrase_item_title_1,
+      desc: LanguageKey.protect_secret_phrase_item_desc_1,
     },
-
     {
       icon: "edit-3",
-      title: LanguageKey.protect_secret_phrase_desc_2,
+      title: LanguageKey.protect_secret_phrase_item_title_2,
+      desc: LanguageKey.protect_secret_phrase_item_desc_2,
+    },
+    {
+      icon: "cloud-off",
+      title: LanguageKey.protect_secret_phrase_item_title_3,
+      desc: LanguageKey.protect_secret_phrase_item_desc_3,
     },
   ];
   const theme = useAppTheme();

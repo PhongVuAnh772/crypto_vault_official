@@ -14,6 +14,7 @@ import {
   useProtocolSelected,
   useSelectedCurrencySetting,
 } from "src/core/redux/slice/account.selector";
+import { getCryptoCurrencyState } from "src/core/redux/slice/app.selector";
 import {
   changWallet,
   editWallet,
@@ -66,6 +67,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   const dispatch = useAppDispatch();
   const currencyRateConversion = useCurrencyRateConversion();
   const selectedCurrencySetting = useSelectedCurrencySetting();
+  const cryptosCurrency = useAppSelector(getCryptoCurrencyState);
   const lightMode = useAppSelector(getThemeMode) !== ThemeKey.light;
   const buttonRefs = useRef<{ [key: string]: TouchableOpacity | null }>({});
   const protocolDataLists = useAppSelector(getProtocolDataLists);
@@ -313,6 +315,9 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
         })
         .map((item) => {
           const id = Utils.generateUniqueId();
+          const fallbackPrice = cryptosCurrency?.find(
+            (c) => c.symbol.toLowerCase() === item.symbol.toLowerCase()
+          )?.price || 0;
           const data: ListCryptoDataType = {
             id,
             name: item?.name,
@@ -323,7 +328,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
             contractAddress: item?.contractAddress,
             decimal: item.decimal,
             baseData: protocolBaseData,
-            rateCurrency: item.balanceCurrency ?? 0,
+            rateCurrency: item.balanceCurrency || fallbackPrice || 0,
           };
           return data;
         });
@@ -446,8 +451,11 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
           let updatedToken = { ...token };
 
           if (matchToken) {
+            const fallbackPrice = cryptosCurrency?.find(
+              (c) => c.symbol.toLowerCase() === token.symbol.toLowerCase()
+            )?.price || 0;
             updatedToken.balance = +matchToken.balance;
-            updatedToken.rateCurrency = matchToken.usd_price;
+            updatedToken.rateCurrency = matchToken.usd_price || fallbackPrice || 0;
           }
 
           return updatedToken;
@@ -476,11 +484,6 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       await updateTokenBalance(tokensAddress);
     } catch (error) {
       console.error("processQueue Error:", error);
-      Utils.showToast({
-        msg: t(LanguageKey.common_server_busy),
-        type: AppToastType.error,
-        contentOffSet: contentOffsetToast,
-      });
     } finally {
       if (queueRef.current.length > 0) {
         setTimeout(() => {
@@ -499,9 +502,19 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
   ): number => {
     return listToken.reduce((total, item) => {
       const balance = item?.balance?.toString() || "";
-      if (!item.decimal || !balance || !item?.rateCurrency) {
+      if (!item.decimal || !balance) {
         return total + 0;
       }
+
+      const fallbackPrice = cryptosCurrency?.find(
+        (c) => c.symbol.toLowerCase() === item.symbol.toLowerCase()
+      )?.price || 0;
+
+      const price = item.rateCurrency || fallbackPrice;
+      if (!price) {
+        return total + 0;
+      }
+
       const convertBalance = Utils.convertBigIntFollowDecimals(
         balance,
         item.decimal
@@ -509,7 +522,7 @@ const useEVMHome = ({ navigation }: RootNavigationType) => {
       const formattedBalance = Utils.formattedBalanceCurrency(+convertBalance);
       const coinAmount =
         selectedCurrencySetting.rate *
-        item.rateCurrency *
+        price *
         currencyRateConversion;
 
       const cutCoinAmount = Utils.truncateToNumberDecimals(coinAmount, 2);

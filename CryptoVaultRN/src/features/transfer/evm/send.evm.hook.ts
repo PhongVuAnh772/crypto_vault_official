@@ -57,6 +57,8 @@ import {
   LoadingSendTokenType,
   PinCodeType,
 } from "./send.evm.type";
+import { ethers } from "ethers";
+import RpcFallbackProvider from "src/core/utils/rpcUtils";
 
 type SendEVMParams = RouteProp<
   HomeStackParamListType,
@@ -78,6 +80,8 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
   const [sendMaximum, setSendMaximum] = useState<string>(""); // State for the maximum amount to send
   const [estimateGasFee, setEstimateGasFee] = useState<string>(""); // State for the estimated gas fee
   const [disableInput, setDisableInput] = useState<boolean>(false); // State to disable input fields
+  const [rpcUrl, setRpcUrl] = useState<string>("");
+  const rpcUrlRef = useRef<string>("");
   const [estimateGasFeeForApprove, setEstimateGasFeeForApprove] =
     useState<string>(""); // State for the estimated gas fee for approve
   const [onShowPinCode, setOnShowPinCode] = useState<PinCodeType>({
@@ -109,9 +113,9 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     [currentToken, listToken, params]
   );
 
-  const initWeb3 = () => {
+  const initWeb3 = (customUrl?: string) => {
     const urpUrl =
-       "https://ethereum-rpc.publicnode.com"; // Get the RPC URL of the selected protocol
+       customUrl || rpcUrlRef.current || currentProtocol?.rpcUrl || "https://ethereum-rpc.publicnode.com"; // Get the RPC URL of the selected protocol
     const token = tokenSelected as SupportedTokenItemWithProtocol; // Cast tokenSelected to SupportedTokenItemWithProtocol
     return new Web3Service({
       urpUrl, // Initialize Web3 service with RPC URL
@@ -283,14 +287,34 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       tokenSelected,
     } = data;
 
-    const estimateGasFee = await web3.estimateGasTransferNativeToken({
-      amount: commonUtils.convertAmountToWeiFollowDecimals(
-        amountSend,
-        tokenSelected?.decimal ?? 0
-      ),
-      recipientAddress: recipientAddress,
-      sender: wallet?.address,
-    });
+    let estimateGasFee: bigint;
+    if (
+      !commissionContractAddress ||
+      !beneficiaryWalletAddress ||
+      serviceFee === 0n
+    ) {
+      estimateGasFee = await web3.estimateGasTransferNativeToken({
+        amount: commonUtils.convertAmountToWeiFollowDecimals(
+          amountSend,
+          tokenSelected?.decimal ?? 0
+        ),
+        recipientAddress: recipientAddress,
+        sender: wallet?.address,
+      });
+    } else {
+      estimateGasFee = await web3.estimateGasTransferToken({
+        smartContract: commissionContractAddress,
+        amount: commonUtils.convertAmountToWeiFollowDecimals(
+          amountSend,
+          tokenSelected?.decimal ?? 0
+        ),
+        beneficiaryAddress: beneficiaryWalletAddress,
+        commission: serviceFee,
+        recipientAddress,
+        tokenContractAddress: "0x0000000000000000000000000000000000000000",
+        sender: wallet?.address,
+      });
+    }
 
     const convertEstimateGasFee = commonUtils.convertBigIntFollowDecimals(
       estimateGasFee,
@@ -411,7 +435,19 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       return { ...prev, screen: true };
     });
     try {
-      const web3 = initWeb3();
+      // Resolve the healthy RPC URL first
+      let activeUrl = rpcUrlRef.current;
+      if (currentProtocol) {
+        const urls = currentProtocol.rpcUrls && currentProtocol.rpcUrls.length > 0
+          ? currentProtocol.rpcUrls
+          : [currentProtocol.rpcUrl];
+        const fallback = new RpcFallbackProvider(urls, currentProtocol.chainId);
+        activeUrl = await fallback.getHealthyRpcUrl();
+        rpcUrlRef.current = activeUrl;
+        setRpcUrl(activeUrl);
+      }
+
+      const web3 = initWeb3(activeUrl);
 
       const data = validateBaseData();
       if (!data) {
@@ -423,6 +459,8 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
         protocol,
         wallet,
         tokenSelected,
+        commissionContractAddress,
+        beneficiaryWalletAddress,
       } = data;
 
       let balance: bigint = 0n;
@@ -445,12 +483,26 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
           decimals
         );
 
-        const estimateGasFeeWhenSendFullBalance =
-          await web3.estimateGasTransferNativeToken({
-            amount: balance - convertFeeToBigInt,
-            recipientAddress: wallet?.address,
-            sender: wallet?.address,
-          });
+        let estimateGasFeeWhenSendFullBalance: bigint;
+        if (!commissionContractAddress || !beneficiaryWalletAddress || convertFeeToBigInt === 0n) {
+          estimateGasFeeWhenSendFullBalance =
+            await web3.estimateGasTransferNativeToken({
+              amount: balance - convertFeeToBigInt,
+              recipientAddress: wallet?.address,
+              sender: wallet?.address,
+            });
+        } else {
+          estimateGasFeeWhenSendFullBalance =
+            await web3.estimateGasTransferToken({
+              smartContract: commissionContractAddress,
+              amount: balance - convertFeeToBigInt,
+              beneficiaryAddress: beneficiaryWalletAddress,
+              commission: convertFeeToBigInt,
+              recipientAddress: wallet?.address,
+              tokenContractAddress: "0x0000000000000000000000000000000000000000",
+              sender: wallet?.address,
+            });
+        }
 
         let totalMaximumSend =
           balance - estimateGasFeeWhenSendFullBalance - convertFeeToBigInt;
@@ -462,6 +514,13 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
           });
           totalMaximumSend = 0n;
           setDisableInput(true);
+        } else {
+          setError({
+            address: "",
+            amount: "",
+            page: "",
+          });
+          setDisableInput(false);
         }
 
         const convertMaximumSend = commonUtils.convertBigIntFollowDecimals(
@@ -483,6 +542,12 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
           tokenSelected.decimal
         );
         setSendMaximum(convertMaximumSend);
+        setError({
+          address: "",
+          amount: "",
+          page: "",
+        });
+        setDisableInput(false);
       }
 
       const convertBalanceFollowDecimals =
@@ -551,6 +616,31 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
     contractAddress: string,
     isGetNative?: boolean
   ) => {
+    try {
+      const urls = currentProtocol?.rpcUrls && currentProtocol.rpcUrls.length > 0
+        ? currentProtocol.rpcUrls
+        : [currentProtocol?.rpcUrl || "https://ethereum-rpc.publicnode.com"];
+      const fallback = new RpcFallbackProvider(urls, currentProtocol?.chainId);
+      const provider = await fallback.getProvider();
+      if (provider) {
+        const isNative = isGetNative || token.isNativeToken;
+        if (isNative) {
+          const balance = await provider.getBalance(walletAddress);
+          return balance;
+        } else {
+          const contract = new ethers.Contract(
+            contractAddress,
+            ["function balanceOf(address) view returns (uint256)"],
+            provider
+          );
+          const balance = await contract.balanceOf(walletAddress);
+          return balance;
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to get balance via RPC, falling back to Moralis...", e);
+    }
+
     const getChain = convertChainByProtocol(slip0044);
     const isNative = isGetNative || token.isNativeToken;
 
@@ -713,6 +803,7 @@ const useSendEVM = ({ navigation }: RootNavigationType) => {
       slip: protocol.slip0044,
       pinCode,
       smartContract: "0xd9145CCE52D386f254917e481eB44e9943F39138",
+      tokenContractAddress: "0x0000000000000000000000000000000000000000",
     });
   };
 

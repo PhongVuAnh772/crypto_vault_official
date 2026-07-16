@@ -106,7 +106,7 @@ export type SupportedNativeTokenType = {
     logo: string | null;
     name: string;
     symbol: string;
-    contractAddress: string;
+    contractAddress?: string;
 };
 
 export interface ProtocolDataWithSupportedTokensFormBEType

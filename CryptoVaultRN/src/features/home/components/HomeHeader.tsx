@@ -33,6 +33,7 @@ export type HomeHeaderProps = {
   onPressAccount?: () => void;
   onPressScan?: () => void;
   onPressAI?: () => void;
+  isLoading?: boolean;
 };
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -78,6 +79,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
   onPressAccount,
   onPressScan,
   onPressAI,
+  isLoading,
 }) => {
   const theme = useAppTheme();
   const styles = useStyles(theme);
@@ -121,6 +123,7 @@ const HomeHeader: React.FC<HomeHeaderProps> = ({
             balance={balance}
             withoutCurrencyRate={false}
             onPressAccount={onPressAccount}
+            isLoading={isLoading}
           />
 
           {/* Action buttons at the bottom of the card */}

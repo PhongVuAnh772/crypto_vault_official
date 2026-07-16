@@ -1,6 +1,6 @@
 import { Feather } from '@expo/vector-icons';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useAppTheme } from 'src/core/hooks/useAppTheme';
 import { useCurrentWallet, useSelectedCurrencySetting } from 'src/core/redux/slice/account.selector';
 import Utils from 'src/core/utils/commonUtils';
@@ -11,11 +11,13 @@ type WalletAcBalanceledgerifyProps = {
     balance: number;
     withoutCurrencyRate: boolean;
     onPressAccount?: () => void;
+    isLoading?: boolean;
 };
 const BalanceCard: React.FC<WalletAcBalanceledgerifyProps> = ({
     withoutCurrencyRate,
     balance,
     onPressAccount,
+    isLoading,
 }) => {
     const theme = useAppTheme();
     const selectedCurrencySetting = useSelectedCurrencySetting();
@@ -39,7 +41,12 @@ const BalanceCard: React.FC<WalletAcBalanceledgerifyProps> = ({
                 <Feather name="chevron-down" size={14} color="rgba(255,255,255,0.7)" style={{ marginLeft: 4 }} />
             </TouchableOpacity>
             
-            <Text style={styles.balance}>{balanceConverted}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
+                <Text style={[styles.balance, { marginBottom: 0 }]}>{balanceConverted}</Text>
+                {isLoading && (
+                    <ActivityIndicator size="small" color="#9E86FF" style={{ marginLeft: 12 }} />
+                )}
+            </View>
             
             <TouchableOpacity style={styles.accountsBtn} onPress={handleCopyAddress}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>

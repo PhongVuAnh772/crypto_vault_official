@@ -1,7 +1,6 @@
 import EnvConfig from 'src/core/constants/EnvConfig';
 import { sendGet, sendPost } from 'src/core/network/requests';
 import { CollectionDetailMoralisResponse } from 'src/core/redux/slice/NFT/NFTImport.type';
-import { pushErrorEventToAnalytics } from '../FirebaseAnalytics';
 import { ThirdPartyService } from '../FirebaseAnalytics/type';
 import {
     APIResponseMoralis,
@@ -23,11 +22,7 @@ class MoralisService {
       data: ErrorMessage | any;
     };
     if (status !== 200 || (data && "message" in data)) {
-      const error = data as ErrorMessage;
-      pushErrorEventToAnalytics({
-        error: error.message,
-        thirdPartyName: ThirdPartyService.Moralis,
-      });
+    
     }
   }
 

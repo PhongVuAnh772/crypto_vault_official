@@ -81,3 +81,12 @@ yarn-error.*
 *.tsbuildinfo
 
 # @end expo-cli
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.toc
+*.pdf

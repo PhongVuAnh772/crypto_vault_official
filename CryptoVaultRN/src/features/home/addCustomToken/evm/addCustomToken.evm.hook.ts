@@ -28,6 +28,8 @@ import {
 } from 'src/core/utils/evmUtils';
 import RootNavigationType from 'src/navigation/stacks/type/NavigationType';
 import { tokenService } from 'src/core/services/api.service';
+import { ethers } from 'ethers';
+import RpcFallbackProvider from 'src/core/utils/rpcUtils';
 
 const useAddCustomToken = ({ navigation }: RootNavigationType) => {
     const moralis = useMemo(() => new MoralisService(), []);
@@ -95,26 +97,67 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
                 console.error("Couldn't find current protocol");
                 throw new Error(t(LanguageKey.common_server_busy));
             }
+
+            let responseToken: any = null;
             const chain = convertChainByProtocol(protocolBaseData.slip0044);
-            if (!chain) {
-                console.error("Couldn't find chain");
-                throw new Error(t(LanguageKey.common_server_busy));
+            
+            if (chain) {
+                try {
+                    const response = await moralis.getTokenDetailByWallet({
+                        chain: chain,
+                        token_address: contractAddress.trim(),
+                    });
+                    if (response && response[0]) {
+                        responseToken = response[0];
+                    }
+                } catch (e) {
+                    console.warn('Moralis check failed, trying RPC...', e);
+                }
             }
-            const response = await moralis.getTokenDetailByWallet({
-                chain: chain,
-                token_address: contractAddress.trim(),
-            });
-            if (!response || !response[0]) {
-                throw new Error(t(LanguageKey.common_server_busy));
+
+            if (!responseToken) {
+                const urls = protocolBaseData.rpcUrls && protocolBaseData.rpcUrls.length > 0
+                    ? protocolBaseData.rpcUrls
+                    : [protocolBaseData.rpcUrl];
+                const fallback = new RpcFallbackProvider(urls, protocolBaseData.chainId);
+                const provider = await fallback.getProvider();
+                if (provider) {
+                    const contract = new ethers.Contract(
+                        contractAddress.trim(),
+                        [
+                            "function name() view returns (string)",
+                            "function symbol() view returns (string)",
+                            "function decimals() view returns (uint8)",
+                        ],
+                        provider
+                    );
+                    const [rpcName, rpcSymbol, rpcDecimals] = await Promise.all([
+                        contract.name().catch(() => ""),
+                        contract.symbol().catch(() => ""),
+                        contract.decimals().catch(() => 18),
+                    ]);
+                    if (rpcName && rpcSymbol) {
+                        responseToken = {
+                            name: rpcName,
+                            symbol: rpcSymbol,
+                            decimals: rpcDecimals.toString(),
+                        };
+                    }
+                }
             }
-            const responseToken = response[0];
+
+            if (!responseToken) {
+                throw new Error("Could not fetch token details");
+            }
+
             setSymbolToken(responseToken.symbol);
-            setDecimalsToken(responseToken.decimals);
+            setDecimalsToken(responseToken.decimals.toString());
             setNameToken(responseToken.name);
             setEditable(false);
-            setIsLoadingPage(false);
+            setError(false);
         } catch (error) {
             setError(true);
+            setEditable(true); // Allow manual entry if verification fails
             console.log('🚀 ~ handleCheckToken ~ error:', error);
         } finally {
             setIsLoadingPage(false);
@@ -151,36 +194,90 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
                 );
                 throw new Error(t(LanguageKey.common_server_busy));
             }
-            const chain = convertChainByProtocol(protocolBaseData.slip0044);
-            if (!chain) {
-                console.error("Couldn't find chain");
-                throw new Error(t(LanguageKey.common_server_busy));
+            
+            // Check if we already have token info in state
+            let finalName = nameToken;
+            let finalSymbol = symbolToken;
+            let finalDecimals = Number(decimalsToken || '18');
+            let finalLogo = '';
+
+            if (!finalName || !finalSymbol) {
+                // If not in state, try to fetch from Moralis or RPC
+                const chain = convertChainByProtocol(protocolBaseData.slip0044);
+                let responseToken: any = null;
+
+                if (chain) {
+                    try {
+                        const response = await moralis.getTokenDetailByWallet({
+                            chain: chain,
+                            token_address: contractAddress.trim(),
+                        });
+                        if (response && response[0]) {
+                            responseToken = response[0];
+                        }
+                    } catch (e) {
+                        console.warn('Moralis token fetch failed, trying RPC...', e);
+                    }
+                }
+
+                if (!responseToken) {
+                    const urls = protocolBaseData.rpcUrls && protocolBaseData.rpcUrls.length > 0
+                        ? protocolBaseData.rpcUrls
+                        : [protocolBaseData.rpcUrl];
+                    const fallback = new RpcFallbackProvider(urls, protocolBaseData.chainId);
+                    const provider = await fallback.getProvider();
+                    if (provider) {
+                        const contract = new ethers.Contract(
+                            contractAddress.trim(),
+                            [
+                                "function name() view returns (string)",
+                                "function symbol() view returns (string)",
+                                "function decimals() view returns (uint8)",
+                            ],
+                            provider
+                        );
+                        const [rpcName, rpcSymbol, rpcDecimals] = await Promise.all([
+                            contract.name().catch(() => ""),
+                            contract.symbol().catch(() => ""),
+                            contract.decimals().catch(() => 18),
+                        ]);
+                        if (rpcName && rpcSymbol) {
+                            responseToken = {
+                                name: rpcName,
+                                symbol: rpcSymbol,
+                                decimals: rpcDecimals,
+                            };
+                        }
+                    }
+                }
+
+                if (!responseToken) {
+                    throw new Error(t(LanguageKey.common_server_busy));
+                }
+
+                finalName = responseToken.name;
+                finalSymbol = responseToken.symbol;
+                finalDecimals = Number(responseToken.decimals);
+                finalLogo = responseToken?.logo || '';
             }
-            const response = await moralis.getTokenDetailByWallet({
-                chain: chain,
-                token_address: contractAddress.trim(),
-            });
-            if (!response || !response[0]) {
-                throw new Error(t(LanguageKey.common_server_busy));
-            }
-            const responseToken = response[0];
 
             const data: AddTokenParamsType = {
                 token: {
-                    name: responseToken.name,
-                    symbol: responseToken.symbol,
-                    logo: responseToken?.logo,
+                    name: finalName,
+                    symbol: finalSymbol,
+                    logo: finalLogo,
                     active: true,
-                    contractAddress: contractAddress,
+                    contractAddress: contractAddress.trim(),
                     idProtocol: protocolBaseData._id,
                     isNativeToken: false,
-                    decimal: Number(responseToken.decimals),
+                    decimal: finalDecimals,
                     protocol: protocolBaseData,
                     _id: commonUtils.generateUUID(),
                 },
                 id: `${wallet.address}_${protocolBaseData?.slip0044}`,
             };
-            if (checkExist(contractAddress)) {
+
+            if (checkExist(contractAddress.trim())) {
                 Utils.showToast({
                     msg: t(LanguageKey.token_already_added),
                     visibilityTime: 2000,
@@ -188,16 +285,17 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
                 });
                 throw new Error(t(LanguageKey.token_already_added));
             }
+
             // Notify backend for Admin management
             try {
                 await tokenService.requestCustomToken({
                     chain_id: (protocolBaseData.chainId || protocolBaseData._id).toString(),
-                    symbol: responseToken.symbol,
-                    name: responseToken.name,
-                    decimals: Number(responseToken.decimals),
+                    symbol: finalSymbol,
+                    name: finalName,
+                    decimals: finalDecimals,
                     contract_address: contractAddress.trim(),
                     metadata: {
-                        logo: responseToken?.logo,
+                        logo: finalLogo,
                         user_address: wallet.address
                     }
                 });
@@ -209,6 +307,10 @@ const useAddCustomToken = ({ navigation }: RootNavigationType) => {
             navigation.goBack();
         } catch (error) {
             console.log('🚀 ~ handleAddToken ~ error:', error);
+            Utils.showToast({
+                msg: t(LanguageKey.common_server_busy),
+                type: AppToastType.error,
+            });
         }
         setIsLoadingPage(false);
     };

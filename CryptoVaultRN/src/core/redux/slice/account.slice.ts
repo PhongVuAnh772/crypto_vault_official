@@ -55,7 +55,7 @@ export const MOCK_PROTOCOL_LIST_RESPONSE: ProtocolListDataAPI = { items: [] };
 export const getMobileProtocolListsWithSupportedTokens = createAsyncThunk(
   "account/getMobileProtocolListsWithSupportedTokens",
   async (
-    initMnemonic: string | undefined,
+    initMnemonic: string | undefined = undefined,
     { rejectWithValue, getState, dispatch }
   ) => {
     try {

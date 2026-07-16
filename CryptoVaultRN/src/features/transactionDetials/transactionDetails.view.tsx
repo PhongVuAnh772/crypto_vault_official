@@ -104,7 +104,7 @@ const TransactionDetails: React.FC<RootNavigationType> = ({ navigation }) => {
           : LanguageKey.transaction_detail_header_title
       }
       headerTextVariant={TextVariantKeys.titleLarge}
-      backgroundColor={appColors.neutral.n100}
+      backgroundColor={theme.colors.surface_surface_default}
     >
       <>
         {loading ? (
@@ -151,7 +151,6 @@ const TransactionDetails: React.FC<RootNavigationType> = ({ navigation }) => {
                     })}`}
                     totalAmount
                     variantValue={TextVariantKeys.titleMedium}
-                    valueColor={appColors.neutral.black}
                     bottomLine
                     valueMaxFontSizeMultiplier={1.3}
                     titleStyles={styles.widthHalf}
@@ -235,7 +234,6 @@ const TransactionDetails: React.FC<RootNavigationType> = ({ navigation }) => {
                     value={totalAmountDisplay}
                     totalAmount
                     variantValue={TextVariantKeys.titleMedium}
-                    valueColor={appColors.neutral.black}
                     bottomLine
                     valueMaxFontSizeMultiplier={1.3}
                     titleStyles={styles.widthHalf}

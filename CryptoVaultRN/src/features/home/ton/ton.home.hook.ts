@@ -291,11 +291,6 @@ const useTonHome = ({ navigation }: RootNavigationType) => {
           }
         } catch (error) {
           console.error("fetchDataCrypto Ton error:", error);
-          Utils.showToast({
-            msg: t(LanguageKey.common_server_busy),
-            type: AppToastType.error,
-            contentOffSet: contentOffsetToast,
-          });
         }
       }
     } catch (error) {

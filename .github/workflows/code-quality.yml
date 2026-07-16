@@ -17,4 +17,4 @@ jobs:
 
       - run: |
           chmod +x scripts/deployment/common/check-code-quality.sh
-          scripts/deployment/common/check-code-quality.sh $GITHUB_WORKSPACE
+          scripts/deployment/common/check-code-quality.sh $GITHUB_WORKSPACE/crypto-vault-expo

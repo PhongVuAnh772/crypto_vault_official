@@ -11,10 +11,13 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             backgroundColor: theme.colors.surface_surface_high,
             ...appStyles.mbt10,
             ...appStyles.mt20,
+            borderRadius: 12,
+            overflow: 'hidden',
         },
         closeButton: {
             width: '100%',
-            backgroundColor: appColors.main.tokyoRed,
+            backgroundColor: theme.colors.surface_surface_brand,
+            borderRadius: 10,
         },
         widthHalf: { width: '50%' },
         statusView: {
@@ -29,7 +32,7 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
             ...appStyles.justifyContentBetween,
             ...appStyles.alignItemsCenter,
             padding: 15,
-            backgroundColor: appColors.neutral.white,
+            backgroundColor: theme.colors.surface_surface_high,
         },
         line: {
             height: 1,
@@ -39,18 +42,18 @@ const useStyles = (theme: AppThemeType, insets: EdgeInsets) =>
         container: {
             ...appStyles.flex1,
             ...appStyles.pH15,
-            backgroundColor: appColors.neutral.n100,
+            backgroundColor: theme.colors.surface_surface_default,
         },
         viewButton: {
-            backgroundColor:  undefined,
-            paddingTop: 0,
-            paddingBottom: 0,
+            backgroundColor:  theme.colors.surface_surface_default,
+            paddingTop: 10,
+            paddingBottom: insets.bottom || 15,
             ...appStyles.pH15,
         },
         loadingContainer: {
             ...appStyles.flex1,
             ...appStyles.pH15,
-            backgroundColor: appColors.neutral.n100,
+            backgroundColor: theme.colors.surface_surface_default,
             ...appStyles.alignItemsCenter,
             ...appStyles.pT30,
         },

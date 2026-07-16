@@ -108,7 +108,7 @@ const useHeaderTabBar = (
   const [refreshProtocolList, setRefreshProtocolList] = useState(false);
   const onProtocolListRefresh = async () => {
     setRefreshProtocolList(true);
-    await dispatch(getMobileProtocolListsWithSupportedTokens());
+    await dispatch(getMobileProtocolListsWithSupportedTokens(undefined));
     setRefreshProtocolList(false);
   };
   const resetAction = useAppSelector(getResetAction);
@@ -375,7 +375,7 @@ const useHeaderTabBar = (
   const bottomSheetProtocolRef = useRef<BottomSheetModal>(null);
   const onShowModalProtocol = async () => {
     if (protocolDataLists.length === 0) {
-      const fetchRes = await dispatch(getMobileProtocolListsWithSupportedTokens());
+      const fetchRes = await dispatch(getMobileProtocolListsWithSupportedTokens(undefined));
       if (getMobileProtocolListsWithSupportedTokens.rejected.match(fetchRes)) {
         Utils.showToast({
           type: AppToastType.error,
@@ -480,7 +480,7 @@ const useHeaderTabBar = (
   }, [getAllConnect, tonAddressData?.address]);
   useEffect(() => {
     if (protocolDataLists.length === 0) {
-      dispatch(getMobileProtocolListsWithSupportedTokens());
+      dispatch(getMobileProtocolListsWithSupportedTokens(undefined));
     }
   }, [dispatch, protocolDataLists.length]);
 

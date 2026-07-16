@@ -87,6 +87,11 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
             action: () => navigation.navigate(HomeStackScreenKey.ManageCrypto),
         },
     ];
+    const getTopAssetAmount = () => {
+        if (!topAsset) return '-';
+        return `${Utils.formattedBalanceCurrency(topAsset.balance ?? 0)} ${topAsset.symbol ?? ''}`;
+    };
+
     const widgets: HomeWidgetData[] = [
         {
             id: 'portfolio',
@@ -98,7 +103,7 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
         {
             id: 'top-asset',
             label: t(LanguageKey.home_widget_top_asset_label),
-            amount: topAsset ? `${Utils.formattedCurrency(topAsset.balance ?? 0)} ${topAsset.symbol ?? ''}` : '-',
+            amount: topAsset ? getTopAssetAmount() : '-',
             trend: topAsset?.name || t(LanguageKey.home_widget_no_data),
             trendUp: (topAsset?.balance ?? 0) >= 0,
         },
@@ -155,6 +160,7 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                         onPressAccount={showBottomSheetModalAction}
                         onPressScan={goToScan}
                         onPressAI={goToAIDetail}
+                        isLoading={isFirstInitial}
                     />
 
                     {/* Promo Swiper Section */}

@@ -37,6 +37,7 @@ const LanguageKey = {
   home_tab_nft_collection_title: "home_tab_nft_collection_title",
   home_tab_transaction_title: "home_tab_transaction_title",
   home_tab_explore_title: "home_tab_explore_title",
+  home_tab_tickets_title: "home_tab_tickets_title",
   home_tab_setting_title: "home_tab_setting_title",
   onboarding_new_wallet_button_title: "onboarding_new_wallet_button_title",
   onboarding_restore_wallet_button_title:
@@ -756,5 +757,15 @@ const LanguageKey = {
   home_widget_top_asset_label: "home_widget_top_asset_label",
   home_widget_assets_count: "home_widget_assets_count",
   home_widget_no_data: "home_widget_no_data",
+  protect_secret_phrase_title_new: "protect_secret_phrase_title_new",
+  protect_secret_phrase_subtitle_new: "protect_secret_phrase_subtitle_new",
+  protect_secret_phrase_item_title_1: "protect_secret_phrase_item_title_1",
+  protect_secret_phrase_item_desc_1: "protect_secret_phrase_item_desc_1",
+  protect_secret_phrase_item_title_2: "protect_secret_phrase_item_title_2",
+  protect_secret_phrase_item_desc_2: "protect_secret_phrase_item_desc_2",
+  protect_secret_phrase_item_title_3: "protect_secret_phrase_item_title_3",
+  protect_secret_phrase_item_desc_3: "protect_secret_phrase_item_desc_3",
+  protect_secret_phrase_footer_new: "protect_secret_phrase_footer_new",
 };
+
 export default LanguageKey;

@@ -83,6 +83,16 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
 
     const topAsset = listCryptoData[0];
     const networkLabel = protocolBaseData?.symbol?.toUpperCase?.() || "NETWORK";
+
+    const getTopAssetAmount = () => {
+        if (!topAsset) return '-';
+        const balanceConverted = Utils.convertBigIntFollowDecimals(
+            (topAsset.balance ?? 0).toString(),
+            topAsset.decimal || 18,
+        );
+        return `${Utils.formattedBalanceCurrency(+balanceConverted)} ${topAsset.symbol ?? ''}`;
+    };
+
     const widgets: HomeWidgetData[] = [
         {
             id: 'portfolio',
@@ -94,7 +104,7 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
         {
             id: 'top-asset',
             label: t(LanguageKey.home_widget_top_asset_label),
-            amount: topAsset ? `${Utils.formattedCurrency(Number(topAsset.balance ?? 0))} ${topAsset.symbol ?? ''}` : '-',
+            amount: topAsset ? getTopAssetAmount() : '-',
             trend: topAsset?.name || t(LanguageKey.home_widget_no_data),
             trendUp: Number(topAsset?.balance ?? 0) >= 0,
         },
@@ -220,6 +230,7 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                         onPressAccount={showBottomSheetModalAction}
                         onPressScan={goToScan}
                         onPressAI={goToAIDetail}
+                        isLoading={isFirstInitial}
                     />
 
                     {/* Promo Swiper Section */}

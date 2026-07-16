@@ -9,7 +9,7 @@ const bitcoinProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
   chainId: null,
   symbol: "BTC",
   blockExplorerUrl: "",
-  VM: VMType.BITCOIN,
+  VM: VMType.Bitcoin,
   tokenTransferFee: 0.001,
   coinTransferFee: 0.001,
   nftTransferFee: 0.001,
@@ -34,6 +34,9 @@ const bitcoinProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
     },
   ],
   isDefault: true,
+  network: "",
+  explorer: "",
+  type: ""
 };
 
 const ethereumProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
@@ -68,6 +71,9 @@ const ethereumProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
     },
   ],
   isDefault: true,
+  network: "",
+  explorer: "",
+  type: ""
 };
 
 const tonProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
@@ -77,7 +83,7 @@ const tonProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
   status: "active",
   symbol: "TON",
   blockExplorerUrl: "",
-  VM: VMType.TON,
+  VM: VMType.Ton,
   tokenTransferFee: 0.001,
   coinTransferFee: 0.001,
   nftTransferFee: 0.001,
@@ -102,6 +108,9 @@ const tonProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
     },
   ],
   isDefault: true,
+  network: "",
+  explorer: "",
+  type: ""
 };
 
 const binanceProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
@@ -136,6 +145,9 @@ const binanceProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
     },
   ],
   isDefault: true,
+  network: "",
+  explorer: "",
+  type: ""
 };
 
 const polProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
@@ -170,6 +182,9 @@ const polProtocolDefaultData: ProtocolDataWithSupportedTokensFormBEType = {
     },
   ],
   isDefault: true,
+  network: "",
+  explorer: "",
+  type: ""
 };
 
 export const DefaultProtocolData = {

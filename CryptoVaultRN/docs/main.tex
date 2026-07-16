@@ -1,0 +1,2760 @@
+\documentclass[a4paper]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[vietnamese]{babel}
+\usepackage[T5]{fontenc}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{positioning,shapes,arrows,babel}
+\usepackage[utf8]{vietnam}
+\usepackage{enumitem}
+\usepackage{indentfirst}
+\usepackage{pgf-umlsd}
+
+
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\contentsname}{Mục lục}
+\fancyhead[R]{NGHIÊN CỨU VÀ PHÁT TRIỂN ỨNG DỤNG VÍ PHI TẬP TRUNG ĐA CHUỖI HỖ TRỢ QUẢN LÝ VÀ GIAO DỊCH TÀI SẢN} % Header bên phải
+% Thiết lập footer
+\fancyfoot[L]{Trang \thepage} % Footer bên trái: số trang
+\fancyfoot[R]{Vũ Anh Phong - 65CS3} % Footer bên phải
+
+
+
+\begin{document}
+\begin{titlepage}
+    \begin{center}
+        
+        % Phần trên cùng của trang tiêu đề
+        \textbf{TRƯỜNG ĐẠI HỌC XÂY DỰNG HÀ NỘI}\\
+        KHOA CÔNG NGHỆ THÔNG TIN\\
+        \textit{o0o}
+        \vspace{2cm}
+        \begin{figure}[h] % Changed the positioning of the figure
+            \centering
+            \label{fig:enter-label}
+        \end{figure}
+        \vspace{3cm}
+        
+        % Tiêu đề chính giữa trang
+        
+        \textbf{\Large NGHIÊN CỨU VÀ PHÁT TRIỂN ỨNG DỤNG VÍ PHI TẬP TRUNG ĐA CHUỖI HỖ TRỢ QUẢN LÝ VÀ GIAO DỊCH TÀI SẢN}\\
+        
+      
+        \vspace{2cm}
+    
+        % Phần dưới cùng của trang tiêu đề
+         \textbf{\normalsize SINH VIÊN THỰC HIỆN : VŨ ANH PHONG}\\
+    \textbf{\normalsize MÃ SỐ SINH VIÊN : 1538665}\\
+    \textbf{\normalsize LỚP : 65CS3}\\
+    
+    \vspace{2cm}
+    
+    \textbf{\normalsize GIẢNG VIÊN HƯỚNG DẪN : ThS. Hoàng Nam Thắng}
+        
+        \vspace{2cm}
+        \textbf{HÀ NỘI, THÁNG 7 NĂM 2026}
+    \end{center}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+
+\newpage
+
+\newpage
+
+\section{Lời cảm ơn}
+\vspace{1cm}
+Kính gửi Ths. Hoàng Nam Thắng,
+
+\vspace{0.5cm}
+Trước hết, em xin gửi lời cảm ơn chân thành nhất đến Ths. Hoàng Nam Thắng đã hướng dẫn, chỉ bảo tận tâm trong suốt quá trình em thực hiện đồ án tốt nghiệp. Sự hỗ trợ của thầy đã giúp em vượt qua những thách thức trong quá trình nghiên cứu và xây dựng đề tài.
+
+\vspace{0.5cm}
+Em cũng muốn bày tỏ lòng biết ơn sâu sắc đến các thầy cô trong khoa Công Nghệ Thông Tin, Trường Đại học Xây Dựng Hà Nội, đã dành thời gian và kiến thức của mình để hỗ trợ và chia sẻ kinh nghiệm cho em trong suốt quãng thời gian học tập. Sự tận tâm và lòng nhiệt huyết của quý thầy cô đã là nguồn động viên quan trọng, giúp em có được kiến thức sâu rộng và tự tin hơn trong lĩnh vực công nghệ thông tin.
+
+\vspace{0.5cm}
+Cuối cùng, em muốn bày tỏ lòng biết ơn đặc biệt đến gia đình và bạn bè đã luôn ở bên cạnh, động viên và hỗ trợ em trong quá trình học tập và thực hiện đồ án tốt nghiệp.
+
+\vspace{0.5cm}
+Chắc chắn, những kinh nghiệm và kiến thức thu được sẽ là nguồn động viên không ngừng cho sự phát triển của em trong tương lai.
+
+\vspace{0.5cm}
+\begin{flushright}
+\textit{Em xin chân thành cảm ơn!!}
+\end{flushright}
+\newpage
+
+\chapter{Giới thiệu bài toán}
+\section{Tính cấp thiết của đề tài}
+\subsection{Giới thiệu về đề tài}
+Trong bối cảnh công nghệ chuỗi khối (Blockchain) và tài sản số đang trải qua những bước phát triển vượt bậc, việc quản lý và lưu trữ an toàn các loại tiền mã hóa trở thành một nhu cầu thiết yếu và cấp bách đối với người dùng toàn cầu. Sự chuyển dịch từ hệ thống tài chính tập trung (CeFi) sang tài chính phi tập trung (DeFi) không chỉ mở ra nhiều cơ hội đầu tư mới mà còn đi kèm với những thách thức to lớn về mặt an ninh bảo mật thông tin. Điều này đòi hỏi các giải pháp lưu trữ tài sản số phải liên tục cải tiến để đáp ứng tiêu chuẩn an toàn cao nhất, bảo vệ quyền kiểm soát tối đa cho người dùng cá nhân.
+
+Một trong những giải pháp tối ưu và được tin cậy nhất hiện nay là mô hình ví phi lưu ký (non-custodial wallet). Khác với các ví tập trung trên các sàn giao dịch, ví phi lưu ký cho phép người dùng tự quản lý khóa cá nhân (private key) và cụm từ khôi phục (seed phrase) của mình mà không phụ thuộc vào bất kỳ bên thứ ba nào. Tuy nhiên, việc tự quản lý này cũng tạo ra áp lực lớn về mặt bảo mật đối với người sử dụng, yêu cầu ứng dụng phải tích hợp các cơ chế bảo vệ nghiêm ngặt như mã PIN bảo mật, sinh trắc học và hệ thống cảnh báo rủi ro tức thời, đồng thời đảm bảo giao diện đơn giản và trực quan.
+
+Bên cạnh yếu tố bảo mật, sự bùng nổ của nhiều mạng lưới blockchain độc lập như Bitcoin (BTC), mạng lưới tương thích EVM (Ethereum, BNB Chain) và TON Network đã dẫn đến sự phân mảnh tài sản số. Người dùng thường gặp khó khăn khi phải chuyển đổi liên tục giữa nhiều ứng dụng ví khác nhau để quản lý tài sản trên từng chuỗi. Từ thực tế đó, nhu cầu về một ứng dụng ví đa chuỗi (multi-chain) tích hợp toàn diện, hỗ trợ quản lý tập trung và thực hiện giao dịch liền mạch trên nhiều nền tảng blockchain đã trở nên cấp thiết hơn bao giờ hết đối với sự phát triển chung của cộng đồng DeFi.
+
+Xuất phát từ những đòi hỏi thực tiễn trên, dự án \textbf{CryptoVault} được xây dựng và phát triển dưới dạng một ứng dụng ví tiền mã hóa phi lưu ký đa chuỗi trên nền tảng di động. Bằng việc ứng dụng công nghệ React Native kết hợp với TypeScript, CryptoVault hướng tới mục tiêu cung cấp giải pháp lưu trữ an toàn cho Bitcoin, TON và các token EVM, đồng thời tối ưu hóa trải nghiệm người dùng thông qua giao diện hiện đại, tính năng bảo mật nhiều lớp và khả năng tương tác thời gian thực thông qua các dịch vụ phân tích dữ liệu tiên tiến.
+
+\subsection{Một số ưu điểm nổi bật của ứng dụng ví điện tử CryptoVault:}
+
+\begin{itemize}
+    \item \textbf{Tính phi lưu ký và bảo mật tối đa:}
+    \begin{itemize}
+        \item Quyền tự quyết tài sản: Người dùng nắm giữ hoàn toàn khóa cá nhân (private key) và cụm từ khôi phục (seed phrase), loại bỏ hoàn toàn rủi ro từ bên thứ ba.
+        \item Bảo mật đa lớp bảo vệ: Tích hợp các giải pháp xác thực nâng cao như mã hóa PIN bảo mật, mã hóa thiết bị phần cứng để ngăn chặn truy cập trái phép.
+    \end{itemize}
+    
+    \item \textbf{Quản lý tài sản đa chuỗi tập trung:}
+    \begin{itemize}
+        \item Hỗ trợ nhiều mạng lưới: Tích hợp đồng thời Bitcoin (BTC), các chuỗi tương thích EVM (Ethereum, BNB Chain) và TON Network trên một nền tảng duy nhất.
+        \item Quản lý danh mục đầu tư toàn diện: Hỗ trợ theo dõi số dư token và danh mục NFT trên nhiều chuỗi mà không cần chuyển đổi ứng dụng.
+    \end{itemize}
+    
+    \item \textbf{Trải nghiệm người dùng mượt mà và thân thiện:}
+    \begin{itemize}
+        \item Ứng dụng di động tối ưu: Phát triển trên React Native giúp đồng bộ trải nghiệm mượt mà, tối ưu hóa giao diện hiển thị cho cả hai hệ điều hành iOS và Android.
+        \item Thao tác đơn giản: Tối giản hóa quy trình chuyển tiền, nhận tiền và nhập ví bằng cụm từ khôi phục, giúp người dùng mới dễ dàng tiếp cận Web3.
+    \end{itemize}
+    
+    \item \textbf{Theo dõi và cập nhật thời gian thực:}
+    \begin{itemize}
+        \item Dữ liệu giao dịch chính xác: Tích hợp các dịch vụ API mạnh mẽ từ Moralis và TonServices giúp cập nhật tức thời số dư tài sản và lịch sử giao dịch.
+        \item Thống kê trực quan: Cung cấp biểu đồ trực quan về phân bổ danh mục đầu tư và phân tích hành vi giao dịch thông qua Firebase Analytics.
+    \end{itemize}
+\end{itemize}
+
+Việc phát triển ứng dụng CryptoVault không chỉ mang lại một giải pháp lưu trữ tài sản an toàn, hiệu quả mà còn là cầu nối quan trọng giúp người dùng tương tác dễ dàng với hệ sinh thái tài chính phi tập trung toàn cầu.
+
+\section{Mục đích xây dựng ứng dụng}
+
+Việc xây dựng ứng dụng ví điện tử đa chuỗi phi lưu ký CryptoVault không chỉ dừng lại ở việc tạo ra một công cụ lưu trữ tài sản số, mà còn nhằm mang đến một giải pháp toàn diện và tối ưu cho người dùng trong kỷ nguyên Web3, với các mục tiêu chính như sau:
+
+\subsection{Tối Ưu Hóa Trải Nghiệm Quản Lý Tài Sản Số}
+Ứng dụng hướng đến việc cung cấp một giao diện quản lý tài sản trực quan, giúp người dùng dễ dàng theo dõi biến động số dư, danh mục Token và bộ sưu tập NFT từ nhiều chuỗi khác nhau trên một bảng điều khiển duy nhất. Các quy trình giao dịch như gửi, nhận tiền mã hóa được tối giản hóa tối đa về mặt thao tác để giảm thiểu các sai sót kỹ thuật (ví dụ: nhập sai định dạng địa chỉ ví, chọn sai mạng lưới), từ đó nâng cao hiệu quả và sự tự tin cho người dùng khi tương tác với thị trường tiền mã hóa.
+
+\subsection{Nâng Cao Quyền Riêng Tư và An Toàn Tài Sản}
+Mục tiêu cốt lõi của CryptoVault là bảo vệ tối đa quyền sở hữu tài sản của người dùng thông qua mô hình ví phi lưu ký. Bằng cách lưu trữ khóa cá nhân trực tiếp trên thiết bị của người dùng và áp dụng các cơ chế mã hóa phần cứng nghiêm ngặt kết hợp xác thực PIN code/sinh trắc học, ứng dụng loại bỏ hoàn toàn nguy cơ thất thoát tài sản do các vụ tấn công mạng nhắm vào các máy chủ tập trung hay các sự cố phá sản của các bên trung gian tài chính.
+
+\subsection{Hỗ Trợ Kết Nối và Tương Tác Đa Chuỗi Liền Mạch}
+CryptoVault được thiết kế để xóa nhòa ranh giới giữa các hệ sinh thái blockchain khác nhau bao gồm Bitcoin, TON và các mạng tương thích EVM. Mục đích là cho phép người dùng tiếp cận và tương tác nhanh chóng với các cơ sở hạ tầng mạng lưới khác nhau mà không cần cài đặt nhiều ứng dụng ví riêng lẻ, tạo tiền đề thuận lợi cho việc tham gia vào các hoạt động tài chính phi tập trung (DeFi) và tương tác với các ứng dụng phi tập trung (dApps) trong tương lai.
+
+\subsection{Cung Cấp Thông Tin Tài Sản Thời Gian Thực Minh Bạch}
+Ứng dụng tích hợp các giải pháp công nghệ tiên tiến để truy xuất và hiển thị dữ liệu lịch sử giao dịch, giá trị tài sản theo thời gian thực một cách chính xác nhất. Thông qua việc hiển thị thông tin rõ ràng và cập nhật liên tục, người dùng luôn nắm bắt được trạng thái tài sản của mình, từ đó đưa ra các quyết định quản trị tài chính hợp lý và hạn chế tối đa các rủi ro do trễ thông tin trong môi trường giao dịch biến động nhanh.
+
+\subsection{Thúc Đẩy Tiến Trình Phổ Cập Công Nghệ Web3}
+CryptoVault đặt mục tiêu trở thành một cầu nối thân thiện giúp người dùng truyền thống dễ dàng tiếp cận và làm quen với các khái niệm mới của Web3. Bằng việc xây dựng giao diện tối giản, cung cấp các tài liệu hướng dẫn trực quan và cơ chế khôi phục ví an toàn, ứng dụng mong muốn giảm bớt rào cản kỹ thuật, góp phần thúc đẩy sự chấp nhận và phổ cập rộng rãi của công nghệ blockchain trong đời sống xã hội.
+
+Nhìn chung, việc phát triển ứng dụng ví CryptoVault không chỉ đáp ứng nhu cầu lưu trữ và bảo mật tài sản số thiết thực của người dùng mà còn góp phần quan trọng vào sự phát triển của hệ sinh thái tài chính phi tập trung bằng cách mang lại một sản phẩm chất lượng, ổn định và dễ sử dụng.
+
+\section{Đối tượng, phạm vi áp dụng}
+
+\subsection{Đối tượng sử dụng ứng dụng:}
+
+\begin{itemize}
+    \item \textbf{Người dùng cá nhân sở hữu tiền mã hóa (Crypto Investors/Users):} Những cá nhân có nhu cầu lưu trữ an toàn các tài sản kỹ thuật số như Bitcoin, TON, Ethereum, và các token tiêu chuẩn khác. Họ cần thực hiện các giao dịch gửi và nhận tiền nhanh chóng, bảo mật trên thiết bị di động cá nhân của mình.
+    
+    \item \textbf{Người thu thập và giao dịch tác phẩm nghệ thuật số (NFT Collectors):} Các cá nhân sở hữu và có nhu cầu hiển thị, quản lý các bộ sưu tập tài sản số độc bản (NFT) trên nhiều mạng lưới blockchain khác nhau.
+    
+    \item \textbf{Đối tác thứ ba (Partners / Event Organizers / Third-party Providers):} Các doanh nghiệp, nhà tổ chức sự kiện, rạp chiếu phim, hãng hàng không có nhu cầu số hóa vé vào cửa dưới dạng NFT, theo dõi doanh thu soát vé và tích hợp hệ thống phát hành qua API và nhận dữ liệu qua Webhook.
+    
+    \item \textbf{Nhân viên soát vé (Staff / Ticket Scanners):} Nhân sự vận hành tại các địa điểm diễn ra sự kiện sử dụng công cụ camera quét mã trên thiết bị di động để kiểm tra và xác nhận quyền vào cửa của khách hàng bằng QR động hoặc mã offline.
+    
+    \item \textbf{Nhà phát triển và Quản trị viên hệ thống (Developers/Administrators):} Những người chịu trách nhiệm giám sát hoạt động của hệ thống, phân tích hiệu năng và hành vi người dùng thông qua các công cụ đo lường (Firebase Analytics), cập nhật và bảo trì các dịch vụ tích hợp bên thứ ba (Moralis, TonServices) để đảm bảo hệ thống vận hành trơn tru.
+\end{itemize}
+
+Mỗi đối tượng đều có nhu cầu và mục đích sử dụng riêng biệt, cùng tương tác trên một giao diện ví đồng nhất để tối ưu hóa hiệu quả quản trị tài sản số.
+
+\subsection{Phạm vi của Ứng dụng:} 
+Phạm vi áp dụng của ứng dụng di động CryptoVault được giới hạn cụ thể như sau:
+
+\begin{itemize}
+    \item \textbf{Về mặt nền tảng:} Ứng dụng được xây dựng và phân phối dưới dạng ứng dụng di động đa nền tảng (Cross-platform) sử dụng React Native, hỗ trợ các thiết bị sử dụng hệ điều hành iOS và Android. Đồng thời bao gồm hệ thống Backend Middleware hỗ trợ các kết nối API bảo mật cho các hệ thống đối tác thứ ba.
+    
+    \item \textbf{Về mặt tài sản hỗ trợ:} Hỗ trợ lưu trữ, hiển thị số dư và thực hiện giao dịch cho Bitcoin (mạng BTC), token và NFT trên mạng lưới TON, cùng các token tiêu chuẩn trên các blockchain tương thích EVM (Ethereum, BNB Chain, v.v.).
+    
+    \item \textbf{Về mặt tính năng:} Giới hạn trong các nghiệp vụ ví phi lưu ký cốt lõi bao gồm: tạo ví mới, nhập ví bằng cụm từ khôi phục (seed phrase), quản lý khóa bảo mật cục bộ, truy xuất số dư và lịch sử giao dịch thời gian thực, gửi/nhận tài sản số và xác thực bảo mật bằng mã PIN. Ngoài ra, tích hợp mô-đun quản lý vé điện tử đa nền tảng (Digital Ticket Wallet Platform) cho phép lưu trữ vé dưới dạng NFT, chuyển nhượng P2P bảo mật, hiển thị QR động tự xoay vòng nonce trong 30 giây, soát vé ngoại tuyến bằng chữ ký điện tử và đồng bộ hóa hàng loạt.
+\end{itemize}
+
+
+\chapter{Phân tích, thiết kế}
+\section{Phân tích yêu cầu}
+\subsection{Biểu đồ phân rã chức năng}
+
+Biểu đồ phân rã chức năng mô tả cấu trúc các thành phần chức năng từ mức tổng quát đến chi tiết của ứng dụng CryptoVault.
+
+\subsubsection{Biểu đồ phân rã chức năng chung của hệ thống}
+Biểu đồ này biểu diễn các tính năng cốt lõi và tiện ích nền tảng chạy ngầm hoặc phục vụ chung cho toàn hệ thống:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[
+        every node/.style={
+            draw=blue!70,
+            fill=blue!5,
+            rounded corners,
+            minimum width=2.8cm,
+            minimum height=0.9cm,
+            align=center,
+            font=\small
+        },
+        level 1/.style={sibling distance=3.8cm},
+        edge from parent/.style={
+            draw=blue!70,
+            thick,
+            -latex
+        }
+    ]
+        % Node gốc
+        \node (root) {Hệ thống cốt lõi \&\\ Tiện ích chung}
+        % Level 1
+        child {
+            node {Xác thực mã PIN}
+        }
+        child {
+            node {Đồng bộ giao dịch}
+        }
+        child {
+            node {Chuyển đổi ngôn ngữ}
+        }
+        child {
+            node {Cấu hình hiển thị}
+        };
+    \end{tikzpicture}
+    }
+    \caption{Biểu đồ phân rã chức năng hệ thống cốt lõi và tiện ích chung}
+    \label{fig:decomp-common}
+\end{figure}
+
+\subsubsection{Biểu đồ phân rã chức năng đối với Người dùng ví}
+Biểu đồ này mô tả chi tiết các tác vụ mà một Người dùng ví (Wallet User) có thể thực hiện trên ứng dụng CryptoVault để quản trị và giao dịch tài sản:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        level distance=2.2cm,
+        level 1/.style={sibling distance=6.5cm},
+        level 2/.style={sibling distance=1.6cm},
+        every node/.style={
+            draw=teal!70, 
+            rounded corners=3pt, 
+            fill=teal!5, 
+            text width=2.5cm,
+            align=center, 
+            minimum height=0.9cm,
+            font=\small
+        },
+        edge from parent/.style={
+            draw=teal!70,
+            thick,
+            -latex
+        }
+    ]
+    \node {Người dùng ví}
+        child {
+            node {Quản lý ví \& bảo mật}
+            child { node {Tạo ví mới} }
+            child { node {Nhập ví bằng Seedphrase} }
+            child { node {Sao lưu private key} }
+            child { node {Thiết lập PIN \& FaceID} }
+        }
+        child {
+            node {Quản lý tài sản}
+            child { node {Xem số dư Token} }
+            child { node {Xem bộ sưu tập NFT} }
+            child { node {Xem lịch sử giao dịch} }
+        }
+        child {
+            node {Giao dịch tài sản}
+            child { node {Gửi Token \& NFT} }
+            child { node {Nhận Token \& NFT qua QR} }
+        };
+    \end{tikzpicture}
+    }
+    \caption{Biểu đồ phân rã chức năng đối với Người dùng ví}
+    \label{fig:decomp-user}
+\end{figure}
+
+\newpage
+
+\subsubsection{Biểu đồ phân rã chức năng đối với Nhà phát triển / Quản trị viên}
+Biểu đồ này biểu diễn các công cụ hỗ trợ cho Nhà phát triển và Quản trị viên (Developer/Admin) trong việc vận hành, bảo trì và cập nhật hệ thống:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.85\textwidth}{!}{
+    \begin{tikzpicture}[
+        level distance=2cm,
+        level 1/.style={sibling distance=5cm},
+        level 2/.style={sibling distance=2.8cm},
+        every node/.style={
+            draw=orange!70, 
+            rounded corners=3pt, 
+            fill=orange!5, 
+            text width=2.5cm,
+            align=center, 
+            minimum height=0.9cm,
+            font=\small
+        },
+        edge from parent/.style={
+            draw=orange!70,
+            thick,
+            -latex
+        }
+    ]
+    \node {Developer/Admin}
+        child {
+            node {Giám sát \& Vận hành}
+            child { node {Firebase Analytics} }
+            child { node {Cấu hình mạng RPC} }
+        }
+        child {
+            node {Bảo trì \& Cập nhật}
+            child { node {Quản lý API Moralis/TON} }
+            child { node {Bản vá lỗi bảo mật} }
+        };
+    \end{tikzpicture}
+    }
+    \caption{Biểu đồ phân rã chức năng đối với Developer/Admin}
+    \label{fig:decomp-admin}
+\end{figure}
+- Biểu đồ phân rã chức năng quản lý ví và bảo mật
+\vspace{0.4cm}
+
+\begin{tikzpicture}[
+    scale=0.7,
+    transform shape,
+    level distance=1.8cm,
+    level 1/.style={sibling distance=5.5cm},
+    level 2/.style={sibling distance=2.5cm},
+    every node/.style={
+        draw, 
+        rounded corners=3pt, 
+        fill=teal!20, 
+        text width=2cm,
+        align=center, 
+        minimum height=0.8cm,
+        font=\small
+    }
+]
+
+\node {Quản lý ví \& bảo mật}
+    child {
+        node {Tạo \& Nhập ví}
+        child {
+            node {Tạo ví mới}
+        }
+        child {
+            node {Nhập ví bằng Seedphrase}
+        }
+    }
+    child {
+        node {Bảo mật thiết bị}
+        child {
+            node {Mã PIN bảo mật}
+        }
+        child {
+            node {Sinh trắc học (FaceID/TouchID)}
+        }
+    }
+    child {
+        node {Sao lưu \& Khôi phục}
+        child {
+            node {Sao lưu Private Key}
+        }
+        child {
+            node {Xuất Seedphrase}
+        }
+    };
+
+\tikzset{every edge/.style={draw=teal}}
+
+\end{tikzpicture}
+
+\vspace{2.4cm}
+
+- Biểu đồ phân rã chức năng giao dịch và chuyển nhận
+\vspace{0.4cm}
+
+\begin{tikzpicture}[
+    scale=0.7,
+    transform shape,
+    level distance=1.8cm,
+    level 1/.style={sibling distance=5.5cm},
+    level 2/.style={sibling distance=2.5cm},
+    every node/.style={
+        draw, 
+        rounded corners=3pt, 
+        fill=teal!20, 
+        text width=2.2cm,
+        align=center, 
+        minimum height=0.8cm,
+        font=\small
+    }
+]
+
+\node {Giao dịch tài sản}
+    child {
+        node {Gửi tài sản}
+        child {
+            node {Nhập địa chỉ ví (QR/Danh bạ)}
+        }
+        child {
+            node {Nhập số lượng \& Tính phí gas}
+        }
+        child {
+            node {Ký và gửi giao dịch}
+        }
+    }
+    child {
+        node {Nhận tài sản}
+        child {
+            node {Hiển thị địa chỉ ví \& QR}
+        }
+        child {
+            node {Tạo QR yêu cầu số lượng}
+        }
+    }
+    child {
+        node {Lịch sử giao dịch}
+        child {
+            node {Chi tiết trạng thái giao dịch}
+        }
+    };
+
+\tikzset{every edge/.style={draw=teal}}
+
+\end{tikzpicture}
+
+\vspace{2.4cm}
+
+- Biểu đồ phân rã chức năng quản lý tài sản và Web3
+\vspace{0.4cm}
+
+\begin{tikzpicture}[
+    scale=0.7,
+    transform shape,
+    level distance=1.8cm,
+    level 1/.style={sibling distance=6cm},
+    level 2/.style={sibling distance=3cm},
+    every node/.style={
+        draw, 
+        rounded corners=3pt, 
+        fill=teal!20, 
+        text width=2.2cm,
+        align=center, 
+        minimum height=0.8cm,
+        font=\small
+    }
+]
+
+\node {Quản lý tài sản}
+    child {
+        node {Quản lý Token}
+        child {
+            node {Xem số dư \& Tỷ giá thị trường}
+        }
+        child {
+            node {Thêm Token tùy chỉnh}
+        }
+    }
+    child {
+        node {Bộ sưu tập NFT}
+        child {
+            node {Xem danh sách NFT}
+        }
+        child {
+            node {Xem chi tiết metadata NFT}
+        }
+    }
+    child {
+        node {Theo dõi thị trường}
+        child {
+            node {Xem biểu đồ biến động giá}
+        }
+    };
+
+\tikzset{every edge/.style={draw=teal}}
+
+\end{tikzpicture}
+\vspace{3cm}
+
+- Biểu đồ phân rã chức năng cấu hình hệ thống
+
+\vspace{1cm}
+
+\begin{tikzpicture}[
+    scale=0.7,
+    transform shape,
+    level distance=1.8cm,
+    level 1/.style={sibling distance=6cm},
+    level 2/.style={sibling distance=3cm},
+    every node/.style={
+        draw, 
+        rounded corners=3pt, 
+        fill=teal!20, 
+        text width=2.2cm,
+        align=center, 
+        minimum height=0.8cm,
+        font=\small
+    }
+]
+
+\node {Cấu hình hệ thống}
+    child {
+        node {Cấu hình mạng (RPC)}
+        child {
+            node {Quản lý mạng TON (Main/Test)}
+        }
+        child {
+            node {Quản lý mạng EVM (ETH, BSC)}
+        }
+        child {
+            node {Cấu hình Custom RPC}
+        }
+    }
+    child {
+        node {Thiết lập chung}
+        child {
+            node {Cài đặt ngôn ngữ hiển thị}
+        }
+        child {
+            node {Cài đặt đơn vị tiền tệ}
+        }
+        child {
+            node {Cấu hình theme (Sáng/Tối)}
+        }
+    };
+
+\tikzset{every edge/.style={draw=teal}}
+
+\end{tikzpicture}
+\subsection{Biểu đồ usecase}
+
+\begin{tikzpicture}[
+    actor/.style={draw,circle,minimum size=1cm},
+    usecase/.style={draw,ellipse,minimum width=2.8cm,minimum height=1cm},
+    >=latex
+]
+
+% Actors
+\node[actor] (user) at (-6,0) {Người dùng ví};
+\node[actor] (admin) at (6,0) {Admin / Dev};
+\node[actor] (blockchain) at (0,-5) {Mạng Blockchain};
+
+% Use cases
+\node[usecase] (create) at (0,4.5) {Tạo / Khôi phục ví};
+\node[usecase] (unlock) at (0,3) {Mở khóa ví};
+\node[usecase] (send_receive) at (-2.5,1.2) {Gửi / Nhận tài sản};
+\node[usecase] (manage_asset) at (-2.5,-0.8) {Quản lý Token \& NFT};
+\node[usecase] (configure) at (-2.5,-2.8) {Cấu hình hệ thống};
+\node[usecase] (monitor) at (2.5,1.2) {Giám sát \& Vận hành};
+\node[usecase] (maintenance) at (2.5,-0.8) {Bảo trì \& Cập nhật};
+
+% Connections from Wallet User
+\draw (user) -- (create);
+\draw (user) -- (unlock);
+\draw (user) -- (send_receive);
+\draw (user) -- (manage_asset);
+\draw (user) -- (configure);
+
+% Connections from Admin/Dev
+\draw (admin) -- (monitor);
+\draw (admin) -- (maintenance);
+
+% Connections from Blockchain
+\draw (blockchain) -- (send_receive);
+\draw (blockchain) -- (manage_asset);
+
+% System boundary
+\draw[dashed] (-4.5,-4.2) rectangle (4.5,5.5) node[above] at (0,5.5) {Hệ thống CryptoVault};
+
+\end{tikzpicture}
+\vspace{0.7cm}
+
+ - Usecase tổng quát của toàn ứng dụng sẽ bao gồm các usecase chính sau: Tạo / Khôi phục ví, Mở khóa ví, Quản lý ví và bảo mật, Quản lý tài sản và giao dịch, Cấu hình hệ thống, Giám sát hệ thống.
+\vspace{0.7cm}
+
+\textbf{1) Usecase Tạo / Khôi phục ví:} sẽ bao gồm các usecase con:
+\begin{itemize}
+    \item Usecase Tạo ví mới (sinh Seedphrase mới)
+    \item Usecase Khôi phục ví cũ (nhập Seedphrase có sẵn)
+    \item Usecase Thiết lập mã PIN bảo mật
+\end{itemize}
+
+\begin{tikzpicture}[
+    actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+    usecase/.style={draw, ellipse, minimum width=3cm, minimum height=0.8cm},
+    include/.style={->, dashed},
+]
+
+% Actors on the left
+\node[actor] (user) at (-4,0) {Người dùng ví};
+
+% Use cases
+\node[usecase] (create) at (0,1.5) {Tạo ví mới};
+\node[usecase] (restore) at (0,-1.5) {Khôi phục ví};
+\node[usecase] (backup) at (5,3) {Sao lưu Seedphrase};
+\node[usecase] (input_seed) at (5,1) {Nhập Seedphrase};
+\node[usecase] (setup_pin) at (5.5,-1) {Thiết lập mã PIN};
+
+% Include relationships
+\draw[include] (create) -- (backup) node[midway, above] {<<include>>};
+\draw[include] (create) -- (setup_pin) node[midway, below] {<<include>>};
+\draw[include] (restore) -- (input_seed) node[midway, above] {<<include>>};
+\draw[include] (restore) -- (setup_pin) node[midway, below] {<<include>>};
+
+% Associations (solid lines)
+\draw (user) -- (create);
+\draw (user) -- (restore);
+
+\draw[dashed] (-2.5,-3) rectangle (8.5,4.5) node[above] at (3,4.5) {Tạo / Khôi phục ví};
+
+\end{tikzpicture}
+
+\section{Đặc tả Usecase}
+
+\subsection{Usecase Tạo / Khôi phục ví}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Người dùng thiết lập tài khoản ví trên thiết bị di động lần đầu hoặc khi cài đặt lại ứng dụng để có thể lưu trữ, quản lý các khóa bí mật và thực hiện giao dịch tài sản số.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Ứng dụng chưa liên kết với bất kỳ khóa bí mật (ví) nào trên thiết bị hiện tại.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+* Đối với Tạo ví mới: Không yêu cầu dữ liệu đầu vào. Hệ thống sẽ tự động sinh Seedphrase ngẫu nhiên.
+* Đối với Khôi phục ví: Người dùng cần cung cấp chính xác cụm từ khôi phục 12 hoặc 24 từ tiếng Anh hợp lệ.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Người dùng khởi động ứng dụng và chọn "Tạo ví mới" hoặc "Khôi phục ví".
+    \item Nếu chọn **Tạo ví mới**:
+    \begin{itemize}
+        \item Hệ thống tạo ngẫu nhiên cụm từ gợi nhớ gồm 12/24 từ tiếng Anh (Seedphrase).
+        \item Hiển thị cảnh báo bảo mật và yêu cầu người dùng ghi chép lại an toàn.
+        \item Hệ thống yêu cầu xác thực lại một số từ để đảm bảo người dùng đã lưu trữ thành công.
+    \end{itemize}
+    \item Nếu chọn **Khôi phục ví**:
+    \begin{itemize}
+        \item Người dùng nhập hoặc dán cụm từ gợi nhớ (Seedphrase) của ví đã có trước đây.
+        \item Hệ thống kiểm tra tính hợp lệ về mặt cú pháp và cấu trúc của cụm từ gợi nhớ.
+    \end{itemize}
+    \item Hệ thống yêu cầu người dùng thiết lập mã PIN bảo mật 6 số cục bộ cho thiết bị.
+    \item Hệ thống xác thực sinh trắc học (nếu thiết bị hỗ trợ và người dùng cho phép).
+    \item Lưu trữ khóa bí mật đã mã hóa vào vùng nhớ an toàn (Secure Store / Keychain) của thiết bị.
+    \item Chuyển người dùng tới giao diện chính (Dashboard).
+\end{enumerate}
+
+\subsection{Usecase Mở khóa ví (Đăng nhập)}
+Bao gồm các usecase:
+\begin{itemize}
+    \item Mở khóa ví bằng mã PIN
+    \item Mở khóa ví bằng sinh trắc học
+    \item Khôi phục mã PIN (sử dụng Seedphrase)
+\end{itemize}
+
+\begin{tikzpicture}[
+    actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+    usecase/.style={draw, ellipse, minimum width=3cm, minimum height=0.8cm},
+    extend/.style={->, dashed, red},
+    include/.style={->, dashed},
+]
+
+% Actors on the left
+\node[actor] (user) at (-4,2) {Người dùng ví};
+
+% Use cases
+\node[usecase] (unlock) at (1,2) {Mở khóa ví};
+\node[usecase] (pin) at (6,3.5) {Xác thực mã PIN};
+\node[usecase] (bio) at (6,2) {Xác thực sinh trắc học};
+\node[usecase] (forgot) at (6,0.5) {Khôi phục mã PIN};
+
+% Relationships
+\draw[include] (unlock) -- (pin) node[midway, above] {<<include>>};
+\draw[extend] (unlock) -- (bio) node[midway, below] {<<extend>>};
+\draw[extend] (unlock) -- (forgot) node[midway, below] {<<extend>>};
+
+% Associations
+\draw (user) -- (unlock);
+
+% Boundary box
+\draw[dashed] (-1.5,-0.5) rectangle (8.5,4.8) node[above] at (3.5,4.8) {Mở khóa ví};
+
+\end{tikzpicture}
+
+\section{Đặc tả chi tiết các Usecase}
+
+\subsection{Usecase Mở khóa ví}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Người dùng muốn mở khóa ứng dụng để xem số dư, thực hiện giao dịch hoặc cấu hình ví một cách an toàn, bảo vệ chống truy cập trái phép khi thiết bị bị thất lạc.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Thiết bị đã được khởi tạo hoặc khôi phục ví thành công trước đó.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Mã PIN 6 số nhập vào phải trùng khớp với mã PIN được thiết lập trước đó, hoặc dữ liệu khuôn mặt/vân tay trùng khớp với sinh trắc học của thiết bị.
+
+\subsubsection{e) Luồng chạy}
+\textbf{Trường hợp 1: Xác thực bằng mã PIN}
+\begin{enumerate}
+    \item Người dùng mở ứng dụng, màn hình nhập mã PIN xuất hiện.
+    \item Người dùng nhập mã PIN 6 số.
+    \item Hệ thống kiểm tra mã PIN:
+    \begin{itemize}
+        \item Nếu sai: Hiển thị lỗi, tăng số lần nhập sai. Nếu sai quá số lần quy định, khóa ứng dụng tạm thời.
+        \item Nếu đúng: Mở khóa ứng dụng và đưa người dùng vào màn hình chính.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Trường hợp 2: Xác thực bằng sinh trắc học}
+\begin{enumerate}
+    \item Người dùng mở ứng dụng, hệ thống tự động kích hoạt FaceID/TouchID.
+    \item Người dùng thực hiện quét khuôn mặt hoặc vân tay.
+    \item Hệ thống xác thực sinh trắc học:
+    \begin{itemize}
+        \item Nếu thành công: Mở khóa ứng dụng và đưa người dùng vào màn hình chính.
+        \item Nếu thất bại: Cho phép thử lại hoặc chuyển sang phương thức nhập mã PIN thủ công.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Usecase Khôi phục mã PIN (khi quên PIN)}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Đặt lại mã PIN mới để mở khóa ứng dụng khi người dùng quên mã PIN cũ.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng phải còn lưu giữ cụm từ gợi nhớ (Seedphrase) của ví hiện tại.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Cụm từ gợi nhớ (Seedphrase) nhập vào phải hoàn toàn trùng khớp với ví đã được cấu hình trên thiết bị.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Tại màn hình nhập mã PIN, người dùng chọn "Quên mã PIN".
+    \item Hệ thống hiển thị giao diện khôi phục và yêu cầu nhập cụm từ gợi nhớ (Seedphrase) 12/24 từ.
+    \item Người dùng nhập cụm từ gợi nhớ và nhấn xác nhận.
+    \item Hệ thống kiểm tra tính chính xác của cụm từ gợi nhớ:
+    \begin{itemize}
+        \item Nếu không trùng khớp: Báo lỗi cụm từ không hợp lệ.
+        \item Nếu trùng khớp:
+        \begin{itemize}
+            \item Cho phép người dùng thiết lập mã PIN 6 số mới.
+            \item Lưu trữ mã PIN mới và đưa người dùng vào màn hình chính.
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Usecase Quản lý ví và bảo mật}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Sao lưu các thông tin nhạy cảm của ví (Private Key, Seedphrase) hoặc thay đổi cấu hình mã PIN để nâng cao bảo mật tài sản.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Ứng dụng đã được mở khóa thành công.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Yêu cầu mã PIN xác nhận trước khi thực hiện hiển thị thông tin bảo mật nhạy cảm.
+
+\subsubsection{e) Luồng chạy}
+\textbf{Xem thông tin Seedphrase / Private Key:}
+\begin{enumerate}
+    \item Người dùng vào mục "Bảo mật" trong cài đặt và chọn "Xem cụm từ khôi phục" hoặc "Xem Khóa cá nhân (Private Key)".
+    \item Hệ thống yêu cầu xác thực bằng mã PIN hoặc sinh trắc học.
+    \item Nếu xác thực đúng, hệ thống hiển thị thông tin bảo mật nhạy cảm kèm cảnh báo nghiêm ngặt về việc không chia sẻ cho bất kỳ ai.
+\end{enumerate}
+
+\textbf{Thay đổi mã PIN:}
+\begin{enumerate}
+    \item Người dùng chọn "Thay đổi mã PIN".
+    \item Nhập mã PIN hiện tại để xác thực.
+    \item Nhập mã PIN mới hai lần.
+    \item Hệ thống lưu trữ mã PIN mới thay thế cho mã PIN cũ.
+\end{enumerate}
+
+\subsection{Usecase Quản lý tài sản và Giao dịch}
+Bao gồm các usecase:
+\begin{itemize}
+    \item Gửi tài sản (Send Token/NFT)
+    \item Nhận tài sản (Receive Token/NFT)
+    \item Xem số dư và lịch sử giao dịch
+    \item Thêm Custom Token
+    \item Quản lý bộ sưu tập NFT
+\end{itemize}
+
+\begin{tikzpicture}[
+    actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+    usecase/.style={draw, ellipse, minimum width=3.2cm, minimum height=0.8cm},
+    extend/.style={->, dashed},
+]
+
+% Actors
+\node[actor] (user) at (-5,0) {Người dùng ví};
+\node[actor] (blockchain) at (9,0) {Mạng Blockchain};
+
+% Main use cases
+\node[usecase] (send) at (0,3) {Gửi tài sản};
+\node[usecase] (receive) at (0,1.5) {Nhận tài sản};
+\node[usecase] (view_balance) at (0,0) {Xem số dư \& Lịch sử};
+\node[usecase] (add_token) at (0,-1.5) {Thêm Custom Token};
+\node[usecase] (manage_nft) at (0,-3) {Quản lý NFT};
+
+% Extended use cases
+\node[usecase] (scan_qr) at (4.5,4) {Quét mã QR ví};
+\node[usecase] (calc_gas) at (4.5,2.6) {Tính phí gas ước tính};
+\node[usecase] (show_qr) at (4.5,1.2) {Hiển thị QR địa chỉ};
+\node[usecase] (input_contract) at (4.5,-0.5) {Nhập Contract Address};
+\node[usecase] (view_metadata) at (4.5,-2.2) {Xem metadata NFT};
+
+% Connections from user to main use cases
+\draw (user) -- (send);
+\draw (user) -- (receive);
+\draw (user) -- (view_balance);
+\draw (user) -- (add_token);
+\draw (user) -- (manage_nft);
+
+% Connections from blockchain to main use cases
+\draw (blockchain) -- (send);
+\draw (blockchain) -- (view_balance);
+\draw (blockchain) -- (add_token);
+\draw (blockchain) -- (manage_nft);
+
+% Extend relationships (dashed arrows)
+\draw[extend] (send) -- (scan_qr);
+\draw[extend] (send) -- (calc_gas);
+\draw[extend] (receive) -- (show_qr);
+\draw[extend] (add_token) -- (input_contract);
+\draw[extend] (manage_nft) -- (view_metadata);
+
+% Boundary box
+\draw[dashed] (-3,5) rectangle (7.5,-4.5) node[above] at (2.2,5) {Quản lý tài sản \& Giao dịch};
+
+\end{tikzpicture}
+
+\subsection{Usecase Gửi tài sản}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Gửi một lượng tiền mã hóa (Token) hoặc tài sản số (NFT) đến một địa chỉ ví cụ thể trên mạng lưới blockchain.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng đã tạo hoặc khôi phục ví thành công, mở khóa ứng dụng và ví phải có đủ số dư (bao gồm cả số dư của token cần gửi và phí mạng lưới - gas fee).
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Thông tin cần cung cấp:
+\begin{itemize}
+    \item Địa chỉ ví nhận (dạng chuỗi văn bản hoặc quét qua mã QR)
+    \item Loại tài sản cần chuyển (TON, USDT, các token chuẩn jetton/ERC-20, NFT)
+    \item Số lượng chuyển hoặc định danh NFT (Token ID)
+\end{itemize}
+
+Ràng buộc:
+\begin{itemize}
+    \item Địa chỉ ví nhận phải đúng định dạng của mạng lưới tương ứng (EVM hoặc TON).
+    \item Số dư tài khoản phải lớn hơn hoặc bằng tổng lượng gửi cộng phí gas ước tính.
+\end{itemize}
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Tại màn hình chính, người dùng chọn chức năng "Gửi".
+    \item Hệ thống hiển thị giao diện nhập địa chỉ nhận. Người dùng có thể:
+    \begin{itemize}
+        \item Nhập tay địa chỉ.
+        \item Quét mã QR từ camera.
+    \end{itemize}
+    \item Người dùng chọn loại tài sản cần gửi và nhập số lượng.
+    \item Hệ thống tự động gọi API ước tính phí giao dịch (gas fee) của mạng lưới.
+    \item Hệ thống thực hiện kiểm tra tính hợp lệ:
+    \begin{itemize}
+        \item Nếu số dư không đủ: Hiển thị thông báo cảnh báo và vô hiệu hóa nút gửi.
+        \item Nếu số dư hợp lệ: Hiển thị tóm tắt giao dịch (địa chỉ nhận, số lượng chuyển, phí gas).
+    \end{itemize}
+    \item Người dùng nhấn nút "Xác nhận gửi".
+    \item Hệ thống yêu cầu xác thực bảo mật (nhập PIN hoặc quét FaceID/TouchID).
+    \item Ký giao dịch ngoại tuyến bằng khóa bí mật và phát sóng (broadcast) giao dịch lên mạng blockchain.
+    \item Hiển thị trạng thái giao dịch đang được xử lý và lưu thông tin vào lịch sử giao dịch cục bộ.
+\end{enumerate}
+
+\subsection{Usecase Nhận tài sản}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Hiển thị thông tin địa chỉ ví công khai của người dùng dưới dạng văn bản và mã QR để bên khác có thể chuyển tài sản đến.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng đã khởi tạo ví trên thiết bị di động.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Địa chỉ ví công khai được hiển thị chính xác tương ứng với mạng lưới đang lựa chọn.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Người dùng chọn chức năng "Nhận" từ màn hình chính.
+    \item Hệ thống hiển thị:
+    \begin{itemize}
+        \item Địa chỉ ví công khai (Public Address).
+        \item Mã QR chứa địa chỉ ví.
+    \end{itemize}
+    \item Người dùng có thể:
+    \begin{itemize}
+        \item Nhấn nút "Sao chép" để lưu địa chỉ ví vào bộ nhớ tạm.
+        \item Nhấn nút "Chia sẻ" để gửi hình ảnh mã QR qua các ứng dụng tin nhắn.
+        \item Nhập một số tiền cụ thể để hệ thống tạo mã QR động chứa số tiền tương ứng.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Usecase Xem số dư và lịch sử giao dịch}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Cập nhật số dư tài sản theo thời gian thực và theo dõi danh sách các giao dịch gửi/nhận đã thực hiện.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Thiết bị di động có kết nối mạng Internet.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Địa chỉ ví công khai được dùng để truy vấn dữ liệu từ blockchain thông qua các API (Moralis/TON API).
+
+\subsubsection{e) Luồng chạy}
+\textbf{Xem số dư tài sản:}
+\begin{enumerate}
+    \item Khi người dùng truy cập Dashboard màn hình chính, hệ thống tự động gửi yêu cầu cập nhật số dư.
+    \item Nhận dữ liệu số dư từ các nút mạng (RPC nodes) và API Web3.
+    \item Hiển thị số dư chi tiết của từng loại token và quy đổi sang đơn vị tiền tệ định sẵn (USD/VND).
+\end{enumerate}
+
+\textbf{Xem lịch sử giao dịch:}
+\begin{enumerate}
+    \item Người dùng nhấn vào mục "Lịch sử giao dịch".
+    \item Hệ thống hiển thị danh sách các giao dịch gần đây bao gồm trạng thái (Thành công, Thất bại, Đang xử lý), mốc thời gian, loại tài sản và số lượng.
+    \item Khi chọn một giao dịch cụ thể, hiển thị thông tin chi tiết:
+    \begin{itemize}
+        \item Địa chỉ ví gửi và ví nhận.
+        \item Phí giao dịch (Gas fee) thực tế.
+        \item Mã định danh giao dịch (TxID / Tx Hash) kèm link liên kết đến trang khám phá blockchain (Explorer).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Usecase Thêm Custom Token}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Nhập các loại token không nằm trong danh sách mặc định của ứng dụng thông qua địa chỉ hợp đồng thông minh.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng có thông tin địa chỉ hợp đồng (Contract Address) của token muốn thêm.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+* Địa chỉ hợp đồng của token hợp lệ trên blockchain.
+* Mạng lưới blockchain tương ứng (TON hoặc EVM).
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Tại màn hình quản lý token, chọn "Thêm token tùy chỉnh".
+    \item Nhập hoặc dán địa chỉ Contract của token và chọn mạng lưới phù hợp.
+    \item Hệ thống gửi yêu cầu truy vấn thông tin Smart Contract từ Blockchain.
+    \item Nhận thông tin chi tiết của token (Name, Symbol, Decimals) từ mạng lưới:
+    \begin{itemize}
+        \item Nếu địa chỉ không hợp lệ: Hiển thị lỗi không tìm thấy token.
+        \item Nếu hợp lệ: Hiển thị thông tin tương ứng cho người dùng kiểm tra.
+    \end{itemize}
+    \item Người dùng xác nhận lưu token.
+    \item Token mới được hiển thị trong danh sách theo dõi của ví.
+\end{enumerate}
+
+\begin{tikzpicture}[
+    actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+    usecase/.style={draw, ellipse, minimum width=3.2cm, minimum height=0.8cm},
+    extend/.style={->, dashed}
+]
+
+% Actor
+\node[actor] (user) at (-3,0) {Người dùng ví};
+
+% Use cases
+\node[usecase] (add_token) at (1.5,0) {Thêm Custom Token};
+\node[usecase] (query_contract) at (7,0) {Truy vấn Smart Contract};
+
+% Connections
+\draw (user) -- (add_token);
+\draw[extend] (add_token) -- (query_contract) node[midway, above] {<<include>>};
+
+\end{tikzpicture}
+\subsection{Usecase Quản lý bộ sưu tập NFT}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Cho phép người dùng quản lý, hiển thị và xem thông tin chi tiết các tài sản NFT (Non-Fungible Token) đang sở hữu trong ví của mình.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng đã tạo hoặc khôi phục ví thành công, thiết bị có kết nối Internet để đồng bộ dữ liệu blockchain.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Địa chỉ ví công khai của người dùng được sử dụng để truy vấn các NFT tương ứng trên blockchain qua các API dịch vụ.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Tại màn hình chính, người dùng chọn tab "NFT" hoặc "Bộ sưu tập".
+    \item Hệ thống tự động gửi yêu cầu truy vấn danh sách NFT của ví trên mạng lưới blockchain.
+    \item Hệ thống hiển thị danh sách các NFT dưới dạng lưới hình ảnh kèm theo tên của NFT.
+    \item Khi người dùng chọn một NFT cụ thể:
+    \begin{itemize}
+        \item Hiển thị hình ảnh hoặc video/đồ họa 3D chất lượng cao của NFT.
+        \item Hiển thị thông tin mô tả chi tiết của NFT từ siêu dữ liệu (metadata).
+        \item Hiển thị địa chỉ hợp đồng thông minh (Smart Contract Address), Token ID và tiêu chuẩn token (ví dụ: ERC-721 hoặc TON NFT).
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{f) Các trường hợp đặc biệt}
+\begin{itemize}
+    \item Nếu ví chưa sở hữu NFT nào: Hiển thị thông báo "Bạn chưa sở hữu NFT nào" và hướng dẫn cách nhận hoặc mua NFT.
+    \item Lỗi tải metadata hoặc hình ảnh NFT: Hiển thị ảnh đại diện mặc định và cho phép người dùng bấm nút tải lại dữ liệu.
+\end{itemize}
+
+\subsection{Usecase Giám sát địa chỉ ví (Watch-only Address)}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Thêm một địa chỉ ví công khai bất kỳ vào ứng dụng để theo dõi biến động số dư và giao dịch mà không cần nhập khóa bảo mật (Private Key / Seedphrase).
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng đã tạo hoặc khôi phục ví chính, thiết bị có kết nối mạng Internet.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Địa chỉ ví công khai (Public Address) hợp lệ trên blockchain cần giám sát (TON, Ethereum, BSC, v.v.).
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Tại màn hình quản lý ví giám sát, chọn "Thêm ví giám sát mới".
+    \item Người dùng nhập địa chỉ ví công khai hoặc quét mã QR chứa địa chỉ ví.
+    \item Người dùng đặt tên gợi nhớ (nhãn ví) để dễ quản lý.
+    \item Hệ thống kiểm tra định dạng địa chỉ ví:
+    \begin{itemize}
+        \item Nếu địa chỉ không hợp lệ: Hiển thị thông báo lỗi định dạng địa chỉ.
+        \item Nếu hợp lệ: Lưu địa chỉ ví vào danh sách giám sát (Watchlist) trên thiết bị.
+    \end{itemize}
+    \item Hệ thống gửi yêu cầu đồng bộ hóa số dư và lịch sử giao dịch ban đầu của địa chỉ ví này.
+\end{enumerate}
+
+\subsection{Usecase Xem danh sách ví được giám sát (Watchlist Dashboard)}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Hiển thị danh sách tất cả các địa chỉ ví đang được giám sát, giúp người dùng theo dõi nhanh tổng quan số dư và tài sản của các ví này.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng đã thêm ít nhất một ví vào danh sách giám sát.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Danh sách ví giám sát được lưu cục bộ trên thiết bị.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Người dùng chọn mục "Ví giám sát" từ menu hoặc Dashboard.
+    \item Hệ thống hiển thị danh sách các ví được giám sát kèm theo nhãn tên, địa chỉ rút gọn, và tổng số dư quy đổi (USD/VND) của từng ví.
+    \item Người dùng chọn một ví cụ thể trong danh sách để xem chi tiết:
+    \begin{itemize}
+        \item Danh sách token và số dư chi tiết.
+        \item Lịch sử giao dịch gửi/nhận của ví đó.
+        \item Bộ sưu tập NFT của ví đó.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{f) Các trường hợp đặc biệt}
+\begin{itemize}
+    \item Nếu danh sách trống: Hiển thị giao diện hướng dẫn người dùng cách thêm ví giám sát đầu tiên.
+    \item Lỗi đồng bộ mạng lưới: Hiển thị số dư cũ được lưu trong bộ nhớ đệm (cache) kèm theo nhãn cảnh báo thời gian đồng bộ cuối cùng.
+\end{itemize}
+
+\subsection{Usecase Theo dõi biến động tài sản và Nhận thông báo giao dịch}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Nhận thông báo tự động theo thời gian thực (Push Notifications) khi có các giao dịch phát sinh (Gửi hoặc Nhận tiền) trên các ví được giám sát.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Người dùng cho phép ứng dụng gửi thông báo hệ thống (Notification Permission), thiết bị kết nối mạng Internet và dịch vụ backend của ứng dụng hoạt động.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+Các ví giám sát được đăng ký nhận sự kiện (Webhook) từ backend lắng nghe blockchain.
+
+\subsubsection{e) Luồng chạy}
+\begin{enumerate}
+    \item Khi người dùng thêm một ví giám sát, hệ thống tự động gửi địa chỉ ví này lên server backend để đăng ký lắng nghe sự kiện từ blockchain.
+    \item Khi blockchain phát sinh giao dịch mới liên quan đến địa chỉ ví trong danh sách, server backend nhận diện và tạo gói tin thông báo.
+    \item Server gửi thông báo đẩy đến thiết bị của người dùng qua hệ thống APNs hoặc FCM.
+    \item Người dùng nhận được thông báo biến động số dư và giao dịch trên màn hình khóa hoặc thanh trạng thái.
+    \item Người dùng nhấn vào thông báo để mở trực tiếp chi tiết giao dịch trong ứng dụng.
+\end{enumerate}
+
+\subsubsection{f) Các trường hợp đặc biệt}
+\begin{enumerate}
+    \item Khi giao dịch có giá trị lớn bất thường vượt ngưỡng thiết lập:
+    \begin{itemize}
+        \item Hệ thống gửi thông báo cảnh báo đặc biệt (High-value Transaction Alert).
+    \end{itemize}
+    \item Khi người dùng tắt quyền nhận thông báo:
+    \begin{itemize}
+        \item Hệ thống không gửi thông báo đẩy nhưng vẫn lưu lịch sử biến động vào trung tâm thông báo (Notification Center) trong ứng dụng.
+    \end{itemize}
+\end{enumerate}
+
+\begin{tikzpicture}[
+    actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+    usecase/.style={draw, ellipse, minimum width=3.5cm, minimum height=0.8cm},
+    extend/.style={->, dashed},
+]
+
+% Actor
+\node[actor] (user) at (-5,0) {Người dùng ví};
+
+% Main use cases
+\node[usecase] (monitor) at (0,2) {Theo dõi ví giám sát};
+\node[usecase] (alerts) at (0,0) {Nhận thông báo biến động};
+\node[usecase] (threshold) at (0,-2) {Thiết lập cảnh báo};
+
+% Extended use cases
+\node[usecase] (view_tx) at (6,2) {Xem chi tiết giao dịch};
+\node[usecase] (large_tx) at (6,-1) {Cảnh báo giao dịch lớn};
+
+% Connections
+\draw (user) -- (monitor);
+\draw (user) -- (alerts);
+\draw (user) -- (threshold);
+
+\draw[extend] (monitor) -- (view_tx) node[midway, above] {<<extend>>};
+\draw[extend] (alerts) -- (large_tx) node[midway, above] {<<extend>>};
+
+% Boundary box
+\draw[dashed] (-2.5,-3.2) rectangle (8.5,3.2) node[above] at (3,3.2) {Giám sát \& Cảnh báo ví};
+
+\end{tikzpicture}
+
+\subsection{Usecase Quản lý danh bạ địa chỉ (Address Book Management)}
+
+\subsubsection{a) Đối tượng sử dụng}
+\begin{itemize}
+    \item Người dùng ví (Wallet User)
+\end{itemize}
+
+\subsubsection{b) Mục tiêu của Usecase}
+Cho phép người dùng quản lý danh bạ các địa chỉ ví thường xuyên tương tác, bao gồm tạo mới, chỉnh sửa thông tin, phân nhóm và tìm kiếm liên hệ nhanh khi thực hiện các giao dịch chuyển tiền.
+
+\subsubsection{c) Điều kiện để thực hiện Usecase}
+Ví đã được khởi tạo và mở khóa trên ứng dụng.
+
+\subsubsection{d) Điều kiện về mặt dữ liệu}
+\begin{itemize}
+    \item Địa chỉ ví của liên hệ phải hợp lệ trên các mạng lưới hỗ trợ (EVM, TON).
+    \item Mỗi liên hệ cần có tên gợi nhớ (Name) không được để trống và không trùng lặp với liên hệ khác.
+\end{itemize}
+
+\subsubsection{e) Luồng chạy}
+\textbf{Xem danh sách liên hệ:}
+\begin{enumerate}
+    \item Người dùng truy cập mục "Danh bạ" hoặc "Address Book" từ Dashboard hoặc Cài đặt.
+    \item Hệ thống hiển thị danh sách các liên hệ đã lưu kèm theo các thông tin:
+    \begin{itemize}
+        \item Tên liên hệ (nhãn)
+        \item Địa chỉ ví rút gọn
+        \item Mạng lưới blockchain tương ứng (TON, Ethereum, BSC, v.v.)
+        \item Nhóm/Nhãn phân loại (Bạn bè, Sàn giao dịch, Công việc)
+    \end{itemize}
+    \item Chức năng tìm kiếm và bộ lọc:
+    \begin{itemize}
+        \item Tìm kiếm theo tên hoặc địa chỉ ví.
+        \item Lọc danh bạ theo mạng lưới hoặc theo nhãn phân loại.
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Thêm liên hệ mới:}
+\begin{enumerate}
+    \item Người dùng chọn nút "Thêm liên hệ mới".
+    \item Nhập hoặc quét mã QR địa chỉ ví của liên hệ.
+    \item Hệ thống tự động nhận diện mạng lưới hoặc người dùng chọn thủ công.
+    \item Nhập tên liên hệ (nhãn) và phân loại nhóm (tùy chọn).
+    \item Hệ thống kiểm tra tính hợp lệ của địa chỉ ví và tính duy nhất của tên.
+    \item Người dùng nhấn "Lưu" để thêm liên hệ vào cơ sở dữ liệu cục bộ.
+\end{enumerate}
+
+\textbf{Chỉnh sửa thông tin liên hệ:}
+\begin{enumerate}
+    \item Chọn liên hệ cần sửa đổi từ danh bạ.
+    \item Cập nhật các trường thông tin: Tên, địa chỉ ví, mạng lưới hoặc nhóm.
+    \item Nhấn "Lưu thay đổi" để cập nhật dữ liệu.
+\end{enumerate}
+
+\textbf{Quản lý nhóm và nhãn phân loại:}
+\begin{enumerate}
+    \item Người dùng có thể tự tạo mới hoặc xóa các nhóm phân loại (ví dụ: "Friends", "Work", "Exchanges").
+    \item Gán hoặc bỏ gán các nhãn này cho từng liên hệ trong danh bạ.
+\end{enumerate}
+
+\subsubsection{f) Các trường hợp đặc biệt}
+\begin{enumerate}
+    \item Địa chỉ trùng lặp:
+    \begin{itemize}
+        \item Nếu địa chỉ ví đã tồn tại trong danh bạ dưới tên khác, hệ thống hiển thị cảnh báo trùng lặp và gợi ý người dùng cập nhật liên hệ hiện tại.
+    \end{itemize}
+    \item Định dạng địa chỉ không chính xác:
+    \begin{itemize}
+        \item Hệ thống cảnh báo lỗi định dạng địa chỉ ví của mạng lưới đã chọn và vô hiệu hóa nút lưu.
+    \end{itemize}
+\end{enumerate}
+
+\subsubsection{g) Ghi chú}
+\begin{itemize}
+    \item Hỗ trợ xuất và nhập danh bạ địa chỉ ví dưới dạng file JSON để người dùng sao lưu hoặc đồng bộ.
+    \item Tự động hiển thị gợi ý danh bạ khi người dùng gõ địa chỉ ví nhận tại màn hình gửi tài sản.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[
+        scale=0.7,
+        transform shape,
+        actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm},
+        usecase/.style={draw, ellipse, minimum width=3.5cm, minimum height=0.8cm},
+        extend/.style={->, dashed},
+    ]
+
+    % Actor
+    \node[actor] (user) at (-4,-1) {Người dùng ví};
+
+    % Main use cases
+    \node[usecase] (view) at (0,2) {Xem danh sách liên hệ};
+    \node[usecase] (add) at (0,0) {Thêm liên hệ mới};
+    \node[usecase] (edit) at (0,-2) {Chỉnh sửa liên hệ};
+    \node[usecase] (manage) at (0,-4) {Quản lý nhóm/nhãn};
+
+    % Extended use cases
+    \node[usecase] (search) at (6,3) {Tìm kiếm liên hệ};
+    \node[usecase] (filter) at (6,2) {Lọc theo mạng lưới};
+    \node[usecase] (qr) at (6,0) {Quét mã QR địa chỉ};
+    \node[usecase] (import_export) at (6,-2) {Xuất/Nhập danh bạ};
+
+    % Connections
+    \draw (user) -- (view);
+    \draw (user) -- (add);
+    \draw (user) -- (edit);
+    \draw (user) -- (manage);
+
+    % Extend relationships
+    \draw[extend] (view) -- (search) node[midway, above] {<<extend>>};
+    \draw[extend] (view) -- (filter) node[midway, above] {<<extend>>};
+    \draw[extend] (add) -- (qr) node[midway, above] {<<include>>};
+    \draw[extend] (add) -- (import_export) node[midway, above] {<<extend>>};
+    \draw[extend] (edit) -- (qr) node[midway, above] {<<include>>};
+
+    % Boundary box
+    \draw[dashed] (-2.8,-5) rectangle (9,4) node[above] at (3.25,4) {Quản lý danh bạ địa chỉ};
+
+    \end{tikzpicture}
+    \caption{Mô hình sử dụng cho quản lý danh bạ địa chỉ ví.}
+    \label{fig:address_book_management}
+\end{figure}
+
+\section{Biểu đồ tuần tự }
+\begin{figure}[h]
+    \centering
+    \begin{sequencediagram}
+        \newthread{u}{User}
+        \newinst{ui}{Wallet UI}
+        \newinst{ctrl}{Wallet Engine}
+        \newinst{sec}{Secure Store}
+
+        \begin{call}{u}{1: Chọn Tạo ví mới}{ui}{}
+            \begin{call}{ui}{2: generateMnemonic()}{ctrl}{}
+            \end{call}
+        \end{call}
+
+        \begin{call}{ui}{3: Hiển thị 12 từ khôi phục}{u}{}
+        \end{call}
+
+        \begin{call}{u}{4: Nhập mã PIN và xác nhận từ}{ui}{}
+            \begin{call}{ui}{5: verifyAndSave()}{ctrl}{}
+                \begin{call}{ctrl}{6: encryptAndSave(privateKey, PIN)}{sec}{}
+                \end{call}
+                \begin{call}{ctrl}{7: Trả về trạng thái thành công}{ui}{}
+                \end{call}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+    \caption{Sequence diagram tạo ví mới}
+    \label{fig:sequence-create-wallet}
+\end{figure}
+
+\textbf{Mô tả sơ đồ sequence diagram tạo ví mới:}
+
+\begin{enumerate}
+    \item \textbf{Khởi tạo:}
+    \begin{itemize}
+        \item Người dùng nhấn nút "Tạo ví mới" tại màn hình onboard.
+        \item Wallet UI gọi hàm của Wallet Engine để tạo cụm từ khôi phục ngẫu nhiên (12 từ).
+    \end{itemize}
+
+    \item \textbf{Hiển thị và Xác nhận:}
+    \begin{itemize}
+        \item Cụm từ khôi phục được hiển thị an toàn trên giao diện cho người dùng ghi chép lại.
+        \item Người dùng thực hiện nhập lại các từ ở vị trí ngẫu nhiên để xác nhận tính chính xác.
+    \end{itemize}
+
+    \item \textbf{Bảo mật và Lưu trữ:}
+    \begin{itemize}
+        \item Người dùng thiết lập mã PIN bảo mật (6 chữ số).
+        \item Wallet Engine tạo khóa bảo mật (Private Key) tương ứng, thực hiện mã hóa và gọi API Secure Store của hệ điều hành di động để lưu trữ cục bộ một cách an toàn.
+        \item Hiển thị thông báo hoàn tất và chuyển hướng vào Dashboard.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \label{fig:sequence-restore-wallet}
+    \caption{Biểu đồ tuần tự khôi phục ví bằng Seedphrase}
+\end{figure}
+
+\textbf{Mô tả sơ đồ sequence diagram khôi phục ví bằng Seedphrase:}
+
+\begin{enumerate}
+    \item \textbf{Truyền thông tin:}
+    \begin{itemize}
+        \item Người dùng dán hoặc nhập thủ công 12 từ khôi phục của ví đã có vào Wallet UI.
+        \item Người dùng thiết lập mã PIN mới cho thiết bị này.
+    \end{itemize}
+
+    \item \textbf{Điều kiện:}
+    \begin{itemize}
+        \item Wallet Engine kiểm tra tính hợp lệ của cụm từ khôi phục (chuẩn BIP-39).
+    \end{itemize}
+
+    \item \textbf{Phản hồi điều kiện:}
+    \begin{itemize}
+        \item \textbf{Trường hợp thỏa mãn:}
+        \begin{itemize}
+            \item Tạo khóa bí mật và địa chỉ ví tương ứng từ Seedphrase.
+            \item Mã hóa khóa bí mật bằng PIN và lưu trữ vào Secure Store của thiết bị.
+            \item Trả về thông báo khôi phục thành công.
+        \end{itemize}
+
+        \item \textbf{Trường hợp không thỏa mãn:}
+        \begin{itemize}
+            \item Hiển thị cảnh báo lỗi "Cụm từ khôi phục không hợp lệ".
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\textbf{Mô tả sơ đồ sequence diagram mở khóa ví (PIN/Sinh trắc học):}
+
+\begin{enumerate}
+    \item \textbf{Truyền thông tin:}
+    \begin{itemize}
+        \item Người dùng mở ứng dụng và nhập mã PIN hoặc quét sinh trắc học (vân tay/khuôn mặt).
+    \end{itemize}
+
+    \item \textbf{Điều kiện:}
+    \begin{itemize}
+        \item Wallet Engine kiểm tra mã PIN hoặc sinh trắc học với khóa lưu trong Secure Store.
+    \end{itemize}
+
+    \item \textbf{Phản hồi điều kiện:}
+    \begin{itemize}
+        \item \textbf{Trường hợp thỏa mãn:}
+        \begin{itemize}
+            \item Mở khóa ví thành công và chuyển hướng người dùng vào Dashboard chính.
+        \end{itemize}
+
+        \item \textbf{Trường hợp không thỏa mãn:}
+        \begin{itemize}
+            \item Hiển thị thông báo "Mã PIN/Sinh trắc học không khớp".
+            \item Cho phép nhập lại (giới hạn số lần thử để tránh brute-force).
+        \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \label{fig:sequence-unlock-wallet}
+    \caption{Biểu đồ tuần tự mở khóa ví}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \label{fig:sequence-reset-pin}
+    \caption{Biểu đồ tuần tự khôi phục mã PIN}
+\end{figure}
+
+\subsection{Biểu đồ tuần tự cho chức năng quản lý tài khoản và bảo mật}
+
+\subsubsection{Mô tả sơ đồ}
+
+Biểu đồ mô tả các tương tác liên quan đến bảo mật ví:
+
+\begin{enumerate}
+    \item \textbf{Đổi mã PIN:}
+    \begin{itemize}
+        \item Người dùng nhập mã PIN hiện tại và mã PIN mới.
+        \item Wallet Engine kiểm tra mã PIN hiện tại trong Secure Store.
+        \item Nếu đúng:
+            \begin{itemize}
+                \item Giải mã khóa bí mật bằng PIN cũ.
+                \item Mã hóa lại khóa bí mật bằng PIN mới và lưu trữ vào Secure Store.
+                \item Trả về thông báo "Thay đổi mã PIN thành công".
+            \end{itemize}
+        \item Nếu sai:
+            \begin{itemize}
+                \item Trả về thông báo lỗi "Mã PIN hiện tại không chính xác".
+            \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Xem khóa cá nhân (Reveal Private Key):}
+    \begin{itemize}
+        \item Người dùng yêu cầu xem Private Key của ví.
+        \item Hệ thống yêu cầu xác thực bảo mật bằng PIN hoặc sinh trắc học.
+        \item Nếu xác thực thành công:
+            \begin{itemize}
+                \item Giải mã và hiển thị khóa cá nhân dạng chuỗi ký tự / mã QR kèm theo cảnh báo bảo mật.
+            \end{itemize}
+        \item Nếu xác thực thất bại:
+            \begin{itemize}
+                \item Từ chối hiển thị và báo lỗi xác thực.
+            \end{itemize}
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự quản lý bảo mật ví}
+    \label{fig:sequence_security}
+\end{figure}
+
+\subsection{Biểu đồ tuần tự gửi tài sản}
+
+\begin{figure}[h]
+    \centering
+    \begin{sequencediagram}
+        \newthread{u}{User}
+        \newinst{ui}{Wallet UI}
+        \newinst{ctrl}{Wallet Engine}
+        \newinst{net}{Blockchain RPC}
+
+        \begin{call}{u}{1: Nhập địa chỉ và số lượng}{ui}{}
+            \begin{call}{ui}{2: estimateGas()}{ctrl}{}
+                \begin{call}{ctrl}{3: estimateFee()}{net}{}
+                \end{call}
+            \end{call}
+        \end{call}
+        
+        \begin{call}{ui}{4: Hiển thị phí gas và yêu cầu xác thực}{u}{}
+        \end{call}
+
+        \begin{call}{u}{5: Nhập PIN / Sinh trắc học}{ui}{}
+            \begin{call}{ui}{6: signTransaction()}{ctrl}{}
+            \end{call}
+            \begin{call}{ui}{7: sendRawTransaction()}{net}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+    \caption{Biểu đồ tuần tự gửi tài sản}
+    \label{fig:sequence_send_assets}
+\end{figure}
+
+Biểu đồ mô tả luồng giao dịch chuyển tài sản số (Token/NFT):
+\begin{enumerate}
+    \item \textbf{Khởi tạo và Ước lượng phí:}
+    \begin{itemize}
+        \item Người dùng nhập địa chỉ người nhận và số lượng tài sản.
+        \item Wallet UI gọi hàm ước lượng phí giao dịch (`estimateGas`) trên Wallet Engine.
+        \item Wallet Engine truy vấn Blockchain RPC để lấy thông tin phí gas hiện tại và trả về cho UI hiển thị.
+    \end{itemize}
+    \item \textbf{Xác thực giao dịch:}
+    \begin{itemize}
+        \item Hệ thống hiển thị chi tiết giao dịch cùng phí gas ước tính cho người dùng kiểm tra.
+        \item Người dùng xác nhận và thực hiện quét vân tay / FaceID hoặc nhập mã PIN để xác thực quyền ký.
+    \end{itemize}
+    \item \textbf{Ký và Phát sóng:}
+    \begin{itemize}
+        \item Wallet Engine giải mã khóa cá nhân tạm thời, ký thông điệp giao dịch offline tạo thành giao dịch thô đã ký (`signedTx`).
+        \item Gửi giao dịch đã ký đến Blockchain RPC qua API (`sendRawTransaction`).
+        \item Mạng lưới nhận diện giao dịch, xử lý và trả về mã băm giao dịch (TxHash / TxID).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự xem số dư và lịch sử giao dịch}
+
+\begin{figure}[h]
+    \centering
+    \begin{sequencediagram}
+        \newthread{u}{User}
+        \newinst{ui}{Wallet UI}
+        \newinst{ctrl}{Wallet Engine}
+        \newinst{net}{Moralis/TON API}
+
+        \begin{call}{u}{1: Mở màn hình Dashboard}{ui}{}
+            \begin{call}{ui}{2: getBalanceAndHistory()}{ctrl}{}
+                \begin{call}{ctrl}{3: fetchAssets(address)}{net}{}
+                \end{call}
+            \end{call}
+        \end{call}
+        
+        \begin{call}{ui}{4: Hiển thị số dư và danh sách giao dịch}{u}{}
+        \end{call}
+    \end{sequencediagram}
+    \caption{Biểu đồ tuần tự xem số dư và lịch sử giao dịch}
+    \label{fig:sequence_view_balance}
+\end{figure}
+
+Biểu đồ mô tả quá trình truy vấn và hiển thị tài sản của người dùng:
+\begin{enumerate}
+    \item \textbf{Yêu cầu truy vấn:}
+    \begin{itemize}
+        \item Người dùng truy cập vào ứng dụng hoặc kéo màn hình để làm mới dữ liệu.
+        \item Wallet UI gọi hàm `getBalanceAndHistory` tới Wallet Engine.
+    \end{itemize}
+    \item \textbf{Đồng bộ dữ liệu:}
+    \begin{itemize}
+        \item Wallet Engine sử dụng địa chỉ ví công khai gửi yêu cầu lấy số dư và danh sách các giao dịch gần đây tới API dịch vụ ngoài (Moralis API đối với EVM hoặc TON API đối với TON).
+        \item Các API trả về danh sách các token, NFT đang sở hữu và lịch sử các block giao dịch liên quan.
+    \end{itemize}
+    \item \textbf{Hiển thị kết quả:}
+    \begin{itemize}
+        \item Wallet Engine xử lý dữ liệu thô, định dạng lại số lượng thập phân (decimals) và gửi thông tin về UI hiển thị cho người dùng.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Thêm Custom Token}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự thêm Custom Token}
+    \label{fig:sequence_add_token}
+\end{figure}
+
+Mô tả các tương tác khi người dùng thêm Token tùy chỉnh:
+\begin{enumerate}
+    \item \textbf{Nhập Contract:} Người dùng dán địa chỉ hợp đồng thông minh (Smart Contract Address) của Token vào ô nhập liệu.
+    \item \textbf{Truy vấn Metadata:}
+    \begin{itemize}
+        \item Wallet Engine gửi lệnh gọi hàm đọc (`read-only call`) tới Smart Contract trên blockchain thông qua RPC node để lấy thông tin `name()`, `symbol()`, và `decimals()`.
+        \item Blockchain trả về các tham số tương ứng của Token.
+    \end{itemize}
+    \item \textbf{Xác nhận và Lưu trữ:}
+    \begin{itemize}
+        \item Hệ thống hiển thị các thông tin truy cập được lên màn hình.
+        \item Người dùng bấm xác nhận thêm Token, Wallet Engine lưu địa chỉ contract và thông tin token vào Cơ sở dữ liệu nội bộ thiết bị (Local SQLite/WatermelonDB).
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Quản lý bộ sưu tập NFT}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự quản lý bộ sưu tập NFT}
+    \label{fig:sequence_manage_nft}
+\end{figure}
+
+Biểu đồ mô tả quá trình cập nhật và xem thông tin chi tiết NFT:
+\begin{enumerate}
+    \item \textbf{Yêu cầu đồng bộ:} Người dùng mở tab NFT, Wallet UI gửi yêu cầu truy vấn danh sách NFT.
+    \item \textbf{Tải Metadata:}
+    \begin{itemize}
+        \item Wallet Engine gửi yêu cầu tới NFT Indexer API để lấy danh sách các Token ID và URI metadata của NFT thuộc sở hữu của ví.
+        \item Indexer trả về danh sách NFT kèm đường dẫn JSON lưu trữ siêu dữ liệu (IPFS hoặc HTTP link).
+        \item App tiếp tục gọi API để tải về file JSON metadata chứa thông tin mô tả chi tiết và hình ảnh của NFT.
+    \end{itemize}
+    \item \textbf{Hiển thị:} Hiển thị bộ sưu tập NFT dưới dạng ảnh lưới.
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Giám sát địa chỉ ví (Watch-only Wallet)}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự thêm ví giám sát}
+    \label{fig:sequence_watch_wallet}
+\end{figure}
+
+Mô tả luồng thêm ví chỉ xem (Watch-only) vào danh sách giám sát:
+\begin{enumerate}
+    \item \textbf{Yêu cầu:} Người dùng nhập địa chỉ ví công khai cần theo dõi và đặt tên gợi nhớ.
+    \item \textbf{Kiểm tra định dạng:}
+    \begin{itemize}
+        \item Wallet Engine kiểm tra cấu trúc địa chỉ ví (ví dụ: bắt đầu bằng `EQ` đối với TON, hoặc `0x` đối với Ethereum).
+        \item Nếu hợp lệ, lưu thông tin ví giám sát vào danh sách ví (Watchlist) trong cơ sở dữ liệu nội bộ.
+    \end{itemize}
+    \item \textbf{Đồng bộ số dư:} Hệ thống tự động gửi yêu cầu API để tải số dư hiện tại của địa chỉ ví này và hiển thị lên màn hình.
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Quản lý danh bạ địa chỉ (Address Book)}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự quản lý danh bạ địa chỉ ví}
+    \label{fig:sequence_address_book}
+\end{figure}
+
+Mô tả các thao tác CRUD với danh bạ địa chỉ liên hệ:
+\begin{enumerate}
+    \item \textbf{Thêm liên hệ:} Người dùng nhập tên gợi nhớ và địa chỉ ví $\rightarrow$ Hệ thống kiểm tra trùng lặp và tính hợp lệ $\rightarrow$ Lưu thông tin liên hệ vào bộ nhớ SQLite cục bộ.
+    \item \textbf{Chỉnh sửa liên hệ:} Người dùng chọn liên hệ $\rightarrow$ Thay đổi thông tin $\rightarrow$ Hệ thống cập nhật và ghi đè dữ liệu cũ trong cơ sở dữ liệu.
+    \item \textbf{Xóa liên hệ:} Người dùng chọn xóa liên hệ $\rightarrow$ Hệ thống xóa bản ghi khỏi SQLite và cập nhật lại giao diện danh bạ.
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Theo dõi biến động tài sản và Nhận thông báo giao dịch}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự theo dõi biến động và nhận thông báo}
+    \label{fig:sequence_notifications}
+\end{figure}
+
+Mô tả quy trình nhận thông báo biến động số dư theo thời gian thực:
+\begin{enumerate}
+    \item \textbf{Đăng ký Webhook:} Khi ví mới hoặc ví giám sát được thêm vào danh sách theo dõi, App Client gửi địa chỉ ví lên server Backend của ứng dụng ví để đăng ký theo dõi sự kiện.
+    \item \textbf{Lắng nghe sự kiện Blockchain:}
+    \begin{itemize}
+        \item Server Backend kết nối với Blockchain Node (qua Websocket) hoặc qua hệ thống lắng nghe sự kiện của bên thứ ba (như Alchemy Webhook).
+        \item Khi xuất hiện giao dịch mới liên quan đến địa chỉ ví đã đăng ký, Blockchain Node gửi thông báo cho Backend.
+    \end{itemize}
+    \item \textbf{Gửi thông báo Đẩy (Push Notification):}
+    \begin{itemize}
+        \item Backend phân tích giao dịch (loại token, số lượng, giao dịch gửi hay nhận), xác định ID thiết bị đăng ký.
+        \item Backend gửi thông tin đẩy qua Google Firebase Cloud Messaging (FCM) hoặc Apple Push Notification service (APNs).
+        \item Thiết bị di động của người dùng nhận và hiển thị thông báo đẩy lên màn hình.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Kết nối dApp qua WalletConnect}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự kết nối dApp qua WalletConnect}
+    \label{fig:sequence_dapp_connect}
+\end{figure}
+
+Mô tả luồng tương tác giữa ví CryptoVault và các ứng dụng phi tập trung (dApp):
+\begin{enumerate}
+    \item \textbf{Quét QR kết nối:} Người dùng quét mã QR WalletConnect được hiển thị trên trang web dApp bằng camera của ví CryptoVault.
+    \item \textbf{Thiết lập phiên:}
+    \begin{itemize}
+        \item Wallet Engine gửi yêu cầu bắt tay kết nối (handshake) tới WalletConnect Bridge Server để tạo kênh truyền thông tin bảo mật giữa ví và dApp.
+        \item dApp gửi yêu cầu kết nối ví chứa các thông tin (Tên dApp, biểu tượng, mạng lưới yêu cầu).
+    \end{itemize}
+    \item \textbf{Xác nhận kết nối:}
+    \begin{itemize}
+        \item Màn hình ví hiển thị thông báo hỏi người dùng có đồng ý kết nối ví với dApp hay không.
+        \item Người dùng bấm "Xác nhận". Wallet Engine gửi địa chỉ ví công khai của người dùng cùng với chữ ký xác minh quyền sở hữu ví về cho dApp qua Bridge Server.
+        \item Kết nối thành công, dApp hiển thị số dư và địa chỉ ví của người dùng.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Ký giao dịch từ dApp}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự ký giao dịch từ dApp}
+    \label{fig:sequence_dapp_sign}
+\end{figure}
+
+Mô tả quy trình dApp yêu cầu ví ký và thực hiện giao dịch:
+\begin{enumerate}
+    \item \textbf{Yêu cầu ký:} Người dùng thực hiện thao tác tương tác trên dApp (ví dụ: hoán đổi token trên DEX) $\rightarrow$ dApp tạo giao dịch thô và gửi yêu cầu ký (`eth\_signTransaction` hoặc `ton\_sendTransaction`) tới ứng dụng ví qua Bridge Server.
+    \item \textbf{Hiển thị chi tiết giao dịch:}
+    \begin{itemize}
+        \item Ứng dụng ví mở pop-up hiển thị chi tiết giao dịch: địa chỉ hợp đồng đích, dữ liệu tương tác, số lượng token chuyển đi và phí gas mạng lưới ước tính.
+    \end{itemize}
+    \item \textbf{Xác thực và ký:}
+    \begin{itemize}
+        \item Người dùng kiểm tra thông tin và thực hiện xác thực bảo mật bằng mã PIN hoặc FaceID/TouchID.
+        \item Wallet Engine giải mã khóa cá nhân, thực hiện ký giao dịch ngoại tuyến (offline signature).
+        \item Trả chữ ký giao dịch về cho dApp, hoặc phát sóng trực tiếp giao dịch đã ký lên blockchain tùy thuộc yêu cầu của dApp.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Đồng bộ hóa dữ liệu sao lưu đám mây}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự đồng bộ hóa dữ liệu sao lưu đám mây}
+    \label{fig:sequence_cloud_sync}
+\end{figure}
+
+Mô tả luồng sao lưu thông tin cấu hình ví (Watchlist, Address Book, Settings) lên Supabase để đồng bộ thiết bị:
+\begin{enumerate}
+    \item \textbf{Đăng nhập tài khoản đám mây:} Người dùng đăng nhập bằng tài khoản Google/Email (qua Supabase Auth) để liên kết dịch vụ đồng bộ đám mây.
+    \item \textbf{Mã hóa dữ liệu tại client (Client-side Encryption):}
+    \begin{itemize}
+        \item Để đảm bảo tính phi lưu ký, trước khi tải dữ liệu cấu hình lên đám mây, Wallet Engine sử dụng một khóa dẫn xuất được tạo ra từ mã PIN của người dùng để mã hóa toàn bộ dữ liệu danh bạ và watchlist (AES-256).
+    \end{itemize}
+    \item \textbf{Tải lên đám mây:} App gửi dữ liệu cấu hình đã mã hóa lên Supabase Database để lưu trữ. Khi đăng nhập trên thiết bị mới, người dùng tải dữ liệu đã mã hóa này xuống và giải mã nội bộ bằng mã PIN tương ứng.
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự Xóa ví / Thiết lập lại ứng dụng (Delete Wallet)}
+
+\begin{figure}[h]
+    \centering
+    \caption{Biểu đồ tuần tự xóa ví / thiết lập lại ứng dụng}
+    \label{fig:sequence_delete_wallet}
+\end{figure}
+
+Mô tả quy trình bảo mật nghiêm ngặt khi người dùng thực hiện xóa ví khỏi thiết bị di động:
+\begin{enumerate}
+    \item \textbf{Yêu cầu xóa ví:} Người dùng chọn "Xóa ví" hoặc "Thiết lập lại ứng dụng" trong phần cài đặt bảo mật nâng cao.
+    \item \textbf{Cảnh báo bảo mật:}
+    \begin{itemize}
+        \item Hệ thống hiển thị cảnh báo nghiêm ngặt về việc mất toàn bộ tài sản nếu chưa sao lưu 12 từ khôi phục (Seedphrase).
+        \item Người dùng phải nhập lại cụm từ xác nhận (ví dụ dán Seedphrase hoặc gõ chữ "DELETE") để đảm bảo họ hoàn toàn hiểu rõ rủi ro.
+    \end{itemize}
+    \item \textbf{Hủy bỏ dữ liệu nhạy cảm:}
+    \begin{itemize}
+        \item App tiến hành xóa vĩnh viễn khóa bảo mật và mã PIN lưu trong phân vùng phần cứng bảo mật Secure Store / Keychain của hệ điều hành di động.
+        \item Xóa toàn bộ file dữ liệu cache, cơ sở dữ liệu SQLite cục bộ (lịch sử giao dịch, danh bạ, watchlist) trên thiết bị.
+        \item Chuyển hướng người dùng về màn hình chào mừng onboard ban đầu.
+    \end{itemize}
+\end{enumerate}
+
+\section{Phân tích Thiết kế Nền tảng Vé điện tử Thông minh (Digital Ticket Wallet Platform)}
+
+\subsection{Mô tả chung về hệ thống}
+Nền tảng Vé điện tử Thông minh đóng vai trò là một lớp trung gian (Middleware) kết nối giữa các hệ thống quản lý sự kiện/dịch vụ của đối tác thứ ba (cinemas, stadiums, event organizers) với ví di động phi tập trung đa chuỗi CryptoVault. Hệ thống cho phép phát hành các vé điện tử dưới dạng NFT trên mạng lưới blockchain (EVM và TON), quản lý vòng đời vé, hỗ trợ chuyển nhượng an toàn giữa người dùng và soát vé bảo mật thời gian thực thông qua mã QR động (Dynamic QR Code) và cơ chế soát vé ngoại tuyến (Offline Check-in).
+
+\subsection{Các tác nhân hệ thống (Actors)}
+\begin{itemize}
+    \item \textbf{Đối tác (Partner / Third-party):} Các nhà tổ chức sự kiện, đơn vị cung cấp dịch vụ vé có nhu cầu tích hợp phát hành vé số hóa lên blockchain và nhận cập nhật soát vé từ hệ thống.
+    \item \textbf{Người dùng ví (Wallet User):} Khách hàng sở hữu vé, thực hiện xem danh sách vé, hiển thị QR soát vé hoặc chuyển nhượng vé cho người dùng khác.
+    \item \textbf{Nhân viên soát vé (Staff / Scanner):} Nhân sự tại cửa sự kiện sử dụng app soát vé để quét mã QR và xác nhận quyền vào cửa của khách hàng.
+    \item \textbf{Smart Contract (EVM / TON):} Lưu trữ trạng thái sở hữu của vé trên mạng lưới phi tập trung dưới dạng NFT ERC-721 hoặc TON Collection.
+\end{itemize}
+
+\subsection{Biểu đồ Use Case Nền tảng Vé Điện tử}
+
+Dưới đây là biểu đồ Use Case mô tả các tác vụ cốt lõi của nền tảng vé điện tử thông minh:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{tikzpicture}[
+        actor/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm, rounded corners=3pt, fill=blue!5},
+        usecase/.style={draw, ellipse, minimum width=3.5cm, minimum height=0.9cm, align=center, fill=teal!5},
+        extend/.style={->, dashed, >=stealth},
+        line/.style={draw, thick}
+    ]
+    % Actors
+    \node[actor] (partner) at (-6, 2) {Đối tác (Partner)};
+    \node[actor] (user) at (-6, -2) {Người dùng ví};
+    \node[actor] (staff) at (6, -2) {Nhân viên soát vé (Staff)};
+    \node[actor] (blockchain) at (6, 2) {Smart Contract};
+
+    % Use Cases
+    \node[usecase] (issue) at (0, 3.5) {Phát hành vé \\ (Single/Batch)};
+    \node[usecase] (view) at (0, 2) {Quản lý danh \\ sách vé};
+    \node[usecase] (transfer) at (0, 0.5) {Chuyển nhượng \\ vé P2P};
+    \node[usecase] (show_qr) at (0, -1) {Hiển thị mã \\ QR động};
+    \node[usecase] (scan) at (0, -2.5) {Quét soát vé \\ (QR/Offline)};
+    \node[usecase] (sync) at (0, -4) {Đồng bộ soát vé \\ ngoại tuyến};
+
+    % Connections
+    \draw[line] (partner) -- (issue);
+    \draw[line] (partner) -- (view);
+    
+    \draw[line] (user) -- (view);
+    \draw[line] (user) -- (transfer);
+    \draw[line] (user) -- (show_qr);
+    
+    \draw[line] (staff) -- (scan);
+    \draw[line] (staff) -- (sync);
+    
+    \draw[line] (blockchain) -- (issue);
+    \draw[line] (blockchain) -- (transfer);
+    \draw[line] (blockchain) -- (scan);
+
+    % System boundary
+    \draw[dashed] (-3.5, 4.5) rectangle (3.5, -4.8) node[above] at (0, 4.5) {Hệ thống Vé Điện tử (Ticket Platform)};
+    \end{tikzpicture}
+    }
+    \caption{Biểu đồ Use Case Nền tảng Vé Điện tử Thông minh}
+    \label{fig:usecase_ticket_platform}
+\end{figure}
+
+\subsection{Đặc tả chi tiết các Use Case}
+\begin{enumerate}
+    \item \textbf{Use Case Phát hành vé:} Đối tác khởi tạo sự kiện và phát hành vé thông qua hệ thống API trung gian bảo mật bằng chữ ký HMAC. Hệ thống tạo bản ghi cơ sở dữ liệu và tự động kích hoạt đúc NFT tương ứng trên Blockchain.
+    \item \textbf{Use Case Chuyển nhượng vé P2P:} Người sở hữu vé nhập địa chỉ ví đích để thực hiện chuyển nhượng vé phi tập trung. Hệ thống kiểm tra điều kiện chuyển nhượng của loại vé, ghi nhận giao dịch chuyển nhượng, đổi chủ sở hữu và kích hoạt thay đổi trên chuỗi khối.
+    \item \textbf{Use Case Quét soát vé:} Nhân viên quét mã QR do khách hàng trình ra để thực hiện xác thực chữ ký HMAC và kiểm tra chống Replay Attack thông qua cơ chế kiểm tra nonce ngẫu nhiên dùng một lần của server.
+\end{enumerate}
+
+\subsection{Biểu đồ tuần tự (Sequence Diagram)}
+
+\subsubsection{Quy trình Phát hành Vé điện tử}
+Quy trình mô tả chuỗi hành động khi đối tác thứ ba phát hành vé cho khách hàng:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{p}{Partner}
+        \newinst{srv}{CryptoVault API}
+        \newinst{db}{Database}
+        \newinst{chain}{Blockchain Service}
+        \newinst{u}{Wallet App}
+
+        \begin{call}{p}{1: POST /tickets/issue (HMAC Signature)}{srv}{}
+            \begin{call}{srv}{2: Kiểm tra hạn mức / tồn kho}{db}{}
+            \end{call}
+            \begin{call}{srv}{3: Ghi nhận thông tin vé (status: ACTIVE)}{db}{}
+            \end{call}
+            \begin{call}{srv}{4: Đúc (Mint) Ticket NFT}{chain}{}
+                \begin{call}{chain}{5: Ghi nhận Token ID \& Tx Hash}{db}{}
+                \end{call}
+            \end{call}
+            \begin{call}{srv}{6: Gửi thông báo đẩy (FCM)}{u}{}
+            \end{call}
+        \end{call}
+        \begin{call}{srv}{7: Bắn Webhook (ticket.issued)}{p}{}
+        \end{call}
+    \end{sequencediagram}
+    }
+    \caption{Biểu đồ tuần tự phát hành vé số từ đối tác}
+    \label{fig:seq_ticket_issue}
+\end{figure}
+
+\newpage
+
+\subsubsection{Quy trình Soát vé bằng QR động (Dynamic QR)}
+Quy trình mô tả giải pháp xác thực bảo mật nhiều lớp với cơ chế xoay vòng nonce trong 30 giây để ngăn chặn gian lận chụp ảnh màn hình hoặc quay video vé:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{u}{User}
+        \newinst{w}{Wallet App}
+        \newinst{srv}{CryptoVault API}
+        \newinst{db}{Database}
+        \newinst{sc}{Scanner / Staff}
+
+        \begin{call}{u}{1: Mở hiển thị vé}{w}{}
+            \begin{call}{w}{2: Yêu cầu sinh QR động}{srv}{}
+                \begin{call}{srv}{3: Tạo Nonce mới (30s TTL)}{db}{}
+                \end{call}
+                \begin{call}{srv}{4: Ký HMAC Signature}{srv}{}
+                \end{call}
+            \end{call}
+        \end{call}
+        \begin{call}{w}{5: Hiển thị mã QR động}{u}{}
+        \end{call}
+        \begin{call}{u}{6: Trình mã QR cho nhân viên}{sc}{}
+            \begin{call}{sc}{7: Quét mã QR và gọi verifyQR()}{srv}{}
+                \begin{call}{srv}{8: Kiểm tra chữ ký, thời gian \& nonce}{db}{}
+                \end{call}
+                \begin{call}{srv}{9: Đánh dấu nonce đã dùng (chống replay)}{db}{}
+                \end{call}
+            \end{call}
+            \begin{call}{sc}{10: Nhấn xác nhận checkIn()}{srv}{}
+                \begin{call}{srv}{11: Cập nhật ticket status = USED}{db}{}
+                \end{call}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+    }
+    \caption{Biểu đồ tuần tự soát vé bằng mã QR động}
+    \label{fig:seq_qr_checkin}
+\end{figure}
+
+\newpage
+
+\subsubsection{Quy trình Soát vé Ngoại tuyến (Offline Mode) và Đồng bộ}
+Quy trình kiểm soát vé và vào cửa khi cả thiết bị khách hàng lẫn thiết bị soát vé đều không có kết nối internet:
+
+\begin{figure}[h]
+    \centering
+    \resizebox{0.95\textwidth}{!}{
+    \begin{sequencediagram}
+        \newthread{u}{User}
+        \newinst{w}{Wallet App}
+        \newinst{sc}{Scanner / Staff}
+        \newinst{srv}{CryptoVault API}
+        \newinst{db}{Database}
+
+        \begin{call}{u}{1: Yêu cầu Offline Token (khi có mạng)}{w}{}
+            \begin{call}{w}{2: POST /qr/offline-token}{srv}{}
+                \begin{call}{srv}{3: Ký token offline (hạn dùng 24h)}{srv}{}
+                \end{call}
+            \end{call}
+        \end{call}
+        \begin{call}{u}{4: Trình mã QR Offline tại cửa soát vé}{sc}{}
+            \begin{call}{sc}{5: Tự xác thực chữ ký (Offline)}{sc}{}
+            \end{call}
+            \begin{call}{sc}{6: Ghi nhận lượt check-in vào local queue}{sc}{}
+            \end{call}
+        \end{call}
+        \begin{call}{sc}{7: Đồng bộ khi có mạng (useOfflineSync)}{srv}{}
+            \begin{call}{srv}{8: Ghi nhận loạt check-in hợp lệ}{db}{}
+            \end{call}
+        \end{call}
+    \end{sequencediagram}
+    }
+    \caption{Biểu đồ tuần tự kiểm soát vé ngoại tuyến và đồng bộ}
+    \label{fig:seq_offline_checkin}
+\end{figure}
+
+\chapter{Cơ sở lý thuyết}
+
+\section{HTML, CSS và JavaScript}
+
+HTML (HyperText Markup Language) là ngôn ngữ đánh dấu cơ bản cho việc xây dựng cấu trúc và định dạng nội dung trên các trang web. HTML tạo ra phần khung, giúp xác định các thành phần như tiêu đề, đoạn văn, hình ảnh, và liên kết. Nó là nền tảng cần thiết để tạo ra một Ứng dụng, đóng vai trò như ngôn ngữ giao tiếp giữa trình duyệt và nội dung trang web.
+
+\medskip
+
+Về vai trò, HTML là trung gian trong quá trình biên dịch và hiển thị trang web, bất kể bạn sử dụng ngôn ngữ lập trình hay framework nào. Mỗi trang web chứa một hoặc nhiều file HTML và các công cụ soạn thảo web đều cung cấp chế độ xem HTML. Nói chung, HTML hỗ trợ bạn tổ chức nội dung trang web bằng cách thêm các phần tử như tiêu đề, định dạng đoạn văn, danh sách, liên kết và hình ảnh, tuy nhiên, nó không phải là ngôn ngữ lập trình nên không thể tạo ra các tính năng động. Vì vậy, HTML chỉ đóng vai trò tổ chức và trình bày thông tin trên trang, giống như một trình soạn thảo văn bản đơn giản như Microsoft Word.
+
+\medskip
+
+CSS (Cascading Style Sheets) là ngôn ngữ định dạng cho phép các nhà phát triển tạo phong cách cho các trang HTML. CSS quy định cách các thành phần HTML xuất hiện trên trang web, từ bố cục đến màu sắc, kích thước, font chữ và các yếu tố thiết kế khác. Có ba loại CSS chính:
+
+\begin{itemize}
+    \item Internal CSS: Được định nghĩa trong cùng file HTML, tải cùng lúc khi trang được làm mới.
+    \item Inline CSS: Cho phép điều chỉnh phong cách của các yếu tố cụ thể mà không cần thay đổi file CSS.
+    \item External CSS: Tạo phong cách từ file riêng biệt, áp dụng cho nhiều trang web, giúp cải thiện thời gian tải trang.
+\end{itemize}
+
+\medskip
+
+CSS giúp định hình phong cách và bố cục của trang web, giúp lập trình viên tiết kiệm thời gian bằng cách điều chỉnh nhiều trang web cùng một lúc mà không phải lặp lại các quy định phong cách. So với HTML chỉ cung cấp các khung cơ bản cho nội dung, CSS thêm phần "trang trí" để trang web trông hấp dẫn hơn. Dù vậy, để xây dựng một trang web đẹp, CSS cần kết hợp với các ngôn ngữ khác dựa trên các bản thiết kế đã thống nhất trước đó.
+
+\medskip
+
+JavaScript (JS) là một ngôn ngữ lập trình phổ biến, do Brendan Eich phát triển và ra mắt vào năm 1995. Ban đầu có tên Mocha rồi LiveScript, JavaScript trở thành ngôn ngữ lập trình động khi được đổi tên để tận dụng sự phổ biến của Java lúc bấy giờ. JavaScript cho phép Ứng dụng tương tác và động, giúp tạo các hiệu ứng như trình chiếu ảnh, pop-up quảng cáo, và tính năng tự động hoàn thành trên các công cụ tìm kiếm như Google.
+
+\medskip
+
+JavaScript đóng vai trò chuyển đổi Ứng dụng từ trạng thái tĩnh sang động, cải thiện trải nghiệm người dùng bằng cách tạo ra các tương tác trực tiếp. Các nhà phát triển sử dụng JavaScript để dễ dàng bắt đầu với các ứng dụng đơn giản như ảnh động, bố cục có tính linh hoạt, và cũng có thể xây dựng các ứng dụng phức tạp hơn như trò chơi, hoạt hình 2D và 3D, hay ứng dụng quản lý dữ liệu. Với khả năng tùy chỉnh hành vi và kiểm soát mặc định của trình duyệt, JavaScript mang đến cho trang web các tính năng động mà HTML và CSS không thể làm được.
+
+\medskip
+
+Trong hầu hết các trang web, JavaScript chịu trách nhiệm cho các hành vi động và là một ngôn ngữ khá phức tạp, yêu cầu thời gian và nỗ lực để học thành thạo.
+
+\section{Frontend với React native library}
+
+React Native là một framework mã nguồn mở do Facebook phát triển, cho phép các nhà phát triển tạo ứng dụng di động đa nền tảng với chỉ một bộ mã nguồn. Được xây dựng dựa trên React - thư viện JavaScript phổ biến cho giao diện người dùng, React Native mang lại khả năng phát triển ứng dụng gốc cho cả iOS và Android từ một codebase chung, giúp giảm đáng kể thời gian và chi phí phát triển. Các ứng dụng nổi tiếng như Instagram, Facebook, và Airbnb đều sử dụng React Native để mang lại trải nghiệm mượt mà cho người dùng.
+
+\subsection{Vai trò và ưu điểm của React Native}
+
+React Native cho phép các nhà phát triển sử dụng JavaScript và JSX (JavaScript XML) - cú pháp tương tự HTML - để xây dựng giao diện, giúp họ dễ dàng định nghĩa các thành phần giao diện (component) và tổ chức mã nguồn. Một điểm mạnh khác là React Native không chỉ tạo ra các ứng dụng dựa trên WebView (trình xem web) mà còn sử dụng các thành phần UI gốc của hệ điều hành, mang lại hiệu suất và trải nghiệm gần giống với ứng dụng native (ứng dụng gốc).
+
+\medskip
+
+Bằng cách kết hợp JavaScript và các API gốc, React Native giúp các lập trình viên:
+
+\begin{itemize}
+    \item Tái sử dụng mã nguồn: Một trong những điểm mạnh nổi bật nhất của React Native là khả năng chia sẻ mã giữa các nền tảng. Điều này giúp tiết kiệm rất nhiều công sức và tài nguyên so với việc phải phát triển ứng dụng riêng cho iOS và Android.
+    
+    \item Giao diện người dùng đẹp mắt và hiệu suất cao: Các thành phần React Native như View, Text, và Image sẽ được biên dịch thành mã gốc của nền tảng (native code) khi chạy, giúp cải thiện hiệu suất và tận dụng được sức mạnh của các thành phần gốc của từng hệ điều hành.
+    
+    \item Tích hợp dễ dàng với các module gốc: React Native cho phép tích hợp các thư viện và module viết bằng ngôn ngữ gốc (Objective-C, Swift cho iOS và Java, Kotlin cho Android), hỗ trợ nhà phát triển tận dụng tối đa tính năng của hệ điều hành.
+    
+    \item Tốc độ phát triển nhanh nhờ Hot Reloading: Hot Reloading là tính năng cho phép các nhà phát triển xem những thay đổi ngay lập tức mà không cần phải khởi động lại ứng dụng, tiết kiệm đáng kể thời gian phát triển và kiểm thử.
+\end{itemize}
+
+\subsection{Các thành phần và cú pháp của React Native}
+
+React Native sử dụng cú pháp JavaScript, tương tự như React, nhưng được mở rộng với các API và thành phần đặc biệt cho di động. Dưới đây là một số thành phần và cú pháp phổ biến trong React Native:
+
+\begin{itemize}
+    \item Components (Thành phần): Là các khối xây dựng cơ bản trong React Native. Các thành phần thường gặp như View, Text, Button, Image, v.v., có thể được lồng vào nhau để tạo nên giao diện.
+    
+    \item StyleSheet: React Native sử dụng một hệ thống style riêng, tương tự như CSS nhưng có cú pháp JavaScript, cho phép định nghĩa các style (phong cách) cho từng thành phần UI. Ví dụ, StyleSheet.create cho phép nhà phát triển tổ chức và quản lý các style một cách dễ dàng.
+    
+    \item Navigation (Điều hướng): Điều hướng giữa các màn hình là một phần quan trọng trong ứng dụng di động. Các thư viện như React Navigation hoặc React Native Navigation được sử dụng phổ biến để giúp điều hướng mượt mà giữa các màn hình trong ứng dụng.
+    
+    \item Hooks (Các hook): Hooks như useState, useEffect, useContext giúp quản lý trạng thái và vòng đời của ứng dụng một cách hiệu quả. Các hook này giúp mã nguồn ngắn gọn và dễ hiểu hơn, đồng thời cho phép nhà phát triển tận dụng các tính năng của React Native mà không cần dùng các lớp (class).
+\end{itemize}
+
+\subsection{Hệ sinh thái phong phú và hỗ trợ cộng đồng}
+
+React Native có một hệ sinh thái phong phú với hàng loạt các thư viện và module hỗ trợ như:
+
+\begin{itemize}
+    \item Redux và Context API để quản lý trạng thái ứng dụng
+    \item Axios hoặc Fetch API để gọi API và xử lý dữ liệu từ máy chủ
+    \item @gorhom/bottom-sheet và react-native-modal để tạo các thành phần UI hiện đại và thân thiện
+\end{itemize}
+
+\medskip
+
+Cộng đồng React Native phát triển mạnh mẽ và đóng góp rất nhiều thư viện mã nguồn mở, giúp các nhà phát triển nhanh chóng xây dựng tính năng mà không cần viết lại từ đầu.
+
+\subsection{Hạn chế và thách thức của React Native}
+
+Tuy nhiên, React Native không phải là không có những hạn chế. Vì là một framework đa nền tảng, đôi khi React Native gặp phải các lỗi hoặc xung đột khi các nền tảng được cập nhật, đặc biệt là khi các tính năng gốc thay đổi. Hiệu suất của React Native tuy cao nhưng trong một số trường hợp đòi hỏi nhiều về đồ họa (như các ứng dụng game phức tạp), nó vẫn không thể so sánh được với các ứng dụng viết hoàn toàn bằng mã gốc.
+
+\section{Backend với Express Nodejs}
+
+PostgreSQL là một hệ quản trị cơ sở dữ liệu quan hệ mạnh mẽ và có độ tin cậy cao, được sử dụng phổ biến trong nhiều ứng dụng web nhờ khả năng xử lý giao dịch phức tạp và quản lý dữ liệu dạng JSON linh hoạt. Supabase, mặt khác, là một nền tảng mã nguồn mở, cung cấp các dịch vụ backend như cơ sở dữ liệu, xác thực, lưu trữ và tính năng thời gian thực, và được xây dựng dựa trên PostgreSQL. Khi kết hợp với nhau, PostgreSQL và Supabase tạo thành một giải pháp hiệu quả, linh hoạt và dễ triển khai cho việc xây dựng backend.
+
+\subsection{Tổng Quan về Ưu Điểm của PostgreSQL và Supabase}
+
+\begin{itemize}
+    \item Quản lý Dữ liệu Mạnh mẽ với PostgreSQL: PostgreSQL hỗ trợ tốt các giao dịch phức tạp, bảo mật dữ liệu và có khả năng mở rộng để xử lý dữ liệu lớn. Nó còn hỗ trợ JSON, giúp lưu trữ và truy vấn dữ liệu không cấu trúc dễ dàng.
+    
+    \item Supabase – Backend-as-a-Service với PostgreSQL: Supabase tự động tạo API RESTful dựa trên cấu trúc của PostgreSQL. Bạn có thể nhanh chóng xây dựng API, thêm xác thực và quản lý dữ liệu mà không cần thiết lập phức tạp.
+    
+    \item Tính Năng Thời Gian Thực: Supabase cung cấp khả năng cập nhật thời gian thực, rất hữu ích cho các ứng dụng cần đồng bộ dữ liệu nhanh chóng giữa client và server.
+    
+    \item Xác Thực và Phân Quyền Bảo Mật: Supabase tích hợp sẵn các tính năng xác thực, giúp dễ dàng triển khai các hệ thống đăng nhập, phân quyền người dùng và bảo mật dữ liệu trên nền tảng PostgreSQL.
+    
+    \item Dễ dàng Mở Rộng và Tùy Chỉnh: Với PostgreSQL làm lõi, bạn có thể mở rộng cơ sở dữ liệu dễ dàng, tích hợp các tiện ích như trigger, view và store procedure mà PostgreSQL hỗ trợ.
+\end{itemize}
+
+\subsection{Nhược Điểm khi Sử dụng PostgreSQL với Supabase}
+
+\begin{itemize}
+    \item Tính Linh Hoạt Giới Hạn cho các Truy Vấn Tùy Chỉnh: Supabase tạo API tự động, nhưng trong một số trường hợp, API mặc định có thể không đáp ứng được các truy vấn phức tạp và yêu cầu tối ưu hóa.
+    
+    \item Phụ Thuộc vào Supabase để Quản Lý Backend: Khi sử dụng Supabase làm backend, bạn sẽ phụ thuộc vào các tính năng và hạn chế của nó, và có thể phải chờ cập nhật hoặc tìm giải pháp khác nếu có yêu cầu tính năng chưa được hỗ trợ.
+\end{itemize}
+
+\subsection{Khi nào nên sử dụng PostgreSQL với Supabase?}
+
+Kết hợp PostgreSQL và Supabase sẽ phù hợp khi:
+
+\begin{itemize}
+    \item Bạn cần một giải pháp backend nhanh chóng, không cần quá nhiều thiết lập ban đầu nhưng vẫn đáp ứng được bảo mật và tính mở rộng.
+    
+    \item Ứng dụng của bạn yêu cầu tính năng thời gian thực, đồng bộ dữ liệu nhanh giữa nhiều người dùng.
+    
+    \item Bạn đang tìm kiếm một nền tảng dễ triển khai nhưng không muốn quản lý quá nhiều về cấu hình server.
+\end{itemize}
+
+\medskip
+
+Với sự kết hợp giữa PostgreSQL và Supabase, bạn có thể xây dựng một hệ thống backend linh hoạt và mạnh mẽ, từ quản lý dữ liệu phức tạp đến xác thực và đồng bộ thời gian thực, giúp phát triển ứng dụng trở nên hiệu quả và nhanh chóng hơn.
+
+
+\subsection{Mô hình RESTful API}
+
+\section{RESTful API và PostgreSQL}
+
+\subsection{RESTful API}
+
+RESTful API (REpresentational State Transfer) là một kiểu kiến trúc được sử dụng rộng rãi trong phát triển dịch vụ web. Khác với các giao thức truyền thống, REST không phải là một tiêu chuẩn chính thức mà là tập hợp các nguyên tắc hướng dẫn cách thiết kế các API nhằm tối ưu hóa khả năng tương tác giữa các thành phần web.
+
+\begin{figure}[h] % Changed the positioning of the figure
+            \centering
+            \label{fig:enter-label}
+            \caption{Mô hình hoạt động của RESTful API}
+        \end{figure}
+
+\subsubsection{Các nguyên tắc chính của mô hình RESTful}
+
+\begin{itemize}
+    \item \textbf{Giao Diện Thống Nhất (Uniform Interface):} Một RESTful API cần có giao diện rõ ràng và thống nhất, giúp các thành phần (client, server) tương tác một cách nhất quán. Giao diện nhất quán giúp cho API dễ sử dụng và dễ hiểu, ngay cả khi các thành phần khác nhau đang làm việc cùng nhau.
+    
+    \item \textbf{Tính Không Trạng Thái (Stateless):} Trong REST, mỗi yêu cầu từ client phải tự chứa đủ thông tin cần thiết để server có thể xử lý nó mà không cần dựa vào trạng thái trước đó.
+    
+    \item \textbf{Khả Năng Cache (Cacheable):} Các phản hồi từ server trong một API RESTful cần chỉ định rõ liệu dữ liệu có thể lưu trữ cache hay không.
+    
+    \item \textbf{Hệ Thống Client-Server:} Mô hình REST chia thành phần client và server thành hai hệ thống độc lập.
+    
+    \item \textbf{Cấu Trúc Phân Lớp (Layered System):} Một RESTful API có thể được chia thành nhiều lớp khác nhau, với mỗi lớp đảm nhận một nhiệm vụ riêng biệt.
+    
+    \item \textbf{Mã Theo Yêu Cầu (Code on Demand):} REST cho phép server gửi mã thực thi đến client nếu cần thiết.
+\end{itemize}
+
+\subsubsection{Các Phương Thức HTTP Trong RESTful API}
+
+RESTful API thường sử dụng các phương thức HTTP tiêu chuẩn:
+
+\begin{itemize}
+    \item GET để truy vấn dữ liệu (Read)
+    \item POST để tạo mới tài nguyên (Create)
+    \item PUT để cập nhật tài nguyên hiện có (Update)
+    \item DELETE để xóa tài nguyên (Delete)
+\end{itemize}
+
+\chapter{Xây dựng Ứng dụng}
+
+\section*{Mô tả triển khai Supabase với React Native cho ứng dụng ví điện tử CryptoVault}
+
+\section {Mô hình triển khai hệ thống}
+
+Supabase là một nền tảng backend-as-a-service (BaaS) tương tự như Firebase, nhưng sử dụng cơ sở dữ liệu PostgreSQL để quản lý dữ liệu. Với React Native, Supabase là một lựa chọn tuyệt vời để xây dựng cơ sở hạ tầng bổ trợ cho ứng dụng ví điện tử đa chuỗi CryptoVault nhờ tính dễ triển khai, bảo mật và tích hợp realtime mạnh mẽ. Dưới đây là mô tả và phân tích lý do, điểm mạnh, điểm yếu khi sử dụng Supabase.
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, fill=red!30]
+\tikzstyle{process} = [rectangle, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{decision} = [diamond, minimum width=2.5cm, minimum height=0.8cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\begin{tikzpicture}[node distance=2.5cm] % Tăng khoảng cách giữa các nút
+
+% Nodes
+\node (frontend) [startstop] {React Native App};
+\node (auth) [process, below of=frontend] {Xác thực người dùng (Auth)};
+\node (api) [process, below of=auth, node distance=3cm] {Supabase API}; % Kéo Supabase API xuống sâu hơn
+\node (db) [process, right of=api, xshift=2.5cm] {Cơ sở dữ liệu PostgreSQL}; 
+\node (realtime) [process, left of=api, xshift=-2.5cm] {Realtime Service}; 
+
+% Arrows
+\draw [arrow] (frontend) -- (auth) node[midway, right] {Auth};
+\draw [arrow] (auth) -- (api) node[midway, right] {Token xác thực};
+\draw [arrow] (api) -- (db) node[midway, above] {TVDL};
+\draw [arrow] (db) -- (api) node[midway, below] {KQTV};
+\draw [arrow] (api) -- (realtime) node[midway, above] {CNRT};
+\draw [arrow] (realtime) -- (frontend) node[midway, above] {DLTGT};
+
+% Labels
+\node[below of=db, yshift=0.5cm, text width=4cm, align=center] (dbdesc) {Lưu cấu hình ví, danh bạ, danh sách watchlist};
+\node[below of=realtime, yshift=0.5cm, text width=4cm, align=center] (realtimedesc) {Thông báo các thay đổi giao dịch thời gian thực};
+
+\end{tikzpicture}
+
+% Abbreviation Notes
+\begin{itemize}
+    \item \textbf{Auth}: Xác thực người dùng
+    \item \textbf{TVDL}: Truy vấn dữ liệu lưu
+    \item \textbf{KQTV}: Kết quả truy vấn
+    \item \textbf{CNRT}: Cập nhật nội dung realtime
+    \item \textbf{DLTGT}: Dữ liệu thay đổi trong thời gian thực
+\end{itemize}
+
+\begin{enumerate}
+    \item \textbf{Cấu hình dự án Supabase}
+    \begin{itemize}
+        \item Tạo một dự án trên \href{https://supabase.com/}{Supabase Dashboard}.
+        \item Định nghĩa các bảng dữ liệu cần thiết, ví dụ:
+        \begin{itemize}
+            \item \textbf{users}: Lưu thông tin tài khoản đồng bộ (UID, email, ngày tạo, ...).
+            \item \textbf{wallets}: Lưu danh sách ví đã liên kết (nhãn ví, địa chỉ công khai, chain ID).
+            \item \textbf{watchlist}: Lưu danh sách địa chỉ ví công khai cần giám sát biến động số dư.
+            \item \textbf{address\_book}: Lưu danh bạ địa chỉ ví của bạn bè và các giao dịch thường dùng.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Tích hợp React Native với Supabase}
+    \begin{itemize}
+        \item Cài đặt thư viện Supabase:
+        \begin{verbatim}
+        npm install @supabase/supabase-js
+        \end{verbatim}
+
+        \item Cấu hình kết nối:
+        \begin{verbatim}
+        import { createClient } from '@supabase/supabase-js';
+
+        const supabaseUrl = 'https://your-project.supabase.co';
+        const supabaseKey = 'your-anon-key';
+        export const supabase = createClient(supabaseUrl, supabaseKey);
+        \end{verbatim}
+
+        \item Sử dụng Supabase cho các chức năng:
+        \begin{itemize}
+            \item Xác thực người dùng và đăng nhập đồng bộ hóa.
+            \item Quản lý dữ liệu watchlist, danh bạ, cấu hình ví.
+            \item Đồng bộ dữ liệu thời gian thực.
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Triển khai các tính năng của ứng dụng}
+    \begin{itemize}
+        \item Hiển thị danh bạ địa chỉ từ bảng \textbf{address\_book}.
+        \item Đồng bộ danh sách ví theo dõi từ bảng \textbf{watchlist}.
+        \item Cập nhật thông tin tài khoản người dùng từ bảng \textbf{users}.
+        \item Sử dụng \textbf{Realtime} để cập nhật thông tin biến động tài sản nhanh chóng.
+    \end{itemize}
+\end{enumerate}
+
+\section*{Vì sao chọn Supabase?}
+\begin{itemize}
+    \item \textbf{Tính năng mạnh mẽ:} Hỗ trợ PostgreSQL, Realtime, và xác thực.
+    \item \textbf{Dễ học và sử dụng:} API thân thiện, tài liệu chi tiết.
+    \item \textbf{Chi phí hợp lý:} Có gói miễn phí đủ dùng cho MVP.
+\end{itemize}
+
+\section*{Điểm mạnh của Supabase}
+\begin{itemize}
+    \item Tích hợp PostgreSQL, hỗ trợ query dữ liệu phức tạp.
+    \item Realtime phù hợp cho cập nhật dữ liệu nhanh.
+    \item Tích hợp xác thực người dùng dễ dàng.
+    \item Tự động tạo API RESTful từ cơ sở dữ liệu.
+    \item Có thể tự host trên server riêng.
+\end{itemize}
+
+\section*{Điểm yếu của Supabase}
+\begin{itemize}
+    \item Một số tính năng phức tạp cần cấu hình thêm.
+    \item Hiệu năng realtime có giới hạn.
+    \item Tài liệu và cộng đồng nhỏ hơn Firebase.
+    \item Không hỗ trợ đồng bộ offline mặc định.
+\end{itemize}
+
+\section*{Khi nào nên dùng Supabase?}
+\begin{itemize}
+    \item Khi cần cơ sở dữ liệu mạnh mẽ và khả năng mở rộng tốt.
+    \item Yêu cầu cập nhật thời gian thực không quá lớn.
+    \item Ưu tiên mã nguồn mở và quyền kiểm soát dữ liệu.
+    \item Chi phí là yếu tố quan trọng.
+\end{itemize}
+
+\section*{Tóm lại}
+Supabase là một lựa chọn phù hợp để xây dựng hạ tầng phụ trợ cho ứng dụng ví điện tử đa chuỗi CryptoVault, nhờ khả năng xác thực, realtime, và quản lý cơ sở dữ liệu quan hệ mạnh mẽ. Tuy nhiên, cần cân nhắc các điểm yếu như tài liệu chưa đầy đủ và hiệu năng realtime hạn chế.
+\section{Cấu trúc tổ chức code}
+
+\subsection{Cấu trúc code backend theo Supabase}
+
+\begin{figure}[h]
+    \centering
+    \begin{verbatim}
+    supabase/
+    |-- migrations/           # Các file migration database
+    |   `-- *.sql
+    |-- functions/            # Serverless functions
+    |   `-- *.sql
+    |-- seeds/                # Dữ liệu mẫu
+    |   `-- *.sql
+    `-- config.toml           # File cấu hình Supabase
+    \end{verbatim}
+    \caption{Cấu trúc thư mục backend với Supabase}
+    \label{fig:backend-structure}
+\end{figure}
+
+\subsubsection{Chi tiết cấu trúc}
+
+\begin{itemize}
+    \item \textbf{migrations/}: Quản lý cấu trúc cơ sở dữ liệu
+    \begin{itemize}
+        \item Chứa các file SQL định nghĩa schema
+        \item Theo dõi các thay đổi trong cấu trúc database
+        \item Đảm bảo tính nhất quán giữa các môi trường
+        \item Hỗ trợ version control cho database
+    \end{itemize}
+
+    \item \textbf{functions/}: Serverless functions
+    \begin{itemize}
+        \item Chứa các hàm PostgreSQL tùy chỉnh
+        \item Xử lý logic nghiệp vụ phía server
+        \item Tự động được triển khai lên Supabase
+        \item Có thể được gọi thông qua REST API
+    \end{itemize}
+
+    \item \textbf{seeds/}: Dữ liệu mẫu
+    \begin{itemize}
+        \item Chứa dữ liệu ban đầu cho database
+        \item Hữu ích cho môi trường development
+        \item Giúp testing và development nhất quán
+        \item Có thể chứa dữ liệu cần thiết cho ứng dụng
+    \end{itemize}
+
+    \item \textbf{config.toml}: File cấu hình
+    \begin{itemize}
+        \item Cấu hình cho project Supabase
+        \item Định nghĩa các biến môi trường
+        \item Cấu hình authentication
+        \item Thiết lập các quyền truy cập
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Ưu điểm của cấu trúc Supabase}
+
+\begin{itemize}
+    \item \textbf{Quản lý phiên bản hiệu quả}
+    \begin{itemize}
+        \item Dễ dàng theo dõi thay đổi database
+        \item Hỗ trợ rollback khi cần thiết
+        \item Đồng bộ giữa các môi trường khác nhau
+    \end{itemize}
+
+    \item \textbf{Tự động hóa cao}
+    \begin{itemize}
+        \item Tự động triển khai functions
+        \item Tự động cập nhật schema
+        \item CI/CD tích hợp sẵn
+    \end{itemize}
+
+    \item \textbf{Bảo mật tốt}
+    \begin{itemize}
+        \item Quản lý quyền truy cập chi tiết
+        \item Tích hợp authentication
+        \item Row Level Security (RLS)
+    \end{itemize}
+
+    \item \textbf{Dễ dàng phát triển}
+    \begin{itemize}
+        \item Môi trường development nhất quán
+        \item Công cụ CLI mạnh mẽ
+        \item Dashboard quản lý trực quan
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Quy trình làm việc với Supabase}
+
+\begin{enumerate}
+    \item \textbf{Phát triển local}
+    \begin{itemize}
+        \item Tạo migrations cho thay đổi schema
+        \item Viết và test functions
+        \item Chuẩn bị seed data
+    \end{itemize}
+
+    \item \textbf{Kiểm thử}
+    \begin{itemize}
+        \item Test trên môi trường development
+        \item Kiểm tra tính nhất quán của data
+        \item Verify functions hoạt động đúng
+    \end{itemize}
+
+    \item \textbf{Triển khai}
+    \begin{itemize}
+        \item Push changes lên Supabase
+        \item Tự động áp dụng migrations
+        \item Kiểm tra logs và monitoring
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Cấu trúc frontend}
+
+\subsubsection{Chi tiết các thư mục và file}
+
+
+\begin{itemize}
+\begin{figure}[h]
+    \centering
+    \caption{Mô hình hoạt động của RESTful API}
+    \label{fig:restful-api}
+\end{figure}
+    \item \textbf{Thư mục chính}
+    \begin{itemize}
+        \item \textbf{services/}: Chứa mã và cấu hình liên quan đến các dịch vụ của ứng dụng
+        \item \textbf{supabase/}: Liên quan đến framework và cơ sở dữ liệu Supabase
+        \item \textbf{theme/}: Chứa các tệp định kiểu và giao diện của ứng dụng
+        \item \textbf{translations/}: Chứa các tệp dịch để quốc tế hóa ứng dụng
+        \item \textbf{types/}: Chứa các định nghĩa kiểu dữ liệu TypeScript
+    \end{itemize}
+
+    \item \textbf{File cấu hình}
+    \begin{itemize}
+        \item \texttt{.env}: Lưu trữ các biến môi trường
+        \item \texttt{.firebaserc}: Cấu hình Firebase
+        \item \texttt{.gitattributes}: Đặt thuộc tính Git cho kho lưu trữ
+        \item \texttt{.gitignore}: Xác định các file và thư mục Git bỏ qua
+        \item \texttt{app.json}: File cấu hình cho ứng dụng
+        \item \texttt{babel.config.js}: Cấu hình cho trình biên dịch Babel
+        \item \texttt{tsconfig.json}: Cấu hình TypeScript
+    \end{itemize}
+
+    \item \textbf{File cơ sở dữ liệu và bảo mật}
+    \begin{itemize}
+        \item \texttt{database.rules.json}: Quy tắc cho Firebase Realtime Database
+        \item \texttt{debug.keystore}: Keystore để gỡ lỗi ứng dụng Android
+        \item \texttt{my-upload-key.keystore}: Keystore để ký các bản build Android
+        \item \texttt{firestore.rules}: Quy tắc cho Firestore
+        \item \texttt{storage.rules}: Quy tắc cho Firebase Storage
+    \end{itemize}
+
+    \item \textbf{Thư mục phát triển}
+    \begin{itemize}
+        \item \texttt{.expo/}: Sử dụng bởi framework Expo
+        \item \texttt{.venv/}: Chứa môi trường ảo cho dự án
+        \item \texttt{.vscode/}: Cấu hình Visual Studio Code
+        \item \texttt{.yarn/}: Sử dụng bởi trình quản lý gói Yarn
+        \item \texttt{node\_modules/}: Chứa các gói npm đã cài đặt
+    \end{itemize}
+
+    \item \textbf{Thư mục ứng dụng}
+    \begin{itemize}
+        \item \texttt{android/}: File và cấu hình cho Android
+        \item \texttt{ios/}: File và cấu hình cho iOS
+        \item \texttt{app/}: Mã chính của ứng dụng
+        \item \texttt{assets/}: Tài sản tĩnh (hình ảnh, font chữ)
+        \item \texttt{components/}: Thành phần UI tái sử dụng
+        \item \texttt{screens/}: Các màn hình chính của ứng dụng
+    \end{itemize}
+
+    \item \textbf{Thư mục logic nghiệp vụ}
+    \begin{itemize}
+        \item \texttt{atoms/}: Thành phần UI "nguyên tử" trong Atomic Design
+        \item \texttt{auth/}: Mã và cấu hình xác thực
+        \item \texttt{features/}: Mã cho các tính năng cụ thể
+        \item \texttt{firebase/}: Mã và cấu hình Firebase
+        \item \texttt{hooks/}: React hooks tùy chỉnh
+        \item \texttt{redux/}: Mã quản lý state với Redux
+    \end{itemize}
+
+    \item \textbf{Thư mục tiện ích}
+    \begin{itemize}
+        \item \texttt{common/}: Mã dùng chung toàn ứng dụng
+        \item \texttt{constants/}: Các giá trị hằng số
+        \item \texttt{helpers/}: Các hàm tiện ích
+        \item \texttt{scripts/}: Scripts phát triển và build
+        \item \texttt{locales/}: File dịch đa ngôn ngữ
+    \end{itemize}
+\end{itemize}
+\subsection{Chức năng Tạo và Khôi phục ví (Wallet Creation \& Import)}
+
+\subsubsection{Mô tả chức năng}
+
+\textbf{1. Chức năng tạo ví mới}
+\begin{itemize}
+    \item \textbf{Quy trình xử lý:}
+    \begin{itemize}
+        \item Hệ thống sinh ngẫu nhiên cụm từ khôi phục 12 từ (Mnemonic Seedphrase) tuân thủ tiêu chuẩn BIP-39.
+        \item Yêu cầu người dùng xác nhận lại một số từ khóa ngẫu nhiên trong cụm từ để đảm bảo họ đã lưu trữ đúng.
+        \item Yêu cầu thiết lập mã PIN 6 số để bảo mật ứng dụng cục bộ.
+        \item Sinh ra cặp khóa Private Key / Public Key tương ứng và địa chỉ ví công khai trên các chuỗi TON và EVM.
+    \end{itemize}
+    
+    \item \textbf{Bảo mật:}
+    \begin{itemize}
+        \item Cụm từ khôi phục và khóa riêng tư được mã hóa bằng thuật toán AES-256 với khóa phái sinh từ mã PIN.
+        \item Dữ liệu mã hóa được lưu trực tiếp vào Secure Store (trên Android) hoặc Keychain (trên iOS), hoàn toàn không tải lên bất kỳ máy chủ nào.
+    \end{itemize}
+\end{itemize}
+
+\textbf{2. Chức năng khôi phục ví đã có}
+\begin{itemize}
+    \item \textbf{Phương thức khôi phục:}
+    \begin{itemize}
+        \item Nhập thủ công cụm từ khôi phục 12 từ (hoặc 24 từ).
+        \item Nhập trực tiếp chuỗi Private Key (khóa riêng tư).
+    \end{itemize}
+    
+    \item \textbf{Quy trình xử lý:}
+    \begin{itemize}
+        \item Kiểm tra tính hợp lệ của cụm từ khôi phục dựa trên danh sách từ chuẩn BIP-39.
+        \item Tính toán lại cặp khóa và địa chỉ ví tương ứng từ cụm từ vừa nhập.
+        \item Nếu địa chỉ hợp lệ, thiết lập mã PIN mới và lưu trữ khóa vào bộ nhớ bảo mật cục bộ của thiết bị.
+        \item Đồng bộ lại số dư và lịch sử giao dịch từ blockchain.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng Mở khóa ví (Unlock Wallet)}
+
+\subsubsection{Mô tả chức năng}
+
+\begin{itemize}
+    \item \textbf{Phương thức mở khóa:}
+    \begin{itemize}
+        \item Xác thực bằng mã PIN bảo mật 6 số.
+        \item Xác thực sinh trắc học (quét vân tay / FaceID) thông qua API sinh trắc học tích hợp của thiết bị di động.
+    \end{itemize}
+    
+    \item \textbf{Quy trình xử lý bảo mật:}
+    \begin{itemize}
+        \item Mỗi khi người dùng mở ứng dụng hoặc thực hiện giao dịch chuyển tiền/ký dApp, màn hình yêu cầu xác thực sẽ hiển thị.
+        \item So khớp sinh trắc học hoặc mã PIN người dùng nhập vào với thông tin lưu trữ an toàn trong phần cứng thiết bị.
+        \item Khóa tạm thời được giải mã trong bộ nhớ RAM để ký giao dịch và lập tức bị xóa khỏi bộ nhớ sau khi ký xong.
+    \end{itemize}
+    
+    \item \textbf{Xử lý bảo vệ:}
+    \begin{itemize}
+        \item Tự động khóa ứng dụng sau khi thiết bị tắt màn hình hoặc ứng dụng chạy ngầm quá 30 giây.
+        \item Tự động tạm khóa chức năng đăng nhập PIN trong 30 giây nếu nhập sai quá 5 lần liên tiếp để chống tấn công brute-force.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng quản lý thông tin tài khoản và cấu hình ví}
+
+\subsubsection{Mô tả chức năng}
+
+\textbf{1. Quản lý thông tin ví}
+\begin{itemize}
+    \item \textbf{Hiển thị chi tiết ví:}
+    \begin{itemize}
+        \item Nhãn ví (Wallet Name) tự đặt.
+        \item Địa chỉ ví công khai dạng rút gọn và định dạng đầy đủ.
+        \item Loại ví (Ví chính, Ví chỉ xem - Watchlist).
+        \item Cấu hình mạng lưới (Mainnet / Testnet).
+    \end{itemize}
+    
+    \item \textbf{Chức năng sao lưu:}
+    \begin{itemize}
+        \item Xem lại 12 từ khôi phục (cần nhập mã PIN để xác minh).
+        \item Xem lại Private Key của từng chain (TON, EVM).
+        \item Bật/Tắt tính năng đồng bộ hóa cơ sở dữ liệu cấu hình đã mã hóa lên Supabase.
+    \end{itemize}
+\end{itemize}
+
+\textbf{2. Cấu hình bảo mật}
+\begin{itemize}
+    \item \textbf{Thay đổi mã PIN:}
+    \begin{itemize}
+        \item Nhập mã PIN cũ hợp lệ.
+        \item Nhập và xác nhận mã PIN mới.
+        \item Hệ thống giải mã khóa cá nhân bằng mã PIN cũ và mã hóa lại bằng mã PIN mới.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chức năng quản lý thông báo biến động số dư}
+
+\subsubsection{Mô tả chức năng}
+
+\textbf{1. Cấu hình cảnh báo}
+\begin{itemize}
+    \item \textbf{Thông báo biến động số dư:}
+    \begin{itemize}
+        \item Nhận thông báo đẩy (push notification) khi có giao dịch chuyển vào ví.
+        \item Nhận thông báo đẩy khi có giao dịch chuyển tiền đi thành công khỏi ví.
+        \item Nhận thông báo cảnh báo bảo mật khi có yêu cầu bắt tay kết nối hoặc ký giao dịch từ dApp mới.
+    \end{itemize}
+\end{itemize}
+
+\textbf{2. Tùy chỉnh hiển thị thông báo}
+\begin{itemize}
+    \item \textbf{Cài đặt đẩy:}
+    \begin{itemize}
+        \item Bật/tắt thông báo đối với từng ví cụ thể trong danh sách ví giám sát.
+        \item Lưu trữ lịch sử thông báo đẩy cục bộ trên ứng dụng.
+    \end{itemize}
+\end{itemize}
+\section{Chức năng Quản lý ví và bảo mật (Wallet Security \& Management)}
+
+\subsection{Giao diện Tạo / Khôi phục ví}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện onboard tạo ví mới và khôi phục ví}
+    \label{fig:ui_onboard}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Tạo ví mới:} Hệ thống sinh ra 12 từ khôi phục (Seedphrase) ngẫu nhiên, yêu cầu người dùng lưu trữ ngoại tuyến an toàn.
+    \item \textbf{Khôi phục ví:} Người dùng dán hoặc nhập thủ công 12 từ khóa khôi phục đã có từ trước để đồng bộ lại ví vào thiết bị.
+    \item \textbf{Cài đặt bảo mật:} Người dùng thiết lập mã PIN bảo mật 6 số và tùy chọn kích hoạt xác thực sinh trắc học (FaceID/TouchID).
+\end{itemize}
+
+\subsection{Giao diện sao lưu khóa bảo mật}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện hiển thị cụm từ khôi phục và khóa riêng tư}
+    \label{fig:ui_backup}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Xem Seedphrase / Private Key:} Cho phép người dùng xem lại cụm từ khôi phục 12 từ hoặc khóa riêng tư (Private Key) sau khi xác thực thành công bằng mã PIN hoặc sinh trắc học.
+    \item \textbf{Sao lưu đám mây mã hóa:} Người dùng có thể chọn sao lưu cấu hình ví (watchlist, danh bạ) đã được mã hóa bằng mã PIN của họ lên Supabase để dễ dàng khôi phục trên thiết bị khác.
+\end{itemize}
+
+\section{Chức năng Giao dịch và chuyển nhận tài sản (Asset Transactions)}
+
+\subsection{Giao diện Gửi tài sản (Send Asset)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện chuyển token và NFT}
+    \label{fig:ui_send}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Nhập thông tin người nhận:} Cho phép người dùng dán địa chỉ ví nhận hoặc quét mã QR từ camera.
+    \item \textbf{Chọn tài sản và số lượng:} Chọn token từ danh sách (TON, USDT, BNB...) và nhập số lượng cần chuyển.
+    \item \textbf{Ước tính phí gas:} Hệ thống tự động tính toán phí gas mạng lưới theo thời gian thực và hiển thị rõ ràng trước khi người dùng ký xác nhận.
+\end{itemize}
+
+\subsection{Giao diện Nhận tài sản (Receive Asset)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện hiển thị địa chỉ ví công khai và QR code}
+    \label{fig:ui_receive}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Hiển thị mã QR:} Sinh mã QR code đại diện cho địa chỉ ví công khai của người dùng để bên gửi có thể quét nhanh.
+    \item \textbf{Sao chép và chia sẻ:} Nút sao chép nhanh địa chỉ ví vào clipboard hoặc chia sẻ trực tiếp mã QR qua mạng xã hội.
+    \item \textbf{QR code động:} Tùy chọn nhập số tiền cụ thể để sinh mã QR chứa thông tin số tiền chuyển khoản yêu cầu.
+\end{itemize}
+
+\subsection{Giao diện lịch sử giao dịch và số dư}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện Dashboard chính và Lịch sử giao dịch}
+    \label{fig:ui_dashboard}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Dashboard số dư:} Hiển thị tổng số dư tài sản theo thời gian thực quy đổi ra tiền pháp định (USD/VND) và phân bổ danh mục.
+    \item \textbf{Lịch sử giao dịch:} Hiển thị danh sách các giao dịch gửi/nhận đã thực hiện kèm theo trạng thái giao dịch (Thành công, Thất bại, Đang chờ xử lý).
+    \item \textbf{Chi tiết giao dịch:} Xem mã Hash giao dịch (TxHash), phí gas thực tế và nút truy cập nhanh vào Blockchain Explorer.
+\end{itemize}
+
+\section{Chức năng Quản lý tài sản Web3 (Token \& NFT)}
+
+\subsection{Giao diện Quản lý Token tùy chỉnh (Custom Token)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện thêm Custom Token bằng địa chỉ hợp đồng}
+    \label{fig:ui_custom_token}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Nhập Contract Address:} Cho phép dán địa chỉ contract của token trên mạng lưới (TON Jetton hoặc EVM ERC-20).
+    \item \textbf{Nhận diện Metadata:} Tự động gọi API đọc thông số Smart Contract để lấy Name, Symbol, Decimals hiển thị cho người dùng.
+    \item \textbf{Thêm vào danh sách theo dõi:} Lưu trữ token tùy chỉnh vào SQLite nội bộ để hiển thị số dư ở màn hình chính.
+\end{itemize}
+
+\subsection{Giao diện Bộ sưu tập NFT (NFT Gallery)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện trưng bày và quản lý tài sản NFT}
+    \label{fig:ui_nft}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Hiển thị NFT:} Trưng bày các tác phẩm nghệ thuật kỹ thuật số NFT dạng hình ảnh lưới trực quan.
+    \item \textbf{Xem metadata NFT:} Xem mô tả chi tiết, thuộc tính đặc trưng (attributes), Contract của NFT và Token ID.
+\end{itemize}
+
+\section{Chức năng Cấu hình hệ thống và Giám sát ví (System Settings \& Monitoring)}
+
+\subsection{Giao diện Ví giám sát (Watchlist Dashboard)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện quản lý danh sách các ví giám sát}
+    \label{fig:ui_watchlist}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Thêm ví theo dõi:} Nhập địa chỉ ví công khai của người dùng khác để theo dõi danh mục đầu tư và biến động.
+    \item \textbf{Nhận cảnh báo đẩy:} Tích hợp Firebase Cloud Messaging để gửi thông báo thời gian thực khi ví đang theo dõi có giao dịch mới.
+\end{itemize}
+
+\subsection{Giao diện Danh bạ địa chỉ (Address Book)}
+\begin{figure}[h]
+    \centering
+    \caption{Giao diện quản lý danh bạ địa chỉ thường gửi tiền}
+    \label{fig:ui_address_book}
+\end{figure}
+
+\textbf{Mô tả chức năng:}
+\begin{itemize}
+    \item \textbf{Lưu trữ liên hệ:} Thao tác thêm, sửa, xóa các địa chỉ ví của bạn bè hoặc sàn giao dịch và gán nhãn gợi nhớ.
+    \item \textbf{Gợi ý nhanh:} Tự động đề xuất địa chỉ từ danh bạ khi người dùng gõ tìm kiếm tại màn hình gửi tiền.
+\end{itemize}
+
+\section{Chức năng Vé Điện tử Thông minh (Digital Ticket Wallet Platform)}
+
+\subsection{Giao diện Ví Vé Điện tử (Ticket Wallet UI)}
+Giao diện Ví Vé Điện tử trong ứng dụng CryptoVault được tích hợp trực tiếp dưới dạng một tab chính trên thanh Bottom Tab.
+\begin{itemize}
+    \item \textbf{Danh sách Vé đa năng:} Hiển thị toàn bộ các vé điện tử thuộc sở hữu của địa chỉ ví đang kích hoạt dưới dạng các thẻ vé (Ticket Card) được thiết kế hiện đại, tinh gọn.
+    \item \textbf{Bộ lọc trạng thái:} Cho phép lọc nhanh danh sách vé theo trạng thái sử dụng: Đang hoạt động (Active), Đã sử dụng (Used), hoặc Quá hạn/Đã hủy (Past).
+    \item \textbf{Mục vé nổi bật (Upcoming Carousel):} Tự động hiển thị băng chuyền (Carousel) các sự kiện sắp diễn ra gần nhất dựa trên mốc thời gian thực để người dùng truy cập vé nhanh chóng.
+\end{itemize}
+
+\subsection{Giao diện Chi tiết Vé \& QR Soát vé Động (Ticket Detail \& QR Code UI)}
+Khi người dùng bấm vào một vé bất kỳ, giao diện chi tiết vé sẽ hiển thị đầy đủ thông tin:
+\begin{itemize}
+    \item \textbf{Thiết kế thẻ vé chân thực:} Sử dụng phong cách thiết kế vé xé truyền thống với đường đứt đoạn thẩm mỹ phân chia giữa phần thông tin sự kiện và phần soát vé.
+    \item \textbf{Thông tin sự kiện chi tiết:} Hiển thị hình ảnh poster, tên sự kiện, thời gian, địa điểm tổ chức, loại vé, thông tin đối tác phát hành và các thông số on-chain (Mã hợp đồng, Token ID).
+    \item \textbf{Mã QR động bảo mật cao:} Khi bấm "Show QR", một cửa sổ mã QR sẽ xuất hiện. QR này được sinh từ payload ký số HMAC kết hợp với nonce ngẫu nhiên có hiệu lực trong 30 giây. Thanh tiến trình (Progress Bar) hiển thị thời gian còn lại trước khi tự động refresh nonce mới, ngăn chặn việc sao chép hoặc chụp ảnh màn hình để gian lận vé.
+\end{itemize}
+
+\subsection{Giao diện Quét soát vé (Scanner UI)}
+Giao diện dành riêng cho nhân viên soát vé (Staff) để thực hiện kiểm tra quyền vào cửa của khách hàng tại sự kiện:
+\begin{itemize}
+    \item \textbf{Quét QR Camera thời gian thực:} Tích hợp thư viện \texttt{expo-camera} để mở camera quét mã QR của khách hàng siêu tốc.
+    \item \textbf{Xác thực nhanh:} Hiển thị thông báo trạng thái tức thời ngay sau khi quét (Vé hợp lệ, Vé đã sử dụng, Vé quá hạn, Mã QR giả mạo) kèm theo cơ chế rung phản hồi (Haptic Feedback) để nhân viên dễ dàng thao tác tại khu vực đông người.
+    \item \textbf{Đồng bộ ngoại tuyến (Offline Sync):} Tự động lưu trữ thông tin quét vé ngoại tuyến nếu sự kiện mất kết nối mạng và gửi đồng bộ hàng loạt lên máy chủ ngay khi thiết bị có mạng trở lại thông qua hook \texttt{useOfflineSync}.
+\end{itemize}
+
+\clearpage
+
+\chapter{Tổng kết}
+
+\section{Tổng kết}
+
+\subsection{Ưu điểm}
+
+\textbf{Tính phi lưu ký (Non-custodial) bảo mật cao:}
+\begin{itemize}
+    \item \textbf{Bảo vệ khóa cá nhân tuyệt đối:} Người dùng nắm giữ toàn bộ cụm từ khôi phục và private key, không lo sợ rủi ro từ các bên trung gian tập trung.
+    \end{itemize}
+
+\textbf{Hỗ trợ đa chuỗi (Multi-chain) linh hoạt:}
+\begin{itemize}
+    \item \textbf{Kết nối TON và các mạng EVM:} Cho phép quản lý tài sản trên nhiều mạng lưới (TON, Ethereum, Binance Smart Chain...) trong một giao diện ứng dụng duy nhất.
+\end{itemize}
+
+\textbf{Tính năng giám sát ví và cảnh báo thời gian thực:}
+\begin{itemize}
+    \item \textbf{Theo dõi biến động và thông báo đẩy:} Hỗ trợ theo dõi các ví lạnh cá nhân hoặc ví cá mập một cách thuận tiện qua tính năng Watch-only và nhận cảnh báo tức thời.
+\end{itemize}
+
+\subsection{Nhược điểm}
+
+\begin{itemize}
+    \item \textbf{Trách nhiệm bảo mật thuộc về người dùng:} Vì là ví phi lưu ký, nếu người dùng làm mất 12 từ khôi phục thì sẽ mất tài sản vĩnh viễn và không có hệ thống hỗ trợ nào lấy lại được.
+    \item \textbf{Phụ thuộc hoàn toàn vào internet:} Ứng dụng yêu cầu kết nối mạng ổn định để đồng bộ hóa số dư blockchain và thực thi giao dịch.
+\end{itemize}
+
+\section{Kết luận}
+
+Trong xu thế phát triển mạnh mẽ của công nghệ blockchain và Web3, việc xây dựng một nền tảng ví phi lưu ký an toàn, tiện dụng và hỗ trợ đa chuỗi như CryptoVault là vô cùng thiết thực. Ứng dụng đã giải quyết tốt bài toán về trải nghiệm người dùng (UX) đối với người mới tham gia thị trường blockchain bằng cách tối ưu hóa các quy trình bảo mật (mã PIN, sinh trắc học) và đơn giản hóa các giao diện giao dịch.
+
+\medskip
+
+Việc áp dụng framework React Native kết hợp với cấu trúc bảo mật lưu trữ phần cứng trên thiết bị di động (Secure Store/Keychain) đã chứng minh tính khả thi cao trong việc phát triển ứng dụng di động Web3 an toàn, mượt mà và tiết kiệm chi phí phát triển tối đa. Nhìn chung, dự án ví đa chuỗi CryptoVault đã hoàn thành đầy đủ mục tiêu thiết kế và sẵn sàng đáp ứng nhu cầu quản lý tài sản số ngày càng lớn của người dùng hiện đại.
+\end{document}
+

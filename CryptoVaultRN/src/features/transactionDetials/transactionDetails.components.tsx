@@ -304,7 +304,7 @@ const DetailRow: React.FC<DetailRowType> = ({
     value,
     subValue,
     variantValue = TextVariantKeys.bodyMMedium,
-    valueColor = appColors.neutral.n800,
+    valueColor,
     bottomLine = false,
     showCopyButton = false,
     totalAmount,
@@ -338,7 +338,7 @@ const DetailRow: React.FC<DetailRowType> = ({
                         appStyles.flexRow,
                         appStyles.justifyContentEnd,
                         contentContainerStyles,
-                    ]}>
+                     ]}>
                     <AppText
                         title={value}
                         textColor={
@@ -352,7 +352,7 @@ const DetailRow: React.FC<DetailRowType> = ({
                     {subValue ? (
                         <AppText
                             title={subValue}
-                            textColor={valueColor}
+                            textColor={valueColor ?? theme.colors.text_on_surface_text_high}
                             variant={variantValue}
                             styles={appStyles.flex1}
                         />

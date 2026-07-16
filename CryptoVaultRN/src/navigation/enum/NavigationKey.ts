@@ -106,6 +106,13 @@ enum HomeStackScreenKey {
   CreateAuctionScreen = "CreateAuctionScreen",
   AuctionDetailScreen = "AuctionDetailScreen",
   BidHistoryScreen = "BidHistoryScreen",
+
+  // Ticket Wallet Platform
+  TicketWallet = "TicketWallet",
+  TicketDetail = "TicketDetail",
+  TicketQR = "TicketQR",
+  TicketTransfer = "TicketTransfer",
+  TicketScanner = "TicketScanner",
 }
 
 enum CreateWalletStackScreenKey {

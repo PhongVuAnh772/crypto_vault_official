@@ -147,4 +147,11 @@ export type HomeStackParamListType = {
   [HomeStackScreenKey.CreateAuctionScreen]: { nft: MarketplaceNft };
   [HomeStackScreenKey.AuctionDetailScreen]: { auctionId?: string } | undefined;
   [HomeStackScreenKey.BidHistoryScreen]: { auctionId: string };
+
+  // Ticket Platform
+  [HomeStackScreenKey.TicketWallet]: undefined;
+  [HomeStackScreenKey.TicketDetail]: { ticketId: string };
+  [HomeStackScreenKey.TicketQR]: { ticketId: string };
+  [HomeStackScreenKey.TicketTransfer]: { ticketId: string };
+  [HomeStackScreenKey.TicketScanner]: undefined;
 };

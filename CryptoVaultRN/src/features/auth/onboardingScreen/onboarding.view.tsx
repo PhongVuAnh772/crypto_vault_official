@@ -104,6 +104,7 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
       mainStyle={[appStyles.flex1]}
       subStyle={[appStyles.flex1]}
       paddingBottom={false}
+      paddingTop={false}
       backgroundColor={
         count === 1 ? "rgb(23, 24, 29)" : theme.colors.surface_surface_brand
       }
@@ -139,8 +140,8 @@ const OnboardingScreen: React.FC<RootNavigationType> = ({ navigation }) => {
               <Video
                 source={videoSource}
                 style={{
-                  width: 300,
-                  height: 300,
+                  width: '100%',
+                  aspectRatio: 1,
                   zIndex: 9999,
                 }}
                 resizeMode={ResizeMode.COVER}

@@ -13,7 +13,6 @@ import { isAddress } from "web3-validator";
 import { RegisteredSubscription } from "web3/lib/commonjs/eth.exports";
 import { store } from "../../redux/store";
 import AccountServices from "../AccountServices";
-import { pushErrorEventToAnalytics } from "../FirebaseAnalytics";
 import { ThirdPartyService } from "../FirebaseAnalytics/type";
 import { erc1155 } from "./abi/erc1155";
 import erc20 from "./abi/erc20";
@@ -130,10 +129,7 @@ class Web3Service {
         return ownerAddress;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+    
       throw error;
     }
   }
@@ -150,10 +146,7 @@ class Web3Service {
         return getApproved;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+     
       throw error;
     }
   }
@@ -198,10 +191,7 @@ class Web3Service {
         return gasEstimate;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+   
       throw error;
     }
   }
@@ -295,10 +285,7 @@ class Web3Service {
         return result;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+    
       throw error;
     }
   }
@@ -385,10 +372,7 @@ class Web3Service {
       callBackWhenSuccessful(receipt);
       return receipt;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+     
       throw error;
     }
   }
@@ -442,10 +426,7 @@ class Web3Service {
       );
       return resultCommissionFee;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+     
       throw error;
     }
   }
@@ -485,10 +466,7 @@ class Web3Service {
       }
       return { symbol, name, decimals };
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+    
       throw error;
     }
   }
@@ -504,10 +482,7 @@ class Web3Service {
         .call();
       return allowance as unknown as bigint;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+     
       throw error;
     }
   }
@@ -533,10 +508,7 @@ class Web3Service {
       }
       return estimateGas * gasPrice;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+     
       throw error;
     }
   }
@@ -628,10 +600,7 @@ class Web3Service {
         return result;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+
       throw error;
     }
   }
@@ -750,17 +719,33 @@ class Web3Service {
         this.web3.eth.calculateFeeData(),
       ]);
 
-      const contractTransfer = contractABI.methods.transferToken(
-        tokenContractAddress,
-        recipientAddress,
-        amount,
-        beneficiaryAddress,
-        commission
-      );
+      const isNative =
+        !tokenContractAddress ||
+        tokenContractAddress === "0x0000000000000000000000000000000000000000";
+
+      let contractTransfer;
+      if (isNative) {
+        contractTransfer = contractABI.methods.transferNativeToken(
+          recipientAddress,
+          amount,
+          beneficiaryAddress,
+          commission
+        );
+      } else {
+        contractTransfer = contractABI.methods.transferToken(
+          tokenContractAddress,
+          recipientAddress,
+          amount,
+          beneficiaryAddress,
+          commission
+        );
+      }
       const txData = contractTransfer.encodeABI();
 
+      const totalAmountWei = BigInt(amount) + BigInt(commission);
       const estimateGas = await contractTransfer.estimateGas({
         from: data.walletAddress,
+        value: isNative ? totalAmountWei.toString() : undefined,
       });
 
       let txRequest: Transaction = {
@@ -769,6 +754,7 @@ class Web3Service {
         data: txData,
         gas: estimateGas,
         chainId,
+        value: isNative ? totalAmountWei.toString() : undefined,
       };
 
       if (feeData.maxFeePerGas && feeData.maxPriorityFeePerGas) {
@@ -789,10 +775,7 @@ class Web3Service {
       );
       return receipt;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+
       throw error;
     }
   }
@@ -817,10 +800,7 @@ class Web3Service {
 
       return BigInt(estimateGas) * BigInt(gasPrice);
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: String(error),
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+   
       throw error;
     }
   }
@@ -839,16 +819,33 @@ class Web3Service {
         smartContract,
         smartContractABIERC20
       );
-      const contractTransfer = contractABI.methods.transferToken(
-        tokenContractAddress,
-        recipientAddress,
-        amount,
-        beneficiaryAddress,
-        commission
-      );
+      const isNative =
+        !tokenContractAddress ||
+        tokenContractAddress === "0x0000000000000000000000000000000000000000";
+
+      let contractTransfer;
+      if (isNative) {
+        contractTransfer = contractABI.methods.transferNativeToken(
+          recipientAddress,
+          amount,
+          beneficiaryAddress,
+          commission
+        );
+      } else {
+        contractTransfer = contractABI.methods.transferToken(
+          tokenContractAddress,
+          recipientAddress,
+          amount,
+          beneficiaryAddress,
+          commission
+        );
+      }
+
+      const totalAmountWei = BigInt(amount) + BigInt(commission);
       const [estimateGas, gasPrice] = await Promise.all([
         await contractTransfer.estimateGas({
           from: sender,
+          value: isNative ? totalAmountWei.toString() : undefined,
         }),
         this.getCurrentGasPrice(),
       ]);
@@ -857,10 +854,7 @@ class Web3Service {
       }
       return estimateGas * gasPrice;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+  
       throw error;
     }
   }
@@ -1044,10 +1038,7 @@ class Web3Service {
       const gas = estimateGas * gasPrice;
       return gas;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+ 
       throw error;
     }
   }
@@ -1083,10 +1074,7 @@ class Web3Service {
         .call();
       return approve;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+  
       throw error;
     }
   }
@@ -1179,10 +1167,7 @@ class Web3Service {
         return result;
       }
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+    
       throw error;
     }
   }
@@ -1231,10 +1216,7 @@ class Web3Service {
       );
       return resultCommissionFee;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+   
       throw error;
     }
   }
@@ -1322,10 +1304,7 @@ class Web3Service {
       callBackWhenSuccessful(receipt);
       return receipt;
     } catch (error) {
-      pushErrorEventToAnalytics({
-        error: error + "",
-        thirdPartyName: ThirdPartyService.Web3,
-      });
+  
       throw error;
     }
   }
