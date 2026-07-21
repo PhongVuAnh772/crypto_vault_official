@@ -9,12 +9,12 @@ async function createAdmin() {
     try {
         const email = 'admin@cryptovault.com';
         const password = 'admin123456';
-        const pwdHash = hashPassword(password);
+        const pwdHash = CryptoJS.SHA256(password).toString();
         
         await db.query(`
             INSERT INTO admins (email, password_hash, role, is_active)
             VALUES ($1, $2, 'super_admin', true)
-            ON CONFLICT (email) DO NOTHING;
+            ON CONFLICT (email) DO UPDATE SET password_hash = $2, is_active = true;
         `, [email, pwdHash]);
         
         console.log('✅ Admin account created:');
