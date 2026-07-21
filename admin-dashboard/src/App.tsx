@@ -40,10 +40,12 @@ axios.interceptors.response.use(
   }
 );
 
-// Nhúng URL Backend Server (Ưu tiên VITE_API_URL hoặc mặc định Server Render)
+// Nhúng URL Backend Server (Ưu tiên VITE_API_URL, localhost nếu dev, hoặc Render Server)
 const API_BASE = import.meta.env.VITE_API_URL
   ? (import.meta.env.VITE_API_URL.startsWith('http') ? import.meta.env.VITE_API_URL : `https://${import.meta.env.VITE_API_URL}`)
-  : 'https://cryptovault-backend-latest.onrender.com';
+  : (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+      ? 'http://localhost:3000'
+      : 'https://cryptovault-backend-latest.onrender.com');
 
 const WS_BASE = API_BASE.replace('http', 'ws');
 
