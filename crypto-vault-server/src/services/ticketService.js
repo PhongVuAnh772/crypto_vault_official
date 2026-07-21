@@ -98,6 +98,29 @@ async function issueTicket({
     [ticketTypeId]
   );
 
+  // 5.5 Auto-mint 1-to-1 NFT on-chain for this ticket
+  const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
+  if (contractAddress && process.env.TICKET_MINTER_PRIVATE_KEY && ownerWalletAddress) {
+    try {
+      const ticketBlockchainService = require('./ticketBlockchainService');
+      const mintResult = await ticketBlockchainService.mintTicketNFT({
+        ticketId: ticket.id,
+        contractAddress,
+        chain: 'sepolia',
+        toAddress: ownerWalletAddress,
+        metadataUri: metadataUri || 'ipfs://bafkreid4x6ygpy7l2327y345',
+        eventId: event.name || eventId,
+        ticketType: ticketType.name || ticketTypeId,
+        seatInfo: seatInfo || ''
+      });
+      ticket.token_id = mintResult.tokenId;
+      ticket.mint_tx_hash = mintResult.txHash;
+      logger.info(`[TICKET] Auto-minted NFT Token #${mintResult.tokenId} (TX: ${mintResult.txHash}) for ticket ${ticket.id}`);
+    } catch (mintErr) {
+      logger.warn(`[TICKET] On-chain auto-minting failed for ticket ${ticket.id}: ${mintErr.message}`);
+    }
+  }
+
   // 6. Audit log
   await auditService.log({
     actorType: 'PARTNER',

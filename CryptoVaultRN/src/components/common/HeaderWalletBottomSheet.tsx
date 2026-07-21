@@ -10,6 +10,7 @@ import { AppThemeType } from 'src/core/type/ThemeType';
 import AppText from './AppText';
 import { Feather } from '@expo/vector-icons';
 import useAppSafeAreaInsets from 'src/core/hooks/useAppSafeAreaInsets';
+import WalletAddressModal from './WalletAddressModal';
 
 type WalletBottomSheetType = {
     onSelectWalletItem: (item: AccountType) => void;
@@ -32,6 +33,8 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
     const styles = useStyles(theme);
     const insets = useAppSafeAreaInsets();
 
+    const [addressModalData, setAddressModalData] = React.useState<{ address: string; name: string } | null>(null);
+
     const getAccountAddress = (acc?: AccountType) => {
         if (!acc) return '';
         const firstProtocol = acc.protocolData?.find(p => p.addressList && p.addressList.length > 0) || acc.protocolData?.[0];
@@ -42,6 +45,13 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
             return `${addr.slice(0, 8)}...${addr.slice(-8)}`;
         }
         return addr;
+    };
+
+    const getFullAccountAddress = (acc?: AccountType) => {
+        if (!acc) return '';
+        const firstProtocol = acc.protocolData?.find(p => p.addressList && p.addressList.length > 0) || acc.protocolData?.[0];
+        const firstAddress = firstProtocol?.addressList?.[0];
+        return firstAddress?.address || '';
     };
 
     const renderRightActions = (item: AccountType, isCurrent: boolean = false) => {
@@ -94,12 +104,19 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
                                 textColor="#1A1C36"
                                 styles={styles.walletName}
                             />
-                            <AppText
-                                title={getAccountAddress(item)}
-                                variant={TextVariantKeys.bodyMSmall}
-                                textColor="#7D859A"
-                                styles={styles.walletAddress}
-                            />
+                            <TouchableOpacity
+                                onPress={() => setAddressModalData({
+                                    address: getFullAccountAddress(item),
+                                    name: item.name,
+                                })}
+                            >
+                                <AppText
+                                    title={getAccountAddress(item)}
+                                    variant={TextVariantKeys.bodyMSmall}
+                                    textColor="#7D859A"
+                                    styles={styles.walletAddress}
+                                />
+                            </TouchableOpacity>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -150,12 +167,19 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
                                     textColor="#1A1C36"
                                     styles={styles.walletName}
                                 />
-                                <AppText
-                                    title={getAccountAddress(currentWallet)}
-                                    variant={TextVariantKeys.bodyMSmall}
-                                    textColor="#7D859A"
-                                    styles={styles.walletAddress}
-                                />
+                                <TouchableOpacity
+                                    onPress={() => setAddressModalData({
+                                        address: getFullAccountAddress(currentWallet),
+                                        name: currentWallet.name,
+                                    })}
+                                >
+                                    <AppText
+                                        title={getAccountAddress(currentWallet)}
+                                        variant={TextVariantKeys.bodyMSmall}
+                                        textColor="#7D859A"
+                                        styles={styles.walletAddress}
+                                    />
+                                </TouchableOpacity>
                             </View>
                             {/* Purple checkmark icon */}
                             <View style={styles.checkmarkCircle}>
@@ -220,6 +244,13 @@ const HeaderWalletBottomSheet: React.FC<WalletBottomSheetType> = ({
                     </View>
                 </TouchableOpacity>
             )}
+
+            <WalletAddressModal
+                visible={!!addressModalData}
+                onClose={() => setAddressModalData(null)}
+                address={addressModalData?.address || ''}
+                walletName={addressModalData?.name || 'Ví của bạn'}
+            />
         </View>
     );
 };

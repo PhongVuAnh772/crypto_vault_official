@@ -376,7 +376,7 @@ contract TicketNFT is ERC721, ERC721URIStorage, ERC721Burnable, AccessControl {
         return super.supportsInterface(interfaceId);
     }
 
-    function _exists(uint256 tokenId) internal view returns (bool) {
+    function _exists(uint256 tokenId) internal view override returns (bool) {
         return _ownerOf(tokenId) != address(0);
     }
 }

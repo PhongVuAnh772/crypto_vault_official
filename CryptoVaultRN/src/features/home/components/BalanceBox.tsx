@@ -7,6 +7,8 @@ import Utils from 'src/core/utils/commonUtils';
 import * as Clipboard from 'expo-clipboard';
 import { mPlus1 } from 'src/core/constants/FontFamily';
 
+import WalletAddressModal from 'src/components/common/WalletAddressModal';
+
 type WalletAcBalanceledgerifyProps = {
     balance: number;
     withoutCurrencyRate: boolean;
@@ -22,17 +24,12 @@ const BalanceCard: React.FC<WalletAcBalanceledgerifyProps> = ({
     const theme = useAppTheme();
     const selectedCurrencySetting = useSelectedCurrencySetting();
     const currentWallet = useCurrentWallet();
+    const [showAddressModal, setShowAddressModal] = React.useState(false);
     const balanceConverted = `${selectedCurrencySetting?.sign ?? ''} ${Utils.fiatFormat(balance * (withoutCurrencyRate ? 1 : selectedCurrencySetting?.rate))}`;
 
     const formattedAddress = currentWallet?.address
         ? `${currentWallet.address.slice(0, 8)}...${currentWallet.address.slice(-8)}`
         : 'Accounts';
-
-    const handleCopyAddress = async () => {
-        if (currentWallet?.address) {
-            await Clipboard.setStringAsync(currentWallet.address);
-        }
-    };
 
     return (
         <View style={styles.container}>
@@ -48,12 +45,19 @@ const BalanceCard: React.FC<WalletAcBalanceledgerifyProps> = ({
                 )}
             </View>
             
-            <TouchableOpacity style={styles.accountsBtn} onPress={handleCopyAddress}>
+            <TouchableOpacity style={styles.accountsBtn} onPress={() => setShowAddressModal(true)}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={styles.accountsText}>{formattedAddress}</Text>
-                    <Feather name="copy" size={12} color="#D0CDE3" style={{ marginLeft: 6 }} />
+                    <Feather name="qr-code" size={12} color="#D0CDE3" style={{ marginLeft: 6 }} />
                 </View>
             </TouchableOpacity>
+
+            <WalletAddressModal
+                visible={showAddressModal}
+                onClose={() => setShowAddressModal(false)}
+                address={currentWallet?.address || ''}
+                walletName={currentWallet?.name || 'Ví của bạn'}
+            />
         </View>
     );
 };

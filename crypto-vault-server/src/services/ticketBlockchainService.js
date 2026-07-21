@@ -30,23 +30,24 @@ const SUPPORTED_CHAINS = {
     explorer: 'https://bscscan.com'
   },
   sepolia: {
-    rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://sepolia.infura.io/v3/YOUR_KEY',
+    rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com',
     chainId: 11155111,
     explorer: 'https://sepolia.etherscan.io'
+  },
+  amoy: {
+    rpcUrl: process.env.POLYGON_AMOY_RPC_URL || 'https://rpc-amoy.polygon.technology',
+    chainId: 80002,
+    explorer: 'https://amoy.polygonscan.com'
   }
 };
 
 // ABI for TicketNFT.sol — only the functions we use
 const TICKET_NFT_ABI = [
-  'function issueTicket(address to, string memory metadataURI, bytes32 eventId, bytes32 ticketType, string memory seatInfo) external returns (uint256)',
-  'function batchIssueTickets(address[] memory recipients, string[] memory metadataURIs, bytes32 eventId, bytes32 ticketType, string[] memory seatInfos) external returns (uint256[] memory)',
-  'function verifyTicket(uint256 tokenId) external view returns (address owner, bytes32 eventId, bytes32 ticketType, bool isUsed, string memory seatInfo, uint256 issueTimestamp)',
-  'function markTicketUsed(uint256 tokenId) external',
-  'function setTransferRestriction(uint256 tokenId, bool restricted) external',
+  'function mintTicket(address to, bytes32 eventId, bytes32 ticketTypeId, string calldata seatInfo, string calldata metadataURI) external returns (uint256)',
   'function ownerOf(uint256 tokenId) view returns (address)',
   'function tokenURI(uint256 tokenId) view returns (string)',
-  'event TicketIssued(uint256 indexed tokenId, address indexed to, bytes32 indexed eventId, bytes32 ticketType)',
-  'event TicketUsed(uint256 indexed tokenId, address indexed usedBy)',
+  'event TicketMinted(uint256 indexed tokenId, address indexed to, bytes32 indexed eventId, bytes32 ticketTypeId, string seatInfo, string metadataURI)',
+  'event TicketUsed(uint256 indexed tokenId, address indexed verifier, uint256 usedAt)',
   'event Transfer(address indexed from, address indexed to, uint256 indexed tokenId)'
 ];
 
@@ -114,13 +115,13 @@ async function mintTicketNFT({
     const eventIdHash = ethers.id(eventId);
     const ticketTypeHash = ethers.id(ticketType);
 
-    // Issue the ticket on-chain
-    const tx = await contract.issueTicket(
+    // Issue the ticket on-chain using exact contract signature
+    const tx = await contract.mintTicket(
       toAddress,
-      metadataUri || '',
       eventIdHash,
       ticketTypeHash,
-      seatInfo || ''
+      seatInfo || '',
+      metadataUri || ''
     );
 
     logger.info(`[BLOCKCHAIN] TX submitted: ${tx.hash}`);
@@ -128,12 +129,12 @@ async function mintTicketNFT({
     // Wait for confirmation
     const receipt = await tx.wait(1);
     
-    // Extract tokenId from the TicketIssued event
-    const ticketIssuedEvent = receipt.logs.find(
+    // Extract tokenId from the TicketMinted event
+    const ticketMintedEvent = receipt.logs.find(
       (log) => {
         try {
           const parsed = contract.interface.parseLog({ topics: log.topics, data: log.data });
-          return parsed?.name === 'TicketIssued';
+          return parsed?.name === 'TicketMinted';
         } catch {
           return false;
         }
@@ -141,38 +142,42 @@ async function mintTicketNFT({
     );
 
     let tokenId = null;
-    if (ticketIssuedEvent) {
+    if (ticketMintedEvent) {
       const parsed = contract.interface.parseLog({ 
-        topics: ticketIssuedEvent.topics, 
-        data: ticketIssuedEvent.data 
+        topics: ticketMintedEvent.topics, 
+        data: ticketMintedEvent.data 
       });
       tokenId = parsed.args.tokenId.toString();
     }
 
-    // Update DB record with on-chain data
-    await db.query(
-      `UPDATE tickets SET 
-         token_id = $1, contract_address = $2, chain_id = $3,
-         mint_tx_hash = $4, metadata_uri = $5, updated_at = NOW()
-       WHERE id = $6`,
-      [
-        tokenId ? parseInt(tokenId) : null,
-        contractAddress,
-        String(SUPPORTED_CHAINS[chain].chainId),
-        tx.hash,
-        metadataUri,
-        ticketId
-      ]
-    );
+    // Update DB record with on-chain data if DB table exists
+    try {
+      await db.query(
+        `UPDATE tickets SET 
+           token_id = $1, contract_address = $2, chain_id = $3,
+           mint_tx_hash = $4, metadata_uri = $5, updated_at = NOW()
+         WHERE id = $6`,
+        [
+          tokenId ? parseInt(tokenId) : null,
+          contractAddress,
+          String(SUPPORTED_CHAINS[chain].chainId),
+          tx.hash,
+          metadataUri,
+          ticketId
+        ]
+      );
 
-    await auditService.log({
-      actorType: 'SYSTEM',
-      action: 'ticket.mint',
-      resourceType: 'ticket',
-      resourceId: ticketId,
-      description: `Minted NFT tokenId=${tokenId} on ${chain}`,
-      details: { txHash: tx.hash, tokenId, chain, contractAddress }
-    });
+      await auditService.log({
+        actorType: 'SYSTEM',
+        action: 'ticket.mint',
+        resourceType: 'ticket',
+        resourceId: ticketId,
+        description: `Minted NFT tokenId=${tokenId} on ${chain}`,
+        details: { txHash: tx.hash, tokenId, chain, contractAddress }
+      });
+    } catch (dbErr) {
+      logger.warn(`[BLOCKCHAIN] DB update skipped for ticket ${ticketId}: ${dbErr.message}`);
+    }
 
     logger.info(`[BLOCKCHAIN] Minted tokenId=${tokenId} for ticket ${ticketId}`);
 

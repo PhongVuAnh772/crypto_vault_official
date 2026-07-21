@@ -5,6 +5,8 @@ const db = require('../utils/db');
 const logger = require('../utils/logger');
 const adminWorkflowService = require('../services/adminService'); // File Service xử lý Workflow
 const globalEvents = require('../utils/events');
+const { ethers } = require('ethers');
+const ticketBlockchainService = require('../services/ticketBlockchainService');
 const { requireAuth, requireRole, hashPassword, JWT_SECRET } = require('../middlewares/authMiddleware');
 
 // --- MOBILE COMPATIBILITY ENDPOINTS (NO AUTH) ---
@@ -215,7 +217,7 @@ router.put('/admin/chains/:id', async (req, res) => {
     const updates = req.body;
 
     // Build dynamic query
-    const fields = Object.keys(updates).filter(k => ['name', 'is_active', 'rpc_url', 'is_testnet'].includes(k));
+    const fields = Object.keys(updates).filter(k => ['name', 'is_active', 'rpc_url', 'is_testnet', 'coin_transfer_fee', 'token_transfer_fee', 'nft_transfer_fee'].includes(k));
     if (fields.length === 0) return res.json({ success: true, message: 'No fields to update' });
 
     const setClause = fields.map((f, i) => `${f} = $${i + 1}`).join(', ');
@@ -715,6 +717,93 @@ router.post('/admin/config', async (req, res) => {
       [features]
     );
     res.json({ success: true, config: { features: result.rows[0].value } });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// --- NFT TICKET MANAGEMENT & TESTNET MINTING ---
+let recentMintedTickets = [];
+
+router.get('/admin/tickets/info', async (req, res) => {
+  try {
+    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
+    const chain = 'sepolia';
+    const pk = process.env.TICKET_MINTER_PRIVATE_KEY;
+    let minterAddress = 'Chưa cài đặt';
+    if (pk) {
+      try {
+        const w = new ethers.Wallet(pk);
+        minterAddress = w.address;
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      data: {
+        contractAddress,
+        chain,
+        minterAddress,
+        rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com',
+        explorerUrl: `https://sepolia.etherscan.io/address/${contractAddress}`
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.post('/admin/tickets/mint', async (req, res) => {
+  try {
+    const { toAddress, eventName, ticketType, seatInfo, metadataUri } = req.body;
+    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
+
+    if (!toAddress) {
+      return res.status(400).json({ success: false, error: 'Địa chỉ ví nhận (toAddress) là bắt buộc' });
+    }
+
+    const ticketId = 'ticket_' + Date.now();
+    const result = await ticketBlockchainService.mintTicketNFT({
+      ticketId,
+      contractAddress,
+      chain: 'sepolia',
+      toAddress,
+      metadataUri: metadataUri || 'ipfs://bafkreid4x6ygpy7l2327y345',
+      eventId: eventName || 'CryptoVault Festival 2026',
+      ticketType: ticketType || 'VIP_PASS',
+      seatInfo: seatInfo || 'VIP Row A-12'
+    });
+
+    const ticketRecord = {
+      id: ticketId,
+      tokenId: result.tokenId,
+      toAddress,
+      eventName: eventName || 'CryptoVault Festival 2026',
+      ticketType: ticketType || 'VIP Pass',
+      seatInfo: seatInfo || 'VIP Row A-12',
+      txHash: result.txHash,
+      explorerUrl: `https://sepolia.etherscan.io/tx/${result.txHash}`,
+      mintedAt: new Date().toISOString()
+    };
+
+    recentMintedTickets.unshift(ticketRecord);
+
+    res.json({
+      success: true,
+      data: ticketRecord
+    });
+  } catch (err) {
+    logger.error('[ADMIN_TICKETS] Mint error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+router.get('/admin/tickets/list', async (req, res) => {
+  try {
+    res.json({
+      success: true,
+      data: recentMintedTickets
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }

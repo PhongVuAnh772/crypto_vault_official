@@ -103,20 +103,9 @@ const ListNFTEmpty: React.FC<ListEmpty> = ({ onPress }) => {
 
 const localStyles = StyleSheet.create({
   emptyCardFrame: {
-    borderWidth: 1.5,
-    borderColor: 'rgba(90, 63, 255, 0.25)',
-    borderStyle: 'solid',
-    borderRadius: 24,
-    backgroundColor: 'rgba(25, 28, 62, 0.65)',
-    padding: 24,
-    marginHorizontal: 16,
+    paddingHorizontal: 16,
     marginTop: 20,
     alignItems: 'center',
-    shadowColor: '#5A3FFF',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 5,
   },
   illustrationImage: {
     width: 200,
