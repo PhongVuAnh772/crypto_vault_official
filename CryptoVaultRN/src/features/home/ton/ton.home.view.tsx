@@ -18,6 +18,7 @@ import DraggableWidgets, { HomeWidgetData } from '../components/DraggableWidgets
 import HomeHeader from "../components/HomeHeader";
 import HomeSkeletonLoading from "../components/HomeSkeletonLoading";
 import ListCrypto from "../components/ListCrypto";
+import HomeTicketSection from "../components/HomeTicketSection";
 import SocialFeedSection from "../../socialFeed/components/SocialFeedSection";
 import WalletBottomSheet from "../components/WalletBottomSheet/WalletBottomSheet";
 import { MenuActionType } from "../components/WalletBottomSheet/WalletBottomSheet.type";
@@ -239,6 +240,9 @@ const TonHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
               </TouchableOpacity>
             </Swiper>
           </View>
+
+          {/* Ticket NFTs Section - Right Below Swiper */}
+          <HomeTicketSection />
 
           <DraggableWidgets widgets={widgets} />
 

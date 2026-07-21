@@ -18,6 +18,7 @@ import DraggableWidgets, { HomeWidgetData } from '../components/DraggableWidgets
 import HomeHeader from '../components/HomeHeader';
 import HomeSkeletonLoading from '../components/HomeSkeletonLoading';
 import ListCrypto from '../components/ListCrypto';
+import HomeTicketSection from '../components/HomeTicketSection';
 import WalletBottomSheet from '../components/WalletBottomSheet/WalletBottomSheet';
 import useBitcoinHome from './bitcoin.home.hook';
 
@@ -224,6 +225,9 @@ const BitcoinHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                             </TouchableOpacity>
                         </Swiper>
                     </View>
+
+                    {/* Ticket NFTs Section - Right Below Swiper */}
+                    <HomeTicketSection />
 
                     <DraggableWidgets widgets={widgets} />
 

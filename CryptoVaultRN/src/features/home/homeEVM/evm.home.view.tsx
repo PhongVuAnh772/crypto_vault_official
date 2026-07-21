@@ -21,6 +21,7 @@ import DraggableWidgets, { HomeWidgetData } from '../components/DraggableWidgets
 import HomeHeader from '../components/HomeHeader';
 import HomeSkeletonLoading from '../components/HomeSkeletonLoading';
 import ListCrypto from '../components/ListCrypto';
+import HomeTicketSection from '../components/HomeTicketSection';
 import WalletBottomSheet from '../components/WalletBottomSheet/WalletBottomSheet';
 import { MenuActionType } from '../components/WalletBottomSheet/WalletBottomSheet.type';
 import { ListCryptoDataType } from '../home.type';
@@ -293,6 +294,11 @@ const EVMHomeView: React.FC<RootNavigationType> = ({ navigation }) => {
                                 </View>
                             </TouchableOpacity>
                         </Swiper>
+                    </Reanimated.View>
+
+                    {/* My Ticket NFTs Section - Right Below Swiper */}
+                    <Reanimated.View entering={FadeInDown.delay(150).springify().damping(15)}>
+                        <HomeTicketSection />
                     </Reanimated.View>
 
                     <Reanimated.View entering={FadeInDown.delay(200).springify().damping(15)}>
