@@ -225,7 +225,7 @@ router.put('/admin/chains/:id', async (req, res) => {
     values.push(id);
 
     const result = await db.query(
-      `UPDATE chains SET ${setClause}, updated_at = NOW() WHERE id = $${values.length} RETURNING *`,
+      `UPDATE chains SET ${setClause} WHERE id = $${values.length} RETURNING *`,
       values
     );
 
