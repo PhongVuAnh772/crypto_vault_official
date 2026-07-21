@@ -94,6 +94,103 @@ router.post('/admin/login', async (req, res) => {
   }
 });
 
+// --- NFT TICKET MANAGEMENT & TESTNET MINTING ---
+let recentMintedTickets = [];
+
+async function handleTicketInfo(req, res) {
+  try {
+    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
+    const chain = 'sepolia';
+    const pk = process.env.TICKET_MINTER_PRIVATE_KEY;
+    let minterAddress = 'Chưa cài đặt';
+    if (pk) {
+      try {
+        const w = new ethers.Wallet(pk);
+        minterAddress = w.address;
+      } catch (e) {}
+    }
+
+    res.json({
+      success: true,
+      data: {
+        contractAddress,
+        chain,
+        minterAddress,
+        rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com',
+        explorerUrl: `https://sepolia.etherscan.io/address/${contractAddress}`
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+async function handleTicketMint(req, res) {
+  try {
+    const { toAddress, eventName, ticketType, seatInfo, metadataUri } = req.body;
+    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
+
+    if (!toAddress) {
+      return res.status(400).json({ success: false, error: 'Địa chỉ ví nhận (toAddress) là bắt buộc' });
+    }
+
+    const ticketId = 'ticket_' + Date.now();
+    const result = await ticketBlockchainService.mintTicketNFT({
+      ticketId,
+      contractAddress,
+      chain: 'sepolia',
+      toAddress,
+      metadataUri: metadataUri || 'ipfs://bafkreid4x6ygpy7l2327y345',
+      eventId: eventName || 'CryptoVault Festival 2026',
+      ticketType: ticketType || 'VIP_PASS',
+      seatInfo: seatInfo || 'VIP Row A-12'
+    });
+
+    const ticketRecord = {
+      id: ticketId,
+      tokenId: result.tokenId,
+      toAddress,
+      eventName: eventName || 'CryptoVault Festival 2026',
+      ticketType: ticketType || 'VIP Pass',
+      seatInfo: seatInfo || 'VIP Row A-12',
+      txHash: result.txHash,
+      explorerUrl: `https://sepolia.etherscan.io/tx/${result.txHash}`,
+      mintedAt: new Date().toISOString()
+    };
+
+    recentMintedTickets.unshift(ticketRecord);
+
+    res.json({
+      success: true,
+      data: ticketRecord
+    });
+  } catch (err) {
+    logger.error('[ADMIN_TICKETS] Mint error:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+async function handleTicketList(req, res) {
+  try {
+    res.json({
+      success: true,
+      data: recentMintedTickets
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+// Support multiple URL aliases so frontend calls never 404
+router.get('/admin/tickets/info', handleTicketInfo);
+router.get('/tickets/info', handleTicketInfo);
+
+router.post('/admin/tickets/mint', handleTicketMint);
+router.post('/tickets/mint', handleTicketMint);
+
+router.get('/admin/tickets/list', handleTicketList);
+router.get('/tickets/list', handleTicketList);
+
 // Khoá bảo mật áp dụng cho toàn bộ thao tác admin (chỉ yêu cầu Token cơ bản)
 router.use('/admin', requireAuth);
 
@@ -721,103 +818,6 @@ router.post('/admin/config', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
-// --- NFT TICKET MANAGEMENT & TESTNET MINTING ---
-let recentMintedTickets = [];
-
-async function handleTicketInfo(req, res) {
-  try {
-    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
-    const chain = 'sepolia';
-    const pk = process.env.TICKET_MINTER_PRIVATE_KEY;
-    let minterAddress = 'Chưa cài đặt';
-    if (pk) {
-      try {
-        const w = new ethers.Wallet(pk);
-        minterAddress = w.address;
-      } catch (e) {}
-    }
-
-    res.json({
-      success: true,
-      data: {
-        contractAddress,
-        chain,
-        minterAddress,
-        rpcUrl: process.env.SEPOLIA_RPC_URL || 'https://ethereum-sepolia-rpc.publicnode.com',
-        explorerUrl: `https://sepolia.etherscan.io/address/${contractAddress}`
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-}
-
-async function handleTicketMint(req, res) {
-  try {
-    const { toAddress, eventName, ticketType, seatInfo, metadataUri } = req.body;
-    const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
-
-    if (!toAddress) {
-      return res.status(400).json({ success: false, error: 'Địa chỉ ví nhận (toAddress) là bắt buộc' });
-    }
-
-    const ticketId = 'ticket_' + Date.now();
-    const result = await ticketBlockchainService.mintTicketNFT({
-      ticketId,
-      contractAddress,
-      chain: 'sepolia',
-      toAddress,
-      metadataUri: metadataUri || 'ipfs://bafkreid4x6ygpy7l2327y345',
-      eventId: eventName || 'CryptoVault Festival 2026',
-      ticketType: ticketType || 'VIP_PASS',
-      seatInfo: seatInfo || 'VIP Row A-12'
-    });
-
-    const ticketRecord = {
-      id: ticketId,
-      tokenId: result.tokenId,
-      toAddress,
-      eventName: eventName || 'CryptoVault Festival 2026',
-      ticketType: ticketType || 'VIP Pass',
-      seatInfo: seatInfo || 'VIP Row A-12',
-      txHash: result.txHash,
-      explorerUrl: `https://sepolia.etherscan.io/tx/${result.txHash}`,
-      mintedAt: new Date().toISOString()
-    };
-
-    recentMintedTickets.unshift(ticketRecord);
-
-    res.json({
-      success: true,
-      data: ticketRecord
-    });
-  } catch (err) {
-    logger.error('[ADMIN_TICKETS] Mint error:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-}
-
-async function handleTicketList(req, res) {
-  try {
-    res.json({
-      success: true,
-      data: recentMintedTickets
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
-  }
-}
-
-// Support multiple URL aliases so frontend calls never 404
-router.get('/admin/tickets/info', handleTicketInfo);
-router.get('/tickets/info', handleTicketInfo);
-
-router.post('/admin/tickets/mint', handleTicketMint);
-router.post('/tickets/mint', handleTicketMint);
-
-router.get('/admin/tickets/list', handleTicketList);
-router.get('/tickets/list', handleTicketList);
 
 module.exports = router;
 module.exports.handleTicketInfo = handleTicketInfo;
