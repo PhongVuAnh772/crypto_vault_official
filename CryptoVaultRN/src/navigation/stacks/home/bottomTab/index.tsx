@@ -79,12 +79,6 @@ const BottomTab = () => {
       />
 
       <Tab.Screen
-        name={LanguageKey.home_tab_tickets_title}
-        component={TicketWalletScreen}
-        options={{ headerShown: false }}
-      />
-
-      <Tab.Screen
         name={LanguageKey.home_tab_setting_title}
         component={SettingScreen}
       />

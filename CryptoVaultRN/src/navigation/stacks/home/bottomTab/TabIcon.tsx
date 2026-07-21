@@ -20,8 +20,6 @@ export const bottomTabIcon = (
             return <Feather name="activity" size={size} color={color} />;
         case LanguageKey.home_tab_setting_title:
             return <Feather name="settings" size={size} color={color} />;
-        case LanguageKey.home_tab_tickets_title:
-            return <Feather name="tag" size={size} color={color} />;
         default:
             return null;
     }
