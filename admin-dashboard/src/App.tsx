@@ -30,19 +30,15 @@ axios.interceptors.request.use(config => {
   return config;
 });
 
-axios.interceptors.response.use(res => res, err => {
-  const isLoginRequest = err.config?.url?.includes('/admin/login');
-
-  // Chỉ reload nếu KHÔNG PHẢI là request login và gặp lỗi 401
-  if (err.response?.status === 401 && !isLoginRequest) {
-    localStorage.removeItem('admin_token');
-    // Thay vì reload liên tục, chúng ta có thể điều hướng hoặc báo lỗi nhẹ nhàng
-    if (window.location.pathname !== '/') {
-      window.location.href = '/';
+axios.interceptors.response.use(
+  res => res,
+  err => {
+    if (err.response?.status === 401) {
+      localStorage.removeItem('admin_token');
     }
+    return Promise.reject(err);
   }
-  return Promise.reject(err);
-});
+);
 
 // Nhúng URL Backend (Mặc định local nếu đang dev)
 const API_BASE = window.location.hostname === 'localhost'
@@ -225,8 +221,12 @@ function App() {
       setAuctions(auctionRes.data.data || []);
       setFeeConfig(feeRes.data.data || null);
       setConfig({ features: configRes.data.features });
-    } catch (err) {
+    } catch (err: any) {
       console.error('Fetch failed', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('admin_token');
+        setIsAuthenticated(false);
+      }
     } finally {
       setLoading(false);
     }
