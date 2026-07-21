@@ -257,8 +257,10 @@ tr:hover td {
 
 .switch {
   position: relative;
-  width: 50px;
-  height: 26px;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+  vertical-align: middle;
 }
 
 .switch input {
@@ -270,12 +272,11 @@ tr:hover td {
 .slider {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.1);
   border: 1px solid var(--glass-border);
-  border-radius: 26px;
+  border-radius: 24px;
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
 }
 
 .slider:before {
@@ -283,22 +284,22 @@ tr:hover td {
   content: "";
   height: 18px;
   width: 18px;
-  left: 3px;
-  bottom: 3px;
+  left: 2px;
+  bottom: 2px;
   background: white;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s ease;
   border-radius: 50%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
 }
 
 input:checked+.slider {
   background: var(--accent-blue);
   border-color: var(--accent-blue);
-  box-shadow: 0 0 15px var(--accent-blue-glow);
+  box-shadow: 0 0 10px var(--accent-blue-glow);
 }
 
 input:checked+.slider:before {
-  transform: translateX(24px);
+  transform: translateX(22px);
   background: white;
 }
 
