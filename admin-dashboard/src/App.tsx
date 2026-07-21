@@ -150,8 +150,8 @@ function App() {
   const fetchTicketsData = async () => {
     try {
       const [infoRes, listRes] = await Promise.all([
-        axios.get(`${API_BASE}/api/admin/tickets/info`),
-        axios.get(`${API_BASE}/api/admin/tickets/list`)
+        axios.get(`${API_BASE}/api/v1/admin/tickets/info`),
+        axios.get(`${API_BASE}/api/v1/admin/tickets/list`)
       ]);
       if (infoRes.data.success) setTicketContractInfo(infoRes.data.data);
       if (listRes.data.success) setMintedTickets(listRes.data.data);
@@ -163,7 +163,7 @@ function App() {
     if (!mintToAddress) return alert('Vui lòng nhập địa chỉ ví nhận NFT');
     setMintingLoading(true);
     try {
-      const res = await axios.post(`${API_BASE}/api/admin/tickets/mint`, {
+      const res = await axios.post(`${API_BASE}/api/v1/admin/tickets/mint`, {
         toAddress: mintToAddress,
         eventName: mintEventName,
         ticketType: mintTicketType,
