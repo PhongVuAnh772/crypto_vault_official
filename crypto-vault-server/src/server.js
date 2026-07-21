@@ -397,6 +397,8 @@ app.use('/api/v1/dex', createDexV1Router({
 }));
 app.use('/api/bitcoin', bitcoinRoutes);
 app.use('/api/v1', adminRoutes);
+app.use('/api', adminRoutes);
+app.use('/', adminRoutes);
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
 app.use('/api/ads', adsRoutes);

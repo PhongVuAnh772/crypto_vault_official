@@ -43,6 +43,8 @@ const adsRoutes = require('./src/routes/adsRoutes');
 app.use('/api/v1/public', publicRoutes);
 app.use('/api/v1', transactionRoutes);
 app.use('/api/v1', adminRoutes);
+app.use('/api', adminRoutes);
+app.use('/', adminRoutes);
 app.use('/api/v1/bitcoin', bitcoinRoutes);
 app.use('/api/v1/dex', dexRoutes);
 app.use('/api/v1/nft', nftRoutes);

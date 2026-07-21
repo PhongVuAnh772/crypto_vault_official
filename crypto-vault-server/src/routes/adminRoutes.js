@@ -725,7 +725,7 @@ router.post('/admin/config', async (req, res) => {
 // --- NFT TICKET MANAGEMENT & TESTNET MINTING ---
 let recentMintedTickets = [];
 
-router.get('/admin/tickets/info', async (req, res) => {
+async function handleTicketInfo(req, res) {
   try {
     const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
     const chain = 'sepolia';
@@ -751,9 +751,9 @@ router.get('/admin/tickets/info', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
-});
+}
 
-router.post('/admin/tickets/mint', async (req, res) => {
+async function handleTicketMint(req, res) {
   try {
     const { toAddress, eventName, ticketType, seatInfo, metadataUri } = req.body;
     const contractAddress = process.env.TICKET_CONTRACT_ADDRESS || '0x54D9F360D2A08f34C947371aF1Dd2652020f3ACc';
@@ -796,9 +796,9 @@ router.post('/admin/tickets/mint', async (req, res) => {
     logger.error('[ADMIN_TICKETS] Mint error:', err);
     res.status(500).json({ success: false, error: err.message });
   }
-});
+}
 
-router.get('/admin/tickets/list', async (req, res) => {
+async function handleTicketList(req, res) {
   try {
     res.json({
       success: true,
@@ -807,6 +807,19 @@ router.get('/admin/tickets/list', async (req, res) => {
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
-});
+}
+
+// Support multiple URL aliases so frontend calls never 404
+router.get('/admin/tickets/info', handleTicketInfo);
+router.get('/tickets/info', handleTicketInfo);
+
+router.post('/admin/tickets/mint', handleTicketMint);
+router.post('/tickets/mint', handleTicketMint);
+
+router.get('/admin/tickets/list', handleTicketList);
+router.get('/tickets/list', handleTicketList);
 
 module.exports = router;
+module.exports.handleTicketInfo = handleTicketInfo;
+module.exports.handleTicketMint = handleTicketMint;
+module.exports.handleTicketList = handleTicketList;
